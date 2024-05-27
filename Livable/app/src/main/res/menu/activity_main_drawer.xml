@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single"
+        android:menuCategory="system">
         <item
             android:id="@+id/nav_wochenplan"
             android:title="@string/menu_Wochenplan" />
@@ -12,7 +14,7 @@
             android:id="@+id/nav_todo"
             android:title="@string/menu_todo" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/nav_einkaufsliste"
+            android:title="@string/menu_einkaufsliste" />
     </group>
 </menu>

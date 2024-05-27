@@ -1,9 +1,6 @@
 package com.serenitysystems.livable
 
 import android.os.Bundle
-import android.view.Menu
-import androidx.appcompat.app.ActionBarDrawerToggle
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -35,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_wochenplan, R.id.nav_todo, R.id.nav_slideshow
+                R.id.nav_wochenplan, R.id.nav_todo, R.id.nav_einkaufsliste
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
