@@ -7,7 +7,7 @@
 
     <!--String zum menu -->
     <string name="menu_Wochenplan">Wochenplan</string>
-    <string name="menu_todo">ToDoList</string>
+    <string name="menu_todo">ToDo Liste</string>
     <string name="menu_einkaufsliste">Einkaufsliste</string>
 
     <!-- Strings related to login -->
