@@ -28,10 +28,8 @@ class ToDoFragment : Fragment() {
         _binding = FragmentTodoBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textGallery
-        toDoyViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        // Hier kannst du UI-Elemente initialisieren und mit dem ViewModel interagieren
+
         return root
     }
 
