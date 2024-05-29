@@ -6,8 +6,11 @@ import androidx.lifecycle.ViewModel
 
 class EinkaufslisteViewModel : ViewModel() {
 
+    // Private MutableLiveData, die den Text speichert und initialisiert
     private val _text = MutableLiveData<String>().apply {
-        value = "Einkaufsliste"
+        value = "Einkaufsliste" // Initialer Wert für die LiveData
     }
+
+    // Öffentlich zugängliche LiveData, die von der UI beobachtet werden kann
     val text: LiveData<String> = _text
 }

@@ -1,20 +1,17 @@
 package com.serenitysystems.livable.ui.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
 
-import com.serenitysystems.livable.R
+class LoginViewModel : ViewModel() {
 
-class LoginViewModel() : ViewModel() {
-
+    // Funktion zum Handhaben des Login-Prozesses
     fun login(username: String, password: String) {
-
+        // Hier könnte der eigentliche Login-Prozess implementiert werden
     }
 
-    // A placeholder password validation check
+    // Eine einfache Passwort-Validierungsfunktion
     private fun isPasswordValid(password: String): Boolean {
+        // Überprüfen, ob das Passwort länger als 5 Zeichen ist
         return password.length > 5
     }
 }
