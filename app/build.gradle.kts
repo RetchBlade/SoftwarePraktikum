@@ -53,4 +53,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation("org.mongodb:mongodb-driver-sync:4.3.0")
 }
