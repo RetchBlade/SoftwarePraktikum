@@ -49,8 +49,9 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.annotation)
+
     // MongoDB Atlas
-    implementation("org.mongodb:mongo-java-driver:3.12.10")
+    implementation("org.mongodb:mongodb-driver-sync:4.3.0")
 
 
     testImplementation(libs.junit)
