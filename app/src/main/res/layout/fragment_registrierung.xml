@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/backgroundlnavyblue"
+    tools:context=".fragment_registrierung">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        >
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_marginStart="-15dp"
+            android:layout_marginTop="-15dp"
+            android:src="@drawable/logo" />
+
+
+        <!-- Avatar-Bereich -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Kreisförmiger Rahmen -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="155dp"
+                android:layout_height="155dp"
+                android:layout_marginTop="100dp"
+                app:cardBackgroundColor="@color/own_helle_Beige"
+                app:cardCornerRadius="77.5dp"
+                app:cardElevation="4dp">
+
+                <!-- Avatar-Bild -->
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/pp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Sign up Text -->
+            <TextView
+                android:id="@+id/signUpText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Registrierung"
+                android:textColor="@color/own_helle_Beige"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+
+            <!-- Hochladebutton -->
+            <ImageButton
+                android:id="@+id/uploadButton"
+                android:layout_width="54dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="-210dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Profilbild hochladen"
+                android:scaleType="centerCrop"
+                app:tint="@android:color/white" />
+
+            <!-- Eingabefelder Bereich -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="350dp"
+                android:layout_height="530dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="200dp"
+                android:layout_marginEnd="24dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"> <!-- Set card background color to transparent -->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_blau">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Zusätzlicher Platz -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="15dp" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="4dp">
+
+                            <EditText
+                                android:id="@+id/usernameEditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/own_helle_Beige"
+                                android:hint="Email Adresse"
+                                android:inputType="textEmailAddress"
+                                android:padding="17dp"
+                                android:textSize="17sp" />
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Username -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="4dp">
+
+                            <EditText
+                                android:id="@+id/editTextNickname"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/own_helle_Beige"
+                                android:hint="Benutzername"
+                                android:padding="17dp"
+                                android:textSize="17sp" />
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Geburtsdatum -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="4dp">
+
+                            <TextView
+                                android:id="@+id/editTextBirthdate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/own_helle_Beige"
+                                android:clickable="true"
+                                android:focusable="false"
+                                android:hint="Geburtsdatum"
+                                android:padding="17dp"
+                                android:textSize="17sp" />
+
+                        </androidx.cardview.widget.CardView>
+                        <!-- Password -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="4dp">
+
+                            <EditText
+                                android:id="@+id/editTextPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/own_helle_Beige"
+                                android:hint="Passwort"
+                                android:inputType="numberPassword"
+                                android:padding="17dp"
+                                android:textSize="17sp" />
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Password Bestätigung -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="4dp">
+
+                            <EditText
+                                android:id="@+id/PasswortBestätigung"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/own_helle_Beige"
+                                android:hint="Passwort Bestätigen"
+                                android:inputType="numberPassword"
+                                android:padding="17dp"
+                                android:textSize="17sp" />
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Geschlecht Auswahl -->
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/radioMale"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="24dp"
+                                android:text="Männlich"
+                                android:textColor="@color/own_helle_Beige" />
+
+                            <RadioButton
+                                android:id="@+id/radioFemale"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="24dp"
+                                android:text="Weiblich"
+                                android:textColor="@color/own_helle_Beige" />
+
+                        </RadioGroup>
+
+                        <Button
+                            android:id="@+id/signUpButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="25dp"
+                            android:backgroundTint="@color/own_helle_Beige"
+                            android:paddingLeft="24dp"
+                            android:paddingRight="24dp"
+                            android:text="Registrieren"
+                            android:textColor="@color/own_navy_Blau"
+                            android:textSize="22sp" />
+
+
+                    </LinearLayout>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </RelativeLayout>
+
+
+
+</androidx.core.widget.NestedScrollView>

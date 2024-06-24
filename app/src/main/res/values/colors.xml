@@ -8,6 +8,9 @@
     <color name="own_navy_Blau">#1b7c97</color>
     <color name="own_helle_Beige">#f4f0e1</color>
     <color name="own_text_Farbe">#094249</color>
+    <color name="dark_beige">#b8b6ac</color>
+    <color name="hell_blau">#5fa3b6</color>
+
 
     <!-- Unsere Farbpalette -->
     <color name="own_very_dark_gray">#292929</color>
