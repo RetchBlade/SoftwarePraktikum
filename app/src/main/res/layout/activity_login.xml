@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <!-- Set the background of this layout to your image -->
+    <!-- Hintergrundbild -->
     <ImageView
         android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
@@ -12,13 +12,12 @@
         android:scaleType="centerCrop"
         android:src="@drawable/backgroundlnavyblue"/>
 
-
+    <!-- LinearLayout für Logo und Willkommensnachricht -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
-
 
         <ImageView
             android:id="@+id/logoImage"
@@ -26,29 +25,24 @@
             android:layout_height="283dp"
             android:layout_marginTop="60dp"
             android:scaleType="centerCrop"
-
-
             android:src="@drawable/logo" />
 
         <TextView
             android:id="@+id/welcomeText"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_below="@id/logoImage"
-            android:layout_centerHorizontal="true"
             android:text="Willkommen!"
             android:textColor="#FFFFFF"
             android:textSize="40sp"
             android:textStyle="bold" />
 
-        <!-- res/layout/activity_main.xml -->
+        <!-- CardView für Eingabefelder und Buttons -->
         <androidx.cardview.widget.CardView
             android:layout_width="350dp"
             android:layout_height="400dp"
             android:layout_margin="16dp"
             android:background="@drawable/gradient_beige"
             app:cardCornerRadius="20dp"
-
             android:elevation="8dp">
 
             <RelativeLayout
@@ -67,16 +61,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="15dp" />
 
-                    <!-- EditText on top of the background shape -->
-
-
-
+                    <!-- Email Adresse Eingabefeld -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="300dp"
                         android:layout_height="60dp"
                         android:layout_marginLeft="7dp"
-                        app:cardCornerRadius="8dp"
-                        >
+                        app:cardCornerRadius="8dp">
 
                         <EditText
                             android:id="@+id/usernameEditText"
@@ -86,18 +76,18 @@
                             android:hint="Email Adresse"
                             android:padding="20dp"
                             android:textSize="17sp"
-                            android:textColor = "@color/own_very_dark_gray"/>
+                            android:textColor="@color/own_very_dark_gray" />
 
                     </androidx.cardview.widget.CardView>
 
+                    <!-- Passwort Eingabefeld -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="300dp"
                         android:layout_height="60dp"
                         android:padding="20dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="7dp"
-                        app:cardCornerRadius="8dp"
-                        >
+                        app:cardCornerRadius="8dp">
 
                         <EditText
                             android:id="@+id/editTextNumberPassword"
@@ -108,10 +98,11 @@
                             android:inputType="numberPassword"
                             android:padding="20dp"
                             android:textSize="17sp"
-                            android:textColor = "@color/own_very_dark_gray"/>
+                            android:textColor="@color/own_very_dark_gray" />
 
                     </androidx.cardview.widget.CardView>
 
+                    <!-- Login Button -->
                     <Button
                         android:id="@+id/loginButton"
                         android:layout_width="159dp"
@@ -126,10 +117,9 @@
                         android:paddingRight="24dp"
                         android:text="Login"
                         android:textColor="@color/own_helle_Beige"
-                        android:textSize="19sp"
-                        />
+                        android:textSize="19sp" />
 
-
+                    <!-- Registrieren TextView -->
                     <TextView
                         android:id="@+id/Registrieren"
                         android:layout_width="198dp"
@@ -137,7 +127,6 @@
                         android:layout_centerInParent="true"
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"
-
                         android:layout_gravity="center_horizontal"
                         android:clickable="true"
                         android:focusable="true"
@@ -146,6 +135,7 @@
                         android:textColor="#1b7c97"
                         android:textSize="16sp" />
 
+                    <!-- Passwort vergessen TextView -->
                     <TextView
                         android:id="@+id/DatenVergessen2"
                         android:layout_width="229dp"
@@ -160,6 +150,7 @@
                         android:textColor="#1b7c97"
                         android:textSize="16sp" />
 
+                    <!-- Benutzerdaten merken CheckBox -->
                     <CheckBox
                         android:id="@+id/checkBox"
                         android:layout_width="261dp"
@@ -167,8 +158,6 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginStart="110dp"
                         android:layout_marginTop="-30dp"
-
-
                         android:layout_marginEnd="85dp"
                         android:buttonTint="@color/own_navy_Blau"
                         android:text="Benutzerdaten merken"
@@ -178,8 +167,12 @@
                 </LinearLayout>
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
-
     </LinearLayout>
 
-</RelativeLayout>
+    <!-- NavHostFragment hinzufügen -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
+</RelativeLayout>

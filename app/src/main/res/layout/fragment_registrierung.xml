@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@drawable/backgroundlnavyblue"
-    tools:context=".fragment_registrierung">
+    android:background="@drawable/backgroundlnavyblue">
 
 
     <RelativeLayout
@@ -171,7 +170,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@color/own_helle_Beige"
                                 android:hint="Passwort"
-                                android:inputType="numberPassword"
+                                android:inputType="textPassword"
                                 android:padding="17dp"
                                 android:textSize="17sp" />
 
@@ -191,7 +190,7 @@
                                 android:layout_height="wrap_content"
                                 android:background="@color/own_helle_Beige"
                                 android:hint="Passwort Bestätigen"
-                                android:inputType="numberPassword"
+                                android:inputType="textPassword"
                                 android:padding="17dp"
                                 android:textSize="17sp" />
 
@@ -221,6 +220,7 @@
                                 android:textColor="@color/own_helle_Beige" />
 
                         </RadioGroup>
+                        <!-- Login TextView -->
 
                         <Button
                             android:id="@+id/signUpButton"
@@ -234,7 +234,14 @@
                             android:text="Registrieren"
                             android:textColor="@color/own_navy_Blau"
                             android:textSize="22sp" />
-
+                        <TextView
+                            android:id="@+id/Login"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center_horizontal"
+                            android:text="Doch ein Account?"
+                            android:textColor="@color/own_helle_Beige" />
 
                     </LinearLayout>
                 </RelativeLayout>
