@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.googleGmsGoogleServices)
 }
 
 android {
@@ -52,8 +53,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
 
-    // MongoDB Atlas
-    implementation("org.mongodb:mongodb-driver-sync:4.3.0")
+    // Firebase
+    implementation(libs.firebase.firestore)
 
 
     testImplementation(libs.junit)
