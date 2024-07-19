@@ -18,6 +18,7 @@ import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.login.LoginActivity
 import com.serenitysystems.livable.ui.register.data.User
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 import java.util.*
 
 class RegistrierungFragment : Fragment() {
@@ -84,8 +85,9 @@ class RegistrierungFragment : Fragment() {
             val selectedGenderId = radioGroupGender.checkedRadioButtonId
             val gender = if (selectedGenderId == R.id.radioMale) "Männlich" else "Weiblich"
 
+            val hashedPassword = hashPassword(password)
             // Erstellt ein User-Objekt mit den eingegebenen Daten
-            val user = User(email, nickname, password, birthdate, gender)
+            val user = User(email, nickname, hashedPassword, birthdate, gender)
 
             // Startet die Registrierung im Hintergrund
             lifecycleScope.launch {
@@ -160,6 +162,12 @@ class RegistrierungFragment : Fragment() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         requireActivity().finish()
+    }
+
+    private fun hashPassword(password: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(password.toByteArray())
+        return hash.joinToString("") { "%02x".format(it) }
     }
 
 }
