@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.serenitysystems.livable" />
+                  <option name="mobileSdkAppId" value="1:122321127272:android:50bdf50ca13f428a97b8dd" />
+                  <option name="projectId" value="livable-91d13" />
+                  <option name="projectNumber" value="122321127272" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

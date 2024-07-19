@@ -95,7 +95,7 @@
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             android:hint="Passwort"
-                            android:inputType="numberPassword"
+                            android:inputType="textWebPassword"
                             android:padding="20dp"
                             android:textSize="17sp"
                             android:textColor="@color/own_very_dark_gray" />
