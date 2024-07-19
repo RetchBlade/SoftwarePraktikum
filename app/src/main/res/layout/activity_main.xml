@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <include
         android:id="@+id/app_bar_main"
         layout="@layout/app_bar_main"
@@ -21,5 +22,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"/>
+        android:background="@drawable/menubackground"
+        app:menu="@menu/activity_main_drawer"
+        app:itemIconTint="@color/own_navy_Blau"
+        app:itemTextColor="@color/own_navy_Blau"/>
 </androidx.drawerlayout.widget.DrawerLayout>

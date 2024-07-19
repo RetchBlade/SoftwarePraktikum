@@ -6,6 +6,9 @@
     <string name="nav_header_desc">Navigation header</string>
 
     <!--String zum menu -->
+    <string name="DrawerName">Navigation Drawer</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
     <string name="menu_Wochenplan">Wochenplan</string>
     <string name="menu_todo">ToDo Liste</string>
     <string name="menu_einkaufsliste">Einkaufsliste</string>

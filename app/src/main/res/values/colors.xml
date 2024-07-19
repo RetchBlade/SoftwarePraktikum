@@ -18,4 +18,12 @@
     <color name="own_grayish_yellow">#d7d4c1</color>
     <color name="own_light_grayish_yellow">#d7d4c1</color>
     <color name="own_Very_light_gray">#f5f5f5</color>
+
+    <!-- Menu Farbpalette -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="lavender">#8692f7</color>
 </resources>

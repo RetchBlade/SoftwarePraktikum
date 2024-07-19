@@ -62,7 +62,6 @@ class RegistrierungFragment : Fragment() {
         signUpButton.setOnClickListener { collectUserDataAndRegister() }
         backtologin.setOnClickListener {navigateToLoginActivity()}
 
-
         // Beobachtung des ViewModels
         observeViewModel()
 
