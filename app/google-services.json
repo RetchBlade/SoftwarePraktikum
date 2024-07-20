@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122321127272",
+    "project_id": "livable-91d13",
+    "storage_bucket": "livable-91d13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122321127272:android:50bdf50ca13f428a97b8dd",
+        "android_client_info": {
+          "package_name": "com.serenitysystems.livable"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWGh0Z8XmOkY0eOrJ2_nAa5ZQ5moeqPCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -31,4 +31,5 @@
     <string name="todo_add">Hinzufügen</string>
     <string name="todo_del">Löschen</string>
     <string name="todo_edit">Bearbeiten</string>
+    <string name="add_item" />
 </resources>
