@@ -9,14 +9,17 @@
 
         <item
             android:id="@+id/nav_wochenplan"
+            android:icon="@android:drawable/ic_menu_week"
             android:title="@string/menu_Wochenplan" />
 
         <item
             android:id="@+id/nav_todo"
+            android:icon="@android:drawable/ic_menu_edit"
             android:title="@string/menu_todo" />
 
         <item
             android:id="@+id/nav_einkaufsliste"
+            android:icon="@drawable/shoppingcarticon"
             android:title="@string/menu_einkaufsliste" />
     </group>
     <item
@@ -25,7 +28,8 @@
         <menu>
             <item
                 android:id="@+id/nav_logout"
-                android:title="Logout"/>
+                android:icon="@drawable/logouticon"
+                android:title="Logout" />
         </menu>
 
     </item>
