@@ -35,7 +35,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:textSize="15sp"/>
-
+        <TextView
+            android:id="@+id/taskAssignee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textSize="15sp"/>
         <ImageView
             android:id="@+id/taskAssigneeAvatar"
             android:layout_width="24dp"

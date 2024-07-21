@@ -96,6 +96,7 @@ class WochenplanFragment : Fragment() {
                 taskView.findViewById<TextView>(R.id.taskDescription).text = task.description
                 taskView.findViewById<TextView>(R.id.taskPriority).text = task.priority
                 taskView.findViewById<TextView>(R.id.taskPoints).text = "${task.points} Punkte"
+                taskView.findViewById<TextView>(R.id.taskAssignee).text = task.assignee
                 taskView.findViewById<ImageView>(R.id.taskAssigneeAvatar).setImageResource(task.avatar)
                 layout.addView(taskView)
             }
