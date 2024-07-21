@@ -26,5 +26,5 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add"
         android:contentDescription="@string/add_task"
-        android:backgroundTint="@color/white"/>
+        android:backgroundTint="@color/own_navy_Blau"/>
 </FrameLayout>
