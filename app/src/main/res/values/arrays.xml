@@ -9,4 +9,12 @@
         <item>Freitag</item>
         <item>Samstag</item>
     </string-array>
+
+    <string-array name="prio_liste">
+        <item>Sehr Hoch</item>
+        <item>Hoch</item>
+        <item>Mittel</item>
+        <item>Niedrig</item>
+        <item>Sehr Niedrig</item>
+    </string-array>
 </resources>

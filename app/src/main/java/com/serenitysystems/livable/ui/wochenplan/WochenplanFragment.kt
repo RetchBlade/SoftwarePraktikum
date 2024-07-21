@@ -49,7 +49,7 @@ class WochenplanFragment : Fragment() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
         val daySpinner: Spinner = dialogView.findViewById(R.id.daySpinner)
         val taskDescription: EditText = dialogView.findViewById(R.id.taskDescription)
-        val taskPriority: EditText = dialogView.findViewById(R.id.taskPriority)
+        val taskPriority: Spinner = dialogView.findViewById(R.id.taskPriority)
         val taskPoints: EditText = dialogView.findViewById(R.id.taskPoints)
         val taskAssignee: EditText = dialogView.findViewById(R.id.taskAssignee)
 
@@ -59,7 +59,7 @@ class WochenplanFragment : Fragment() {
             .setPositiveButton(R.string.add_task) { _, _ ->
                 val day = daySpinner.selectedItem.toString()
                 val description = taskDescription.text.toString()
-                val priority = taskPriority.text.toString()
+                val priority = taskPriority.selectedItem.toString()
                 val points = taskPoints.text.toString().toIntOrNull() ?: 0
                 val assignee = taskAssignee.text.toString()
                 val avatar = R.drawable.logo // Fester Avatar für den Anfang

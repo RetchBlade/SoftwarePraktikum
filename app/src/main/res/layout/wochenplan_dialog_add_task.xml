@@ -19,12 +19,12 @@
         android:hint="@string/task_description"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
+    <Spinner
         android:id="@+id/taskPriority"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/task_priority"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:entries="@array/prio_liste"/>
 
     <EditText
         android:id="@+id/taskPoints"
