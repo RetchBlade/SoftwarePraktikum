@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/own_helle_Beige"
+    android:background="@drawable/wochenplan_rounded_corners"
     android:padding="16dp"
     android:layout_marginTop="8dp">
 
