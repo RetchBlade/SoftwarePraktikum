@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.serenitysystems.livable.R
@@ -17,14 +20,14 @@ class WochenplanFragment : Fragment() {
 
     private var _binding: FragmentWochenplanBinding? = null
     private val binding get() = _binding!!
+    private lateinit var wochenplanViewModel: WochenplanViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val wochenplanViewModel =
-            ViewModelProvider(this).get(WochenplanViewModel::class.java)
+        wochenplanViewModel = ViewModelProvider(this).get(WochenplanViewModel::class.java)
 
         _binding = FragmentWochenplanBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -33,7 +36,41 @@ class WochenplanFragment : Fragment() {
             displayTasks(tasks)
         }
 
+        binding.addTaskButton.setOnClickListener {
+            showAddTaskDialog()
+        }
+
         return root
+    }
+
+    private fun showAddTaskDialog() {
+        // Sicherstellen, dass der Kontext nicht null ist
+        val context = requireContext()
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
+        val daySpinner: Spinner = dialogView.findViewById(R.id.daySpinner)
+        val taskDescription: EditText = dialogView.findViewById(R.id.taskDescription)
+        val taskPriority: EditText = dialogView.findViewById(R.id.taskPriority)
+        val taskPoints: EditText = dialogView.findViewById(R.id.taskPoints)
+        val taskAssignee: EditText = dialogView.findViewById(R.id.taskAssignee)
+
+        val dialog = AlertDialog.Builder(context)
+            .setTitle(R.string.add_task)
+            .setView(dialogView)
+            .setPositiveButton(R.string.add_task) { _, _ ->
+                val day = daySpinner.selectedItem.toString()
+                val description = taskDescription.text.toString()
+                val priority = taskPriority.text.toString()
+                val points = taskPoints.text.toString().toIntOrNull() ?: 0
+                val assignee = taskAssignee.text.toString()
+                val avatar = R.drawable.logo // Fester Avatar für den Anfang
+
+                val newTask = Task(day, description, priority, points, assignee, avatar)
+                wochenplanViewModel.addTask(newTask)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+
+        dialog.show()
     }
 
     private fun displayTasks(tasks: List<Task>) {
@@ -50,12 +87,12 @@ class WochenplanFragment : Fragment() {
 
             val dayTasks = tasks.filter { it.day == day }
 
-            val dayHeader = LayoutInflater.from(context).inflate(R.layout.wochenplan_day_header, layout, false)
+            val dayHeader = LayoutInflater.from(requireContext()).inflate(R.layout.wochenplan_day_header, layout, false)
             dayHeader.findViewById<TextView>(R.id.dayTitle).text = day
             layout.addView(dayHeader)
 
             for (task in dayTasks) {
-                val taskView = LayoutInflater.from(context).inflate(R.layout.wochenplan_task_item, layout, false)
+                val taskView = LayoutInflater.from(requireContext()).inflate(R.layout.wochenplan_task_item, layout, false)
                 taskView.findViewById<TextView>(R.id.taskDescription).text = task.description
                 taskView.findViewById<TextView>(R.id.taskPriority).text = task.priority
                 taskView.findViewById<TextView>(R.id.taskPoints).text = "${task.points} Punkte"

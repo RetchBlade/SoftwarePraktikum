@@ -33,4 +33,12 @@
     <string name="todo_del">Löschen</string>
     <string name="todo_edit">Bearbeiten</string>
     <string name="add_item" />
+
+    <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
+    <string name="add_task">Aufgabe hinzufügen</string>
+    <string name="task_description">Aufgabenbeschreibung</string>
+    <string name="task_priority">Priorität</string>
+    <string name="task_points">Punkte</string>
+    <string name="task_assignee">Zuständiger</string>
+    <string name="cancel">Abbrechen</string>
 </resources>

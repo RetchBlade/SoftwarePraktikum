@@ -21,9 +21,12 @@ class WochenplanViewModel : ViewModel() {
             Task("Sonntag", "Küche putzen", "Niedrig", 2, "Haneen", R.drawable.logo),
             Task("Sonntag", "Wohnzimmer wischen", "Hoch", 2, "Lorenz", R.drawable.logo),
             Task("Montag", "Einkaufen gehen", "Mittel", 1, "Yanik", R.drawable.logo),
-            // Füge weitere Aufgaben hinzu...
+            Task("Freitag", "Einkaufen gehen", "Mittel", 1, "Yanik", R.drawable.logo),
         )
         _tasks.value = tasksList
     }
-
+    fun addTask(task: Task) {
+        val updatedTasks = _tasks.value.orEmpty() + task
+        _tasks.value = updatedTasks
+    }
 }
