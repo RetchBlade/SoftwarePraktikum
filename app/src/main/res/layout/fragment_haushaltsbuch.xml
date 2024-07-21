@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Pie chart -->
-    <com.serenitysystems.livable.ui.haushaltsbuch.CustomPieChartView
+    <com.serenitysystems.livable.ui.haushaltsbuch.PieChartView
         android:id="@+id/pie_chart_view"
         android:layout_width="414dp"
         android:layout_height="297dp"
