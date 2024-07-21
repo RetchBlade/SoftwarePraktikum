@@ -15,4 +15,10 @@
         <item>Mittel</item>
         <item>Niedrig</item>
     </string-array>
+
+    <string-array name="task_options">
+        <item>Erledigt</item>
+        <item>Bearbeiten</item>
+        <item>Löschen</item>
+    </string-array>
 </resources>

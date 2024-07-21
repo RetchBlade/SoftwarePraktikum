@@ -35,10 +35,18 @@
     <string name="add_item" />
 
     <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
-    <string name="add_task">Aufgabe hinzufügen</string>
+
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>
     <string name="task_points">Punkte</string>
     <string name="task_assignee">Zuständiger</string>
+
+    <string name="task_options">Aufgabenoptionen</string>
+    <string name="task_not_due">Diese Aufgabe kann nur am Fälligkeitsdatum als erledigt markiert werden.</string>
+    <string name="delete_task_confirmation">Möchten Sie diese Aufgabe wirklich löschen?</string>
+    <string name="delete">Löschen</string>
+    <string name="save">Speichern</string>
     <string name="cancel">Abbrechen</string>
+    <string name="edit_task">Aufgabe bearbeiten</string>
+    <string name="add_task">Aufgabe hinzufügen</string>
 </resources>
