@@ -3,14 +3,27 @@ package com.serenitysystems.livable.ui.wochenplan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.serenitysystems.livable.R
+import com.serenitysystems.livable.ui.wochenplan.data.Task
 
 class WochenplanViewModel : ViewModel() {
 
-    // Private MutableLiveData, die den Text speichert und initialisiert
-    private val _text = MutableLiveData<String>().apply {
-        value = "Wochenplan kommt noch!" // Initialer Wert für die LiveData
+    private val _tasks = MutableLiveData<List<Task>>()
+    val tasks: LiveData<List<Task>> = _tasks
+
+    init {
+        loadTasks()
     }
 
-    // Öffentlich zugängliche LiveData, die von der UI beobachtet werden kann
-    val text: LiveData<String> = _text
+    private fun loadTasks() {
+        // Hier könntest du die Aufgaben aus einer Datenquelle laden. Für das Beispiel sind sie hartcodiert.
+        val tasksList = listOf(
+            Task("Sonntag", "Küche putzen", "Niedrig", 2, "Haneen", R.drawable.logo),
+            Task("Sonntag", "Wohnzimmer wischen", "Hoch", 2, "Lorenz", R.drawable.logo),
+            Task("Montag", "Einkaufen gehen", "Mittel", 1, "Yanik", R.drawable.logo),
+            // Füge weitere Aufgaben hinzu...
+        )
+        _tasks.value = tasksList
+    }
+
 }
