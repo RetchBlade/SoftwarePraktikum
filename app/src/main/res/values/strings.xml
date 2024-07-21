@@ -12,6 +12,7 @@
     <string name="menu_Wochenplan">Wochenplan</string>
     <string name="menu_todo">ToDo Liste</string>
     <string name="menu_einkaufsliste">Einkaufsliste</string>
+    <string name="menu_haushaltsbuch">Haushaltsbuch</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

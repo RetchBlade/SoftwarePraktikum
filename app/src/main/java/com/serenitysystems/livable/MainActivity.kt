@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         // Festlegen der Top-Level-Ziele für die Navigation
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_wochenplan, R.id.nav_todo, R.id.nav_einkaufsliste
+                R.id.nav_wochenplan, R.id.nav_todo, R.id.nav_einkaufsliste, R.id.nav_haushaltsbuch
             ), drawerLayout
         )
         // Einrichten der ActionBar mit dem NavController

@@ -22,4 +22,9 @@
         android:name="com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteFragment"
         android:label="@string/menu_einkaufsliste"
         tools:layout="@layout/fragment_einkaufsliste" />
+    <fragment
+        android:id="@+id/nav_haushaltsbuch"
+        android:name="com.serenitysystems.livable.ui.haushaltsbuch.HaushaltsbuchFragment"
+        android:label="@string/menu_haushaltsbuch"
+        tools:layout="@layout/fragment_haushaltsbuch" />
 </navigation>

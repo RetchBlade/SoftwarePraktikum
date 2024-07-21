@@ -55,6 +55,8 @@ dependencies {
 
     // Firebase
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.fragment.ktx)
 
 
     testImplementation(libs.junit)

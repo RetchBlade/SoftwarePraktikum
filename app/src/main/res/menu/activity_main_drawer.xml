@@ -21,6 +21,10 @@
             android:id="@+id/nav_einkaufsliste"
             android:icon="@drawable/shoppingcarticon"
             android:title="@string/menu_einkaufsliste" />
+        <item
+            android:id="@+id/nav_haushaltsbuch"
+            android:icon="?attr/actionModePasteDrawable"
+            android:title="@string/menu_haushaltsbuch" />
     </group>
     <item
         android:title="">
