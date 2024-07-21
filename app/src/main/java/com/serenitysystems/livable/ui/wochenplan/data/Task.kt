@@ -6,5 +6,5 @@ data class Task(
     val priority: String,
     val points: Int,
     val assignee: String,
-    val avatar: Int // Drawable resource ID for the avatar
+    val avatar: Int
 )
