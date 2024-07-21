@@ -33,9 +33,10 @@ class CustomPieChartView @JvmOverloads constructor(
     }
     private val labelTextPaint = Paint().apply {
         color = Color.BLACK
-        textSize = 30f
+        textSize = 40f
         isAntiAlias = true
         textAlign = Paint.Align.LEFT
+        isFakeBoldText = true
     }
     private val colors = listOf(
         Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.LTGRAY

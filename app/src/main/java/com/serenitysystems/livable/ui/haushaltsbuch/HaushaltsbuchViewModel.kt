@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class HaushaltsbuchViewModel : ViewModel() {
     // Private MutableLiveData, die den Text speichert und initialisiert
     private val _text = MutableLiveData<String>().apply {
-        value = "Haushaltsbuch kommt noch!" // Initialer Wert für die LiveData
+        value = "Juli-2024" // Initialer Wert für die LiveData
     }
 
     // Öffentlich zugängliche LiveData, die von der UI beobachtet werden kann
