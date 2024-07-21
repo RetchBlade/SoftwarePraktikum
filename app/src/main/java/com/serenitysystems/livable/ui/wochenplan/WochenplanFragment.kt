@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.serenitysystems.livable.R
@@ -94,7 +95,16 @@ class WochenplanFragment : Fragment() {
             for (task in dayTasks) {
                 val taskView = LayoutInflater.from(requireContext()).inflate(R.layout.wochenplan_task_item, layout, false)
                 taskView.findViewById<TextView>(R.id.taskDescription).text = task.description
-                taskView.findViewById<TextView>(R.id.taskPriority).text = task.priority
+                val priorityTextView = taskView.findViewById<TextView>(R.id.taskPriority)
+                priorityTextView.text = task.priority
+
+                // Setze die Textfarbe basierend auf der Priorität
+                when (task.priority) {
+                    "Hoch" -> priorityTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.priority_high))
+                    "Mittel" -> priorityTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.priority_medium))
+                    "Niedrig" -> priorityTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.priority_low))
+                }
+
                 taskView.findViewById<TextView>(R.id.taskPoints).text = "${task.points} Punkte"
                 taskView.findViewById<TextView>(R.id.taskAssignee).text = task.assignee
                 taskView.findViewById<ImageView>(R.id.taskAssigneeAvatar).setImageResource(task.avatar)
@@ -102,6 +112,7 @@ class WochenplanFragment : Fragment() {
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

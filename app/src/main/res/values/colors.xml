@@ -26,4 +26,9 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="lavender">#8692f7</color>
+
+    <!-- Priority Farbpalette -->
+    <color name="priority_high">#FF0000</color> <!-- Rot -->
+    <color name="priority_medium">#FFFF00</color> <!-- Gelb -->
+    <color name="priority_low">#00FF00</color> <!-- Grün -->
 </resources>
