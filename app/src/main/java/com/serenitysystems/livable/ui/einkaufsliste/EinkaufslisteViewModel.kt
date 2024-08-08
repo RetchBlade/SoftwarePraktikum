@@ -6,11 +6,25 @@ import androidx.lifecycle.ViewModel
 
 class EinkaufslisteViewModel : ViewModel() {
 
-    // Private MutableLiveData, die den Text speichert und initialisiert
-    private val _text = MutableLiveData<String>().apply {
-        value = "" // Initialer Wert für die LiveData
+    private val _produkte = MutableLiveData<List<Produkt>>()
+    val produkte: LiveData<List<Produkt>> = _produkte
+
+    init {
+        _produkte.value = emptyList()
     }
 
-    // Öffentlich zugängliche LiveData, die von der UI beobachtet werden kann
-    val text: LiveData<String> = _text
+    fun addProdukt(produkt: Produkt) {
+        val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
+        currentList.add(produkt)
+        _produkte.value = currentList
+    }
+
+    fun updateProdukt(updatedProdukt: Produkt) {
+        val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
+        val index = currentList.indexOfFirst { it.name == updatedProdukt.name }
+        if (index != -1) {
+            currentList[index] = updatedProdukt
+            _produkte.value = currentList
+        }
+    }
 }

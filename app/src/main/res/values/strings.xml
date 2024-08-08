@@ -49,4 +49,20 @@
     <string name="cancel">Abbrechen</string>
     <string name="edit_task">Aufgabe bearbeiten</string>
     <string name="add_task">Aufgabe hinzufügen</string>
+    <string name="product_image">Produktbild</string>
+    <string-array name="unit_array">
+        <item>Stück</item>
+        <item>kg</item>
+        <item>lt</item>
+        <item>Dose</item>
+    </string-array>
+
+    <string-array name="category_array">
+        <item>Lebensmittel</item>
+        <item>Getränke</item>
+        <item>Haushalt</item>
+        <item>Sonstiges</item>
+    </string-array>
+
+
 </resources>

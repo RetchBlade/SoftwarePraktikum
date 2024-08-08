@@ -14,7 +14,7 @@ class AddItemDialogFragment : DialogFragment() {
     private var _binding: DialogAddItemBinding? = null
     private val binding get() = _binding!!
 
-    var onAddItem: ((Produkt) -> Boolean)? = null
+    var onAddItem: ((Produkt) -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,14 +55,8 @@ class AddItemDialogFragment : DialogFragment() {
             }
 
             val newItem = Produkt(name, quantity, unit, category, imageResId)
-            val itemAdded = onAddItem?.invoke(newItem) ?: false
-
-            if (!itemAdded) {
-                // Produkt bereits vorhanden
-                android.widget.Toast.makeText(requireContext(), "Dieses Produkt ist bereits vorhanden", android.widget.Toast.LENGTH_SHORT).show()
-            } else {
-                dismiss()
-            }
+            onAddItem?.invoke(newItem)
+            dismiss()
         }
 
         binding.btnCancel.setOnClickListener {
