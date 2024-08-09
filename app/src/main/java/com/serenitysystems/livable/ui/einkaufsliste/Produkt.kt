@@ -5,6 +5,7 @@ data class Produkt(
     val quantity: String,
     val unit: String,
     val category: String,
-    val imageResId: Int,
+    val imageResId: Int // Ürün resimlerinin referansı
+) {
     var isChecked: Boolean = false
-)
+}

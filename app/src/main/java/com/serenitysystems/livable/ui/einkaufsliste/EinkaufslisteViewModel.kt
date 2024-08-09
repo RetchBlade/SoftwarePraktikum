@@ -13,12 +13,14 @@ class EinkaufslisteViewModel : ViewModel() {
         _produkte.value = emptyList()
     }
 
+    // Fügt ein neues Produkt zur Liste hinzu
     fun addProdukt(produkt: Produkt) {
         val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
         currentList.add(produkt)
         _produkte.value = currentList
     }
 
+    // Aktualisiert ein bestehendes Produkt
     fun updateProdukt(updatedProdukt: Produkt) {
         val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
         val index = currentList.indexOfFirst { it.name == updatedProdukt.name }

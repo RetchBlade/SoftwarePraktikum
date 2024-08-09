@@ -14,12 +14,10 @@ class AddItemDialogFragment : DialogFragment() {
     private var _binding: DialogAddItemBinding? = null
     private val binding get() = _binding!!
 
-    var onAddItem: ((Produkt) -> Unit)? = null
+    var onAddItem: ((Produkt) -> Boolean)? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = DialogAddItemBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -27,17 +25,13 @@ class AddItemDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
         val unitAdapter = ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.unit_array,
-            android.R.layout.simple_spinner_item
+            requireContext(), R.array.unit_array, android.R.layout.simple_spinner_item
         )
         unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerUnit.adapter = unitAdapter
 
         val categoryAdapter = ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.category_array,
-            android.R.layout.simple_spinner_item
+            requireContext(), R.array.category_array, android.R.layout.simple_spinner_item
         )
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = categoryAdapter
@@ -47,23 +41,29 @@ class AddItemDialogFragment : DialogFragment() {
             val quantity = binding.editItemQuantity.text.toString()
             val unit = binding.spinnerUnit.selectedItem.toString()
             val category = binding.spinnerCategory.selectedItem.toString()
-            val imageResId = when (name.toLowerCase()) {
-                "apple" -> R.drawable.apple
-                "banana" -> R.drawable.banana
-                "beer" -> R.drawable.beer
-                else -> R.drawable.ic_placeholder_image
-            }
 
+            // Ürün resminin doğru şekilde atanması
+            val imageResId = getImageResourceId(name)
+
+            // Yeni ürün nesnesini oluşturuyoruz
             val newItem = Produkt(name, quantity, unit, category, imageResId)
             onAddItem?.invoke(newItem)
-            dismiss()
+
+            dismiss()  // Ürün eklendiyse dialogu kapatıyoruz
         }
 
-        binding.btnCancel.setOnClickListener {
-            dismiss()
-        }
+        binding.btnCancel.setOnClickListener { dismiss() }
 
         return view
+    }
+
+    private fun getImageResourceId(productName: String): Int {
+        return when (productName.toLowerCase()) {
+            "apple" -> R.drawable.apple
+            "banana" -> R.drawable.banana
+            "beer" -> R.drawable.beer
+            else -> R.drawable.ic_placeholder_image
+        }
     }
 
     override fun onDestroyView() {
