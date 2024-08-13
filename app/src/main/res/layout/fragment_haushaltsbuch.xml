@@ -1,217 +1,119 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.haushaltsbuch.HaushaltsbuchFragment">
 
-    <!-- Ay bilgisi -->
-    <TextView
-        android:id="@+id/text_monat"
+    <!-- Tarih ve Oklar -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Juli"
-        android:textSize="24sp"
-        android:textColor="#000000"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Pie chart -->
-
-    <!-- Panel -->
-    <com.serenitysystems.livable.ui.haushaltsbuch.PieChartView
-        android:id="@+id/pie_chart_view"
-        android:layout_width="601dp"
-        android:layout_height="292dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.405"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_monat" />
-
-    <!-- Sağda mavi daire içinde artı işareti -->
-    <LinearLayout
-        android:id="@+id/panel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pie_chart_view"
-        app:layout_constraintVertical_bias="0.08">
-
-        <!-- Example rows for each category -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Sol Ok -->
+        <ImageButton
+            android:id="@+id/button_left"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:src="@drawable/ic_left_arrow"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/left_arrow"
+            android:tint="@android:color/black"/>
 
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@color/dark_beige" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:text="Haushalt"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15.25 €"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/line_gradient" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Tarih -->
+        <TextView
+            android:id="@+id/text_monat"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:text="08.11.2018"
+            android:textSize="24sp"
+            android:textColor="#000000"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="showDatePicker"/>
 
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@color/priority_low" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:text="Gesundheit"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20.50 €"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/line_gradient" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Sağ Ok -->
+        <ImageButton
+            android:id="@+id/button_right"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="#CA00FF" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:text="Transportation"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="67.75 €"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/line_gradient" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="#2144F3" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:text="Beauty"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="35.00 €"
-                android:textColor="#000000"
-                android:textSize="18sp" />
-        </LinearLayout>
+            android:src="@drawable/ic_right_arrow"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/right_arrow"
+            android:tint="@android:color/black"/>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/blau_kreis"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/blau_kreis"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:layout_centerInParent="true"/>
-    </RelativeLayout>
-
-    <!-- Solda kırmızı daire içinde eksi işareti -->
-    <RelativeLayout
-        android:id="@+id/rot_kreis"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/rot_kreis"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <!-- Kategori Balkenları -->
+    <LinearLayout
+        android:id="@+id/kategori_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/button_left"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp">
 
-        <TextView
+        <!-- Kategoriler ve Balkenlar buraya dinamik olarak eklenecek -->
+    </LinearLayout>
+
+    <!-- Einnahme ve Ausgabe Butonları -->
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/kategori_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/button_einnahme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:layout_centerInParent="true"/>
-    </RelativeLayout>
+            android:text="Einnahme"
+            android:backgroundTint="@color/grün"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:id="@+id/button_ausgabe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ausgabe"
+            android:backgroundTint="@color/rot"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <!-- Harcama ve Einnahme Listesi -->
+    <ScrollView
+        android:id="@+id/liste_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/button_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/liste_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Harcama ve Einnahme Girdileri buraya dinamik olarak eklenecek -->
+
+        </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

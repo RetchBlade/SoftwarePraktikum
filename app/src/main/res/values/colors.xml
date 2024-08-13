@@ -3,6 +3,8 @@
     <!--Default -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grün">#4CAF50</color>
+    <color name="rot">#F44336</color>
 
     <!-- Login Farbpalette -->
     <color name="own_navy_Blau">#1b7c97</color>

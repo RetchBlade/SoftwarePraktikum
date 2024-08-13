@@ -64,5 +64,20 @@
         <item>Sonstiges</item>
     </string-array>
 
+    <string name="name">Haushaltsbuch</string>
+    <string name="ausgaben_nach_kategorie">Ausgaben nach Kategorie</string>
+    <string name="einnahme_button_text">Einnahme</string>
+    <string name="ausgabe_button_text">Ausgabe</string>
+    <string name="kategorie_zuhause">Zuhause</string>
+    <string name="kategorie_kultur">Kultur</string>
+    <string name="kategorie_gesundheit">Gesundheit &amp; Beauty</string>
+    <string name="kategorie_auto">Auto</string>
+    <string name="kategorie_andere">Andere</string>
+    <string name="datum_label">Datum:</string>
+    <string name="datum_hint">tt.mm.jjjj</string>
+
+    <string name="left_arrow">Left Arrow</string>
+    <string name="right_arrow">Right Arrow</string>
+
 
 </resources>
