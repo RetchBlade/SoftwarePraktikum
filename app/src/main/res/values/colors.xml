@@ -3,8 +3,8 @@
     <!--Default -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="grün">#4CAF50</color>
-    <color name="rot">#F44336</color>
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
 
     <!-- Login Farbpalette -->
     <color name="own_navy_Blau">#1b7c97</color>
@@ -33,4 +33,12 @@
     <color name="priority_high">#FF0000</color> <!-- Rot -->
     <color name="priority_medium">#FFFF00</color> <!-- Gelb -->
     <color name="priority_low">#00FF00</color> <!-- Grün -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+
+
+    <!-- Ekstra Renkler -->
+    <color name="material_grey_300">#E0E0E0</color>
+
+
 </resources>

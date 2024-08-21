@@ -1,6 +1,0 @@
-<!-- res/drawable/rounded_corner.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FFFFFF"/> <!-- Beyaz arka plan -->
-    <corners android:radius="12dp"/> <!-- Köşe yuvarlaklığı -->
-    <stroke android:width="2dp" android:color="#DDDDDD"/> <!-- Sınır rengi -->
-</shape>

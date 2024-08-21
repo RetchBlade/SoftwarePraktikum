@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.googleGmsGoogleServices)
+
 }
 
 android {
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.ui.text.android)
 
 
     testImplementation(libs.junit)

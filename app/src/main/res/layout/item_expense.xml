@@ -1,0 +1,67 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/rounded_corners">
+
+    <!-- Kategori -->
+<TextView
+android:id="@+id/textViewCategory"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Kategorie"
+android:textSize="18sp"
+android:textStyle="bold"
+android:textColor="@android:color/black"/>
+
+    <!-- Betrag ve Tarih Satırı -->
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:gravity="end"> <!-- Sağa hizalama eklendi -->
+
+<!-- Betrag (Tutar) -->
+<TextView
+    android:id="@+id/textViewAmount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:textColor="@android:color/black"
+    android:layout_gravity="end"/><!-- Sağa hizalama eklendi -->
+
+<!-- Tarih -->
+<TextView
+    android:id="@+id/textViewDate"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:textSize="14sp"
+    android:textColor="@android:color/darker_gray"
+    android:layout_gravity="end"/><!-- Sağa hizalama eklendi -->
+</LinearLayout>
+
+    <!-- Notiz (Açıklama) -->
+<TextView
+android:id="@+id/textViewNotiz"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:textSize="14sp"
+android:textColor="@android:color/black"
+android:layout_marginTop="4dp"
+tools:text="Notiz burada olacak" />
+
+    <!-- Ayırıcı Çizgi -->
+<View
+android:id="@+id/separator"
+android:layout_width="match_parent"
+android:layout_height="1dp"
+android:layout_marginTop="8dp"
+android:background="@drawable/gradient_line"
+android:visibility="gone"/> <!-- İlk etapta gizli -->
+    </LinearLayout>

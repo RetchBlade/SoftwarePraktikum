@@ -4,80 +4,94 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class HaushaltsbuchViewModel : ViewModel() {
 
-    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    private val _allExpenses = MutableLiveData<List<Expense>>().apply { value = mutableListOf() }
+    val allExpenses: LiveData<List<Expense>> get() = _allExpenses
+
+    private val _kontostand = MutableLiveData<Float>().apply { value = 0f }
+    val kontostand: LiveData<Float> get() = _kontostand
+
+    private val _totalAusgabe = MutableLiveData<Float>().apply { value = 0f }
+    val totalAusgabe: LiveData<Float> get() = _totalAusgabe
+
+    private val _totalEinnahmen = MutableLiveData<Float>().apply { value = 0f }
+    val totalEinnahmen: LiveData<Float> get() = _totalEinnahmen
+
+    // Yeni kategori isimleri ve renkleri
     private val categories = listOf(
-        "Restaurant", "Essen", "Kleidung", "Gesundheit", "Auto", "Andere"
+        "Haushalt",
+        "Lebensmittel",
+        "Gesundheit",
+        "Kleidung",
+        "Freizeit",
+        "Transport",
+        "Versicherung",
+        "Bildung",
+        "Unterhaltung",
+        "Reisen",
+        "Sonstiges"
     )
-    private val colors = listOf(
-        "#FF0000", "#FFA500", "#008000", "#0000FF", "#800080", "#808080"
-    )
 
-    private val expensesData = mutableMapOf<String, MutableList<Expense>>()
-
-    private val _selectedDate = MutableLiveData<Date>().apply {
-        value = Date()
+    fun addExpense(expense: Expense) {
+        val currentList = _allExpenses.value?.toMutableList() ?: mutableListOf()
+        currentList.add(expense)
+        _allExpenses.value = currentList
+        calculateTotals()
     }
-    val selectedDate: LiveData<Date> = _selectedDate
 
-    private val _expensesForDate = MutableLiveData<List<Expense>>()
-    val expensesForDate: LiveData<List<Expense>> = _expensesForDate
-
-    private val _kontostand = MutableLiveData<Float>().apply {
-        value = 0f
-    }
-    val kontostand: LiveData<Float> = _kontostand
-
-    fun addExpense(kategorie: String, betrag: Float, beschreibung: String, istEinnahme: Boolean) {
-        val dateKey = dateFormat.format(_selectedDate.value ?: Date())
-        val expenseList = expensesData.getOrPut(dateKey) { mutableListOf() }
-
-        val newExpense = Expense(kategorie, betrag, beschreibung, istEinnahme)
-        expenseList.add(newExpense)
-
-        if (istEinnahme) {
-            _kontostand.value = _kontostand.value?.plus(betrag)
-        } else {
-            _kontostand.value = _kontostand.value?.minus(betrag)
+    fun editExpense(index: Int, updatedExpense: Expense) {
+        val currentList = _allExpenses.value?.toMutableList() ?: mutableListOf()
+        if (index in currentList.indices) {
+            currentList[index] = updatedExpense
+            _allExpenses.value = currentList
+            calculateTotals()
         }
-
-        updateExpensesForDate(_selectedDate.value ?: Date())
     }
 
-    fun updateExpensesForDate(date: Date) {
-        val dateKey = dateFormat.format(date)
-        _expensesForDate.value = expensesData[dateKey] ?: emptyList()
+    fun clearExpensesForDate(date: Calendar) {
+        val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
+        _allExpenses.value = _allExpenses.value?.filter { it.datum != dateString }
     }
 
-    fun changeDate(days: Int) {
-        val calendar = Calendar.getInstance()
-        calendar.time = _selectedDate.value ?: Date()
-        calendar.add(Calendar.DAY_OF_YEAR, days)
-        _selectedDate.value = calendar.time
-        updateExpensesForDate(calendar.time)
-    }
 
-    // Yeni fonksiyon: changeDateTo
-    fun changeDateTo(date: Date) {
-        _selectedDate.value = date
-        updateExpensesForDate(date)
+    private fun calculateTotals() {
+        val einnahmenTotal = _allExpenses.value?.filter { it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+        val ausgabenTotal = _allExpenses.value?.filter { !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+        _totalEinnahmen.value = einnahmenTotal
+        _totalAusgabe.value = ausgabenTotal
+        _kontostand.value = einnahmenTotal - ausgabenTotal
     }
 
     fun getCategories(): List<String> = categories
 
     fun getCategoryColor(category: String): String {
-        val index = categories.indexOf(category)
-        return if (index != -1) colors[index] else "#000000"
+        return when (category) {
+            "Haushalt" -> "#FF5722"
+            "Lebensmittel" -> "#4CAF50"
+            "Gesundheit" -> "#03A9F4"
+            "Kleidung" -> "#9C27B0"
+            "Freizeit" -> "#FFEB3B"
+            "Transport" -> "#009688"
+            "Versicherung" -> "#FFC107"
+            "Bildung" -> "#673AB7"
+            "Unterhaltung" -> "#E91E63"
+            "Reisen" -> "#8BC34A"
+            "Sonstiges" -> "#607D8B"
+            else -> "#000000" // Varsayılan renk
+        }
+    }
+
+    fun getCategoryTotal(category: String): Float {
+        return _allExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+    }
+
+    fun getCategoryPercentage(category: String): Float {
+        val totalForCategory = getCategoryTotal(category)
+        val totalAusgabe = _totalAusgabe.value ?: 1f
+        return if (totalAusgabe != 0f) (totalForCategory / totalAusgabe) * 100 else 0f
     }
 }
-
-data class Expense(
-    val kategorie: String,
-    val betrag: Float,
-    val beschreibung: String,
-    val istEinnahme: Boolean,
-    var isStrikethrough: Boolean = false
-)

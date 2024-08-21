@@ -50,6 +50,7 @@
     <string name="edit_task">Aufgabe bearbeiten</string>
     <string name="add_task">Aufgabe hinzufügen</string>
     <string name="product_image">Produktbild</string>
+
     <string-array name="unit_array">
         <item>Stück</item>
         <item>kg</item>
@@ -58,9 +59,16 @@
     </string-array>
 
     <string-array name="category_array">
-        <item>Lebensmittel</item>
-        <item>Getränke</item>
         <item>Haushalt</item>
+        <item>Lebensmittel</item>
+        <item>Gesundheit</item>
+        <item>Kleidung</item>
+        <item>Freizeit</item>
+        <item>Transport</item>
+        <item>Versicherung</item>
+        <item>Bildung</item>
+        <item>Unterhaltung</item>
+        <item>Reisen</item>
         <item>Sonstiges</item>
     </string-array>
 
@@ -75,6 +83,9 @@
     <string name="kategorie_andere">Andere</string>
     <string name="datum_label">Datum:</string>
     <string name="datum_hint">tt.mm.jjjj</string>
+    <string name="error_category_required">Kategorie wählen</string>
+    <string name="error_amount_required">Einnahme benötigt.</string>
+    <string name="error_date_required">Datum benötigt.</string>
 
     <string name="left_arrow">Left Arrow</string>
     <string name="right_arrow">Right Arrow</string>
