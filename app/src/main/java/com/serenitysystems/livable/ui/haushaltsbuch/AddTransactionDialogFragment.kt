@@ -59,10 +59,15 @@ class AddTransactionDialogFragment : DialogFragment() {
         haushaltsbuchViewModel = ViewModelProvider(requireActivity()).get(HaushaltsbuchViewModel::class.java)
         setStyle(STYLE_NORMAL, R.style.CustomDialogTheme)
 
+        // Dialog boyutlarını ayarlayın
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
         val isEinnahme = arguments?.getBoolean(ARG_IS_EINNAHME) ?: false
         val expense = arguments?.getParcelable<Expense>(ARG_EXPENSE)
 
-        // Kategori spinner'ı hem Einnahmen hem de Buchungen için görünür olacak şekilde ayarlanıyor
         binding.spinnerCategory.visibility = View.VISIBLE
         if (isEinnahme) {
             binding.title.text = getString(R.string.einnahme_button_text)
@@ -72,7 +77,6 @@ class AddTransactionDialogFragment : DialogFragment() {
             binding.title.setBackgroundResource(R.drawable.red_filled_background)
         }
 
-        // Spinner'a kategori verilerini yükle
         val categories = haushaltsbuchViewModel.getCategories()
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -110,7 +114,6 @@ class AddTransactionDialogFragment : DialogFragment() {
                 isEinnahme
             )
 
-            // Dialog sonuçlarını gönder
             val resultBundle = Bundle().apply {
                 putParcelable("expense", newExpense)
             }

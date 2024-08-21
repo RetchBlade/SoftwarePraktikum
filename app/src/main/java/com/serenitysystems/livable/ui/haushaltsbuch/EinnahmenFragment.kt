@@ -39,7 +39,7 @@ class EinnahmenFragment : Fragment() {
         }
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner, Observer { expenses ->
+        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner, Observer { expenses ->
             val einnahmen = expenses.filter { it.istEinnahme }
             adapter.updateExpenses(einnahmen)
             updateKontostand()
@@ -54,6 +54,7 @@ class EinnahmenFragment : Fragment() {
         }
 
         updateDateDisplay()
+        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
 
         binding.leftArrow.setOnClickListener {
             changeDate(-1)
@@ -71,6 +72,7 @@ class EinnahmenFragment : Fragment() {
         setFragmentResultListener(AddTransactionDialogFragment.REQUEST_KEY) { _, bundle ->
             val expense = bundle.getParcelable<Expense>("expense")
             expense?.let { haushaltsbuchViewModel.addExpense(it) }
+            haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Yeni harcama eklendiğinde listeyi güncelle
         }
 
         return root
@@ -98,8 +100,8 @@ class EinnahmenFragment : Fragment() {
 
     private fun changeDate(days: Int) {
         selectedDate.add(Calendar.DAY_OF_MONTH, days)
-        haushaltsbuchViewModel.clearExpensesForDate(selectedDate)
         updateDateDisplay()
+        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
     }
 
     private fun showDatePickerDialog() {
@@ -109,8 +111,8 @@ class EinnahmenFragment : Fragment() {
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, monthOfYear)
                 selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                haushaltsbuchViewModel.clearExpensesForDate(selectedDate)
                 updateDateDisplay()
+                haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Tarih seçildiğinde listeyi güncelle
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),

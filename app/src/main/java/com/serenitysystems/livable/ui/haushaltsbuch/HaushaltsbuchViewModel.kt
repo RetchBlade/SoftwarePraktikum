@@ -21,7 +21,9 @@ class HaushaltsbuchViewModel : ViewModel() {
     private val _totalEinnahmen = MutableLiveData<Float>().apply { value = 0f }
     val totalEinnahmen: LiveData<Float> get() = _totalEinnahmen
 
-    // Yeni kategori isimleri ve renkleri
+    private val _selectedDateExpenses = MutableLiveData<List<Expense>>()
+    val selectedDateExpenses: LiveData<List<Expense>> get() = _selectedDateExpenses
+
     private val categories = listOf(
         "Haushalt",
         "Lebensmittel",
@@ -52,11 +54,17 @@ class HaushaltsbuchViewModel : ViewModel() {
         }
     }
 
+    fun loadExpensesForDate(date: Calendar) {
+        val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
+        val expensesForDate = _allExpenses.value?.filter { it.datum == dateString } ?: emptyList()
+        _selectedDateExpenses.value = expensesForDate
+    }
+
+
     fun clearExpensesForDate(date: Calendar) {
         val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
         _allExpenses.value = _allExpenses.value?.filter { it.datum != dateString }
     }
-
 
     private fun calculateTotals() {
         val einnahmenTotal = _allExpenses.value?.filter { it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
@@ -81,9 +89,11 @@ class HaushaltsbuchViewModel : ViewModel() {
             "Unterhaltung" -> "#E91E63"
             "Reisen" -> "#8BC34A"
             "Sonstiges" -> "#607D8B"
-            else -> "#000000" // Varsayılan renk
+            else -> "#000000"
         }
     }
+
+
 
     fun getCategoryTotal(category: String): Float {
         return _allExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f

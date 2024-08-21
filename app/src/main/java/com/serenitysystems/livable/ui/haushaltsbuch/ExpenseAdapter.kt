@@ -1,7 +1,6 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.R
@@ -19,13 +18,6 @@ class ExpenseAdapter(
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         val expense = expenses[position]
-
-        // Eğer aynı kategori ise sadece bir ayırıcı çizgi ekle
-        if (position > 0 && expenses[position - 1].kategorie == expense.kategorie) {
-            holder.binding.separator.visibility = View.VISIBLE
-        } else {
-            holder.binding.separator.visibility = View.GONE
-        }
 
         holder.bind(expense)
     }

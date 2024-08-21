@@ -40,7 +40,7 @@ class BuchungenFragment : Fragment() {
         }
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner, Observer { expenses ->
+        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner, Observer { expenses ->
             val buchungen = expenses.filter { !it.istEinnahme }
             adapter.updateExpenses(buchungen)
             updateKontostand()
@@ -55,18 +55,16 @@ class BuchungenFragment : Fragment() {
         }
 
         updateDateDisplay()
+        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
 
-        // Sol ok butonu için tarih değiştirme
         binding.leftArrow.setOnClickListener {
             changeDate(-1)
         }
 
-        // Sağ ok butonu için tarih değiştirme
         binding.rightArrow.setOnClickListener {
             changeDate(1)
         }
 
-        // Tarih TextView tıklanabilir yapılıyor ve tarih seçici açılıyor
         binding.dateTextView.setOnClickListener {
             showDatePickerDialog()
         }
@@ -75,6 +73,7 @@ class BuchungenFragment : Fragment() {
         setFragmentResultListener(AddTransactionDialogFragment.REQUEST_KEY) { _, bundle ->
             val expense = bundle.getParcelable<Expense>("expense")
             expense?.let { haushaltsbuchViewModel.addExpense(it) }
+            haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Yeni harcama eklendiğinde listeyi güncelle
         }
 
         return root
@@ -102,8 +101,8 @@ class BuchungenFragment : Fragment() {
 
     private fun changeDate(days: Int) {
         selectedDate.add(Calendar.DAY_OF_MONTH, days)
-        haushaltsbuchViewModel.clearExpensesForDate(selectedDate)
         updateDateDisplay()
+        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
     }
 
     private fun showDatePickerDialog() {
@@ -113,8 +112,8 @@ class BuchungenFragment : Fragment() {
                 selectedDate.set(Calendar.YEAR, year)
                 selectedDate.set(Calendar.MONTH, monthOfYear)
                 selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                haushaltsbuchViewModel.clearExpensesForDate(selectedDate)
                 updateDateDisplay()
+                haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Tarih seçildiğinde listeyi güncelle
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
