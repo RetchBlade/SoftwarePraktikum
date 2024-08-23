@@ -59,11 +59,17 @@ class AddTransactionDialogFragment : DialogFragment() {
         haushaltsbuchViewModel = ViewModelProvider(requireActivity()).get(HaushaltsbuchViewModel::class.java)
         setStyle(STYLE_NORMAL, R.style.CustomDialogTheme)
 
-        // Dialog boyutlarını ayarlayın
+        // Dialog boyutlarını genişletin
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+
+        // Spinner'ı ve kategori seçimini genişletin
+        val layoutParams = binding.spinnerCategory.layoutParams
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        binding.spinnerCategory.layoutParams = layoutParams
+
 
         val isEinnahme = arguments?.getBoolean(ARG_IS_EINNAHME) ?: false
         val expense = arguments?.getParcelable<Expense>(ARG_EXPENSE)

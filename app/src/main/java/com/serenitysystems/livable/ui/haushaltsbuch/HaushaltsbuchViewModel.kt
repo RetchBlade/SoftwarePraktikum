@@ -43,6 +43,7 @@ class HaushaltsbuchViewModel : ViewModel() {
         currentList.add(expense)
         _allExpenses.value = currentList
         calculateTotals()
+        loadExpensesForDate(Calendar.getInstance()) // Eklenen harcama güncel tarihe göre yüklensin
     }
 
     fun editExpense(index: Int, updatedExpense: Expense) {
@@ -51,6 +52,7 @@ class HaushaltsbuchViewModel : ViewModel() {
             currentList[index] = updatedExpense
             _allExpenses.value = currentList
             calculateTotals()
+            loadExpensesForDate(Calendar.getInstance())
         }
     }
 
@@ -58,12 +60,13 @@ class HaushaltsbuchViewModel : ViewModel() {
         val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
         val expensesForDate = _allExpenses.value?.filter { it.datum == dateString } ?: emptyList()
         _selectedDateExpenses.value = expensesForDate
+        calculateTotals()
     }
-
 
     fun clearExpensesForDate(date: Calendar) {
         val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
         _allExpenses.value = _allExpenses.value?.filter { it.datum != dateString }
+        calculateTotals()
     }
 
     private fun calculateTotals() {
@@ -92,8 +95,6 @@ class HaushaltsbuchViewModel : ViewModel() {
             else -> "#000000"
         }
     }
-
-
 
     fun getCategoryTotal(category: String): Float {
         return _allExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f

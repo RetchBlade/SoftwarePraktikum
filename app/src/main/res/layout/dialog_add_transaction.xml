@@ -37,7 +37,9 @@
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/spinner_background"/> <!-- Spinner arka planı -->
+            android:textSize="18sp"
+            android:padding="10dp"
+            android:background="@drawable/spinner_background"/>
     </LinearLayout>
 
     <!-- Betrag (Tutar) -->

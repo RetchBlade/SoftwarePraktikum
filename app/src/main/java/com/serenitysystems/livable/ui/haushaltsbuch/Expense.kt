@@ -8,14 +8,16 @@ data class Expense(
     val betrag: Float,
     val notiz: String,
     val datum: String,
-    val istEinnahme: Boolean
+    val istEinnahme: Boolean,
+    var isDeleted: Boolean = false // isDeleted özelliği eklendi
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readFloat(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readByte() != 0.toByte()
+        parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte() // isDeleted değerini okuyoruz
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -24,6 +26,7 @@ data class Expense(
         parcel.writeString(notiz)
         parcel.writeString(datum)
         parcel.writeByte(if (istEinnahme) 1 else 0)
+        parcel.writeByte(if (isDeleted) 1 else 0) // isDeleted değerini yazıyoruz
     }
 
     override fun describeContents(): Int {

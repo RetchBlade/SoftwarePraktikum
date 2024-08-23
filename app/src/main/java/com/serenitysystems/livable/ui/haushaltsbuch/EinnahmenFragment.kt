@@ -1,5 +1,8 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
+import ExpenseAdapter
+import SwipeToDeleteCallback
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serenitysystems.livable.databinding.FragmentEinnahmenBinding
 import java.text.SimpleDateFormat
@@ -18,7 +22,8 @@ class EinnahmenFragment : Fragment() {
 
     private var _binding: FragmentEinnahmenBinding? = null
     private val binding get() = _binding!!
-    lateinit var haushaltsbuchViewModel: HaushaltsbuchViewModel
+    private lateinit var haushaltsbuchViewModel: HaushaltsbuchViewModel
+    private lateinit var adapter: ExpenseAdapter
 
     private var selectedDate: Calendar = Calendar.getInstance()
 
@@ -34,9 +39,30 @@ class EinnahmenFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val adapter = ExpenseAdapter(emptyList()) { expense ->
-            showEditTransactionDialog(expense)
-        }
+        adapter = ExpenseAdapter(
+            mutableListOf(),
+            onEditClick = { expense -> showEditTransactionDialog(expense) },
+            onExpenseUpdated = { haushaltsbuchViewModel.addExpense(it) },
+            onExpenseRemoved = { haushaltsbuchViewModel.clearExpensesForDate(selectedDate) },
+            onRequestDelete = { expense, position ->
+                // Burada silme işlemini onaylama mantığını ekleyebilirsiniz
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Bestätigung")
+                builder.setMessage("Möchten Sie diesen Eintrag wirklich löschen?")
+                builder.setPositiveButton("Ja") { dialog, _ ->
+                    adapter.confirmDelete(expense)
+                    dialog.dismiss()
+                }
+                builder.setNegativeButton("Nein") { dialog, _ ->
+                    adapter.restoreExpense(expense)
+                    dialog.dismiss()
+                }
+                builder.show()
+            }
+        )
+
+
+
         binding.recyclerView.adapter = adapter
 
         haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner, Observer { expenses ->
@@ -68,11 +94,16 @@ class EinnahmenFragment : Fragment() {
             showDatePickerDialog()
         }
 
-        // Dialog'dan sonuçları almak için listener ekleyin
+        // Swipe işlemleri
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(requireContext(), adapter))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
+
         setFragmentResultListener(AddTransactionDialogFragment.REQUEST_KEY) { _, bundle ->
             val expense = bundle.getParcelable<Expense>("expense")
-            expense?.let { haushaltsbuchViewModel.addExpense(it) }
-            haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Yeni harcama eklendiğinde listeyi güncelle
+            expense?.let {
+                haushaltsbuchViewModel.addExpense(it)
+                haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
+            }
         }
 
         return root
@@ -112,7 +143,7 @@ class EinnahmenFragment : Fragment() {
                 selectedDate.set(Calendar.MONTH, monthOfYear)
                 selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 updateDateDisplay()
-                haushaltsbuchViewModel.loadExpensesForDate(selectedDate) // Tarih seçildiğinde listeyi güncelle
+                haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
