@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.serenitysystems.livable.ui.haushaltsbuch.ExpenseAdapter
 
 class SwipeToDeleteCallback(
     private val context: Context,

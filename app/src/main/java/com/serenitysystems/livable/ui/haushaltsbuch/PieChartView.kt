@@ -57,7 +57,6 @@ class PieChartView @JvmOverloads constructor(
             paint.color = colors[i % colors.size]
             canvas.drawArc(cx - radius, cy - radius, cx + radius, cy + radius, startAngle, sweepAngle, true, paint)
 
-            // Çizgiler ve yüzdeleri ekle
             val midAngle = startAngle + sweepAngle / 2f
             val lineX = cx + radius * cos(Math.toRadians(midAngle.toDouble())).toFloat()
             val lineY = cy + radius * sin(Math.toRadians(midAngle.toDouble())).toFloat()

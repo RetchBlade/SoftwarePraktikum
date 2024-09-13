@@ -9,7 +9,7 @@ data class Expense(
     val notiz: String,
     val datum: String,
     val istEinnahme: Boolean,
-    var isDeleted: Boolean = false // isDeleted özelliği eklendi
+    var isDeleted: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -17,7 +17,7 @@ data class Expense(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte() // isDeleted değerini okuyoruz
+        parcel.readByte() != 0.toByte()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -26,20 +26,13 @@ data class Expense(
         parcel.writeString(notiz)
         parcel.writeString(datum)
         parcel.writeByte(if (istEinnahme) 1 else 0)
-        parcel.writeByte(if (isDeleted) 1 else 0) // isDeleted değerini yazıyoruz
+        parcel.writeByte(if (isDeleted) 1 else 0)
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<Expense> {
-        override fun createFromParcel(parcel: Parcel): Expense {
-            return Expense(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Expense?> {
-            return arrayOfNulls(size)
-        }
+        override fun createFromParcel(parcel: Parcel): Expense = Expense(parcel)
+        override fun newArray(size: Int): Array<Expense?> = arrayOfNulls(size)
     }
 }

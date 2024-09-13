@@ -43,7 +43,7 @@ class HaushaltsbuchViewModel : ViewModel() {
         currentList.add(expense)
         _allExpenses.value = currentList
         calculateTotals()
-        loadExpensesForDate(Calendar.getInstance()) // Eklenen harcama güncel tarihe göre yüklensin
+        loadExpensesForDate(Calendar.getInstance())
     }
 
     fun editExpense(index: Int, updatedExpense: Expense) {
@@ -58,7 +58,7 @@ class HaushaltsbuchViewModel : ViewModel() {
 
     fun loadExpensesForDate(date: Calendar) {
         val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
-        val expensesForDate = _allExpenses.value?.filter { it.datum == dateString } ?: emptyList()
+        val expensesForDate = _allExpenses.value?.filter { it.datum == dateString && !it.isDeleted } ?: emptyList()
         _selectedDateExpenses.value = expensesForDate
         calculateTotals()
     }
@@ -70,8 +70,8 @@ class HaushaltsbuchViewModel : ViewModel() {
     }
 
     private fun calculateTotals() {
-        val einnahmenTotal = _allExpenses.value?.filter { it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
-        val ausgabenTotal = _allExpenses.value?.filter { !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+        val einnahmenTotal = _allExpenses.value?.filter { it.istEinnahme && !it.isDeleted }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+        val ausgabenTotal = _allExpenses.value?.filter { !it.istEinnahme && !it.isDeleted }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
         _totalEinnahmen.value = einnahmenTotal
         _totalAusgabe.value = ausgabenTotal
         _kontostand.value = einnahmenTotal - ausgabenTotal

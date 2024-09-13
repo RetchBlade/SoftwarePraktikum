@@ -1,6 +1,5 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
-import ExpenseAdapter
 import SwipeToDeleteCallback
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -16,7 +15,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serenitysystems.livable.databinding.FragmentEinnahmenBinding
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class EinnahmenFragment : Fragment() {
 
