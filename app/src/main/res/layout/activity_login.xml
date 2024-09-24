@@ -37,6 +37,11 @@
             android:textStyle="bold" />
 
         <!-- CardView für Eingabefelder und Buttons -->
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="350dp"
             android:layout_height="400dp"
@@ -170,9 +175,5 @@
     </LinearLayout>
 
     <!-- NavHostFragment hinzufügen -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 </RelativeLayout>

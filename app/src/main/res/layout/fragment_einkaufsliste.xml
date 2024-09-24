@@ -24,7 +24,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp"
-            android:background="@drawable/container_background">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="30dp">
 
             <TextView
                 android:id="@+id/text_lebensmittel"
@@ -32,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="Lebensmittel"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -49,7 +52,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp"
-            android:background="@drawable/container_background">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="30dp">
 
             <TextView
                 android:id="@+id/text_getranke"
@@ -57,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="Getränke"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -74,7 +80,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp"
-            android:background="@drawable/container_background">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="20dp">
 
             <TextView
                 android:id="@+id/text_haushalt"
@@ -82,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="Haushalt"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -99,7 +108,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp"
-            android:background="@drawable/container_background">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="20dp">
 
             <TextView
                 android:id="@+id/text_sonstiges"
@@ -107,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:text="Sonstiges"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
