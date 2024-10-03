@@ -21,4 +21,13 @@
         <item>Bearbeiten</item>
         <item>Löschen</item>
     </string-array>
+
+    <string-array name="kategorien_array">
+        <item>Zuhause</item>
+        <item>Kultur</item>
+        <item>Gesundheit &amp; Beauty</item>
+        <item>Auto</item>
+        <item>Andere</item>
+    </string-array>
+
 </resources>

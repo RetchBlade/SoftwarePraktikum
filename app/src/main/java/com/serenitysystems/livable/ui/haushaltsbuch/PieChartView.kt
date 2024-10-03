@@ -31,79 +31,40 @@ class PieChartView @JvmOverloads constructor(
         isAntiAlias = true
         textAlign = Paint.Align.CENTER
     }
-    private val labelTextPaint = Paint().apply {
-        color = Color.BLACK
-        textSize = 40f
-        isAntiAlias = true
-        textAlign = Paint.Align.LEFT
-        isFakeBoldText = true
+
+    private var categories = listOf<String>()
+    private var percentages = listOf<Float>()
+    private var colors = listOf<Int>()
+
+    fun setData(categories: List<String>, percentages: List<Float>, colors: List<Int>) {
+        this.categories = categories
+        this.percentages = percentages
+        this.colors = colors
+        invalidate() // Ekranı yeniden çizer
     }
-    private val colors = listOf(
-        Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.LTGRAY
-    )
-    private val data = listOf(
-        28f, 26f, 17f, 14f, 7f, 5f, 20f
-    )
-    private val labels = listOf(
-        "Kultur", "Gesundheit", "Beauty", "Kleidung", "Transportation", "Lebensmittel", "Haushalt"
-    )
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val total = data.sum()
+
+        val total = percentages.sum()
         var startAngle = -90f
         val radius = min(width, height) / 2f * 0.7f
-        val innerRadius = radius * 0.6f
         val cx = width / 2f
         val cy = height / 2f
 
-        // Draw the pie segments
-        for (i in data.indices) {
-            val sweepAngle = data[i] / total * 360f
+        for (i in percentages.indices) {
+            val sweepAngle = (percentages[i] / total) * 360f
             paint.color = colors[i % colors.size]
             canvas.drawArc(cx - radius, cy - radius, cx + radius, cy + radius, startAngle, sweepAngle, true, paint)
-            startAngle += sweepAngle
-        }
 
-        // Draw the inner circle to create the donut effect
-        paint.color = Color.WHITE
-        canvas.drawCircle(cx, cy, innerRadius, paint)
+            val midAngle = startAngle + sweepAngle / 2f
+            val lineX = cx + radius * cos(Math.toRadians(midAngle.toDouble())).toFloat()
+            val lineY = cy + radius * sin(Math.toRadians(midAngle.toDouble())).toFloat()
+            val textX = cx + (radius + 20) * cos(Math.toRadians(midAngle.toDouble())).toFloat()
+            val textY = cy + (radius + 20) * sin(Math.toRadians(midAngle.toDouble())).toFloat()
 
-        // Draw the text inside the donut
-        textPaint.color = Color.GREEN
-        canvas.drawText("20.00 €", cx, cy - 10, textPaint)
-        textPaint.color = Color.RED
-        canvas.drawText("-265.78 €", cx, cy + 30, textPaint)
-
-        // Draw labels with lines and percentages
-        startAngle = -90f
-        for (i in data.indices) {
-            val sweepAngle = data[i] / total * 360f
-            val angle = startAngle + sweepAngle / 2f
-
-            val labelRadius = radius + 40f
-            val x = cx + radius * cos(Math.toRadians(angle.toDouble())).toFloat()
-            val y = cy + radius * sin(Math.toRadians(angle.toDouble())).toFloat()
-            val endX = cx + labelRadius * cos(Math.toRadians(angle.toDouble())).toFloat()
-            val endY = cy + labelRadius * sin(Math.toRadians(angle.toDouble())).toFloat()
-
-            // Draw line from segment to label
-            canvas.drawLine(x, y, endX, endY, linePaint)
-
-            // Adjust text alignment based on position
-            if (angle > 90 && angle < 270) {
-                labelTextPaint.textAlign = Paint.Align.RIGHT
-            } else {
-                labelTextPaint.textAlign = Paint.Align.LEFT
-            }
-
-            // Draw the label text
-            canvas.drawText(labels[i], endX, endY, labelTextPaint)
-
-            // Draw the percentage text
-            val percentageText = "${data[i].toInt()}%"
-            val percentageY = endY + 30
-            canvas.drawText(percentageText, endX, percentageY, labelTextPaint)
+            canvas.drawLine(cx, cy, lineX, lineY, linePaint)
+            canvas.drawText("${"%.1f".format(percentages[i] * 100)}%", textX, textY, textPaint)
 
             startAngle += sweepAngle
         }

@@ -3,14 +3,17 @@
     <!--Default -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
 
     <!-- Login Farbpalette -->
     <color name="own_navy_Blau">#1b7c97</color>
+    <color name="own_navy_Dunkelblau">#085562</color>
     <color name="own_helle_Beige">#f4f0e1</color>
     <color name="own_text_Farbe">#094249</color>
     <color name="dark_beige">#b8b6ac</color>
     <color name="hell_blau">#5fa3b6</color>
-
+    <color name="colorAccent">#03DAC5</color>
 
     <!-- Unsere Farbpalette -->
     <color name="own_very_dark_gray">#292929</color>
@@ -31,4 +34,12 @@
     <color name="priority_high">#FF0000</color> <!-- Rot -->
     <color name="priority_medium">#FFFF00</color> <!-- Gelb -->
     <color name="priority_low">#00FF00</color> <!-- Grün -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+
+
+    <!-- Ekstra Renkler -->
+    <color name="material_grey_300">#E0E0E0</color>
+
+
 </resources>
