@@ -90,5 +90,13 @@
     <string name="left_arrow">Left Arrow</string>
     <string name="right_arrow">Right Arrow</string>
 
+        <string name="add_todo">Todo hinzufügen</string>
+        <string name="add">Hinzufügen</string>
+        <string name="todo_options">Todo Optionen</string>
+        <string name="mark_done">Erledigt</string>
+        <string name="edit">Bearbeiten</string>
+        <string name="delete_confirmation">Möchten Sie dieses Todo wirklich löschen?</string>
+
+
 
 </resources>
