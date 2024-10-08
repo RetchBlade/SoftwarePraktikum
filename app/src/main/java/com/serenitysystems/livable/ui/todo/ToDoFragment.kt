@@ -126,8 +126,7 @@ class ToDoFragment : Fragment() {
     }
 
     private fun editTodo(todo: TodoItem) {
-        // Bearbeitungsdialog anzeigen
-        showAddTodoDialog()
+        // Bearbeitungsdialog anzeigen muss noch implementiert werden
     }
 
     override fun onDestroyView() {
