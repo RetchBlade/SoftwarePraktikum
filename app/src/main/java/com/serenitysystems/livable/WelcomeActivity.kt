@@ -15,7 +15,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.welcome_page)
+        setContentView(R.layout.activity_welcome_page)
 
         // Get references to the views
         val logoImage: ImageView = findViewById(R.id.logoImage)
