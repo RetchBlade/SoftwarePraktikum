@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.serenitysystems.livable.ui.login.LoginActivity  // Importiere die LoginActivity
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -44,9 +45,9 @@ class WelcomeActivity : AppCompatActivity() {
             }
         })
 
-        // Navigate to the main activity after a 4-second delay
+        // Navigate to the login activity after a 4-second delay
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this@WelcomeActivity, MainActivity::class.java)
+            val intent = Intent(this@WelcomeActivity, LoginActivity::class.java)
             startActivity(intent)
             finish() // Finish WelcomeActivity so users can't go back to it
         }, 4000) // 4-second delay
