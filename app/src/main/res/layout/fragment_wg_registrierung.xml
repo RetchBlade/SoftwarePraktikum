@@ -7,19 +7,18 @@
     android:background="@drawable/backgroundlnavyblue"
     tools:context=".fragment_wg_registrierung">
 
-    <!-- Logo -->
+
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:scaleType="centerCrop"
-        android:layout_marginStart="-15dp"
-        android:layout_marginTop="-15dp"
         android:src="@drawable/logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- WG-Registrierung Titel -->
     <TextView
         android:id="@+id/signUpText"
         android:layout_width="wrap_content"
@@ -35,7 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- CardView Container -->
+
     <androidx.cardview.widget.CardView
 
         android:layout_width="match_parent"
@@ -48,7 +47,7 @@
         app:cardElevation="8dp"
         app:cardBackgroundColor="@android:color/transparent">
 
-        <!-- RelativeLayout mit Inhalt -->
+
         <RelativeLayout
 
             android:layout_width="match_parent"
@@ -62,7 +61,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- WG Adresse -->
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,12 +73,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
-                        android:hint="Adresse eingeben"
+                        android:hint="Adresse "
                         android:padding="17dp"
                         android:textSize="17sp" />
                 </androidx.cardview.widget.CardView>
 
-                <!-- WG-Größe -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -91,12 +89,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
-                        android:hint="Größe der WG in qm eingeben"
+                        android:hint="Größe der WG in qm "
                         android:padding="17dp"
                         android:textSize="17sp" />
                 </androidx.cardview.widget.CardView>
 
-                <!-- Zimmeranzahl -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -108,12 +105,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
-                        android:hint="Anzahl der Zimmer eingeben"
+                        android:hint="Anzahl der Zimmer "
                         android:padding="17dp"
                         android:textSize="17sp" />
                 </androidx.cardview.widget.CardView>
 
-                <!-- WG Anwohner Anzahl -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,12 +121,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
-                        android:hint="Anzahl der Bewohner eingeben"
+                        android:hint="Anzahl der Bewohner"
                         android:padding="17dp"
                         android:textSize="17sp" />
                 </androidx.cardview.widget.CardView>
 
-                <!-- Registrieren Button -->
+
                 <Button
                     android:id="@+id/registerButton"
                     android:layout_width="wrap_content"
