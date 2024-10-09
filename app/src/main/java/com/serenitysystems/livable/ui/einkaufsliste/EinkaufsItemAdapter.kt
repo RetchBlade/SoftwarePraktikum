@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.databinding.ItemEinkaufsBinding
 
 class EinkaufsItemAdapter(
-    val items: MutableList<Produkt>,
+    private var items: MutableList<Produkt>,
     private val onItemClicked: (Produkt) -> Unit
 ) : RecyclerView.Adapter<EinkaufsItemAdapter.EinkaufsItemViewHolder>() {
 
@@ -32,6 +32,7 @@ class EinkaufsItemAdapter(
                 itemUnit.text = item.unit
 
                 if (item.isChecked) {
+                    // Darstellung für abgehakte Artikel
                     itemName.alpha = 0.5f
                     itemQuantity.alpha = 0.5f
                     itemUnit.alpha = 0.5f
@@ -39,6 +40,7 @@ class EinkaufsItemAdapter(
                     itemQuantity.paintFlags = itemQuantity.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                     itemUnit.paintFlags = itemUnit.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 } else {
+                    // Normale Darstellung
                     itemName.alpha = 1.0f
                     itemQuantity.alpha = 1.0f
                     itemUnit.alpha = 1.0f
@@ -56,6 +58,12 @@ class EinkaufsItemAdapter(
     fun addItem(item: Produkt) {
         items.add(0, item)
         notifyItemInserted(0)
+    }
+
+    // Setzt die gesamte Liste der Produkte und aktualisiert die Ansicht
+    fun setItems(newItems: List<Produkt>) {
+        items = newItems.toMutableList()
+        notifyDataSetChanged()
     }
 
     // Markiert ein Produkt als gelöscht (durchgestrichen)
