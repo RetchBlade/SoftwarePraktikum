@@ -1,41 +1,42 @@
 package com.serenitysystems.livable.ui.todo
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.time.LocalDate
-import java.time.LocalTime
-import java.util.UUID
+import com.serenitysystems.livable.ui.todo.data.TodoItem
+import java.util.Calendar
 
 class ToDoViewModel : ViewModel() {
-    var taskItems = MutableLiveData<MutableList<ToDoItem>>()
+    private val _todos = MutableLiveData<List<TodoItem>>()
+    val todos: LiveData<List<TodoItem>> = _todos
 
     init {
-        taskItems.value = mutableListOf()
+        loadTodos()
     }
 
-    fun addTaskItem(newTask: ToDoItem){
-        val list = taskItems.value ?: mutableListOf()
-        list.add(newTask)
-        taskItems.postValue(list)
+    private fun loadTodos() {
+        // Beispielhafte Todos (du kannst diese aus einer Datenquelle laden)
+        val todosList = listOf(
+            TodoItem(description = "Wäsche waschen", date = Calendar.getInstance().time),
+            TodoItem(description = "Einkaufen", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time),
+            TodoItem(description = "Projekt abschließen", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 5) }.time)
+        )
+        _todos.value = todosList
     }
 
-    fun updateTaskItem(id: UUID, name: String, desc: String, dueTime: LocalTime?){
-        val list = taskItems.value ?: return
-        val task = list.find { it.id == id } ?: return
-        task.name = name
-        task.desc = desc
-        task.dueTime = dueTime
-        taskItems.postValue(list)
+    fun addTodo(todo: TodoItem) {
+        val updatedTodos = _todos.value.orEmpty() + todo
+        _todos.value = updatedTodos
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setCompleted(taskItem: ToDoItem){
-        val list = taskItems.value ?: return
-        val task = list.find { it.id == taskItem.id } ?: return
-        if (task.completedDate == null)
-            task.completedDate = LocalDate.now()
-        taskItems.postValue(list)
+    fun updateTodo(updatedTodo: TodoItem) {
+        val updatedTodos = _todos.value?.map { if (it.id == updatedTodo.id) updatedTodo else it }
+        _todos.value = updatedTodos
+    }
+
+    fun deleteTodo(todo: TodoItem) {
+        val updatedTodos = _todos.value?.filter { it.id != todo.id }
+        _todos.value = updatedTodos
     }
 }
