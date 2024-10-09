@@ -1,21 +1,18 @@
 package com.serenitysystems.livable.ui.einkaufsliste
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.app.DatePickerDialog
+import android.graphics.*
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.DatePicker
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.FragmentEinkaufslisteBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EinkaufslisteFragment : Fragment() {
 
@@ -29,6 +26,13 @@ class EinkaufslisteFragment : Fragment() {
     private lateinit var haushaltAdapter: EinkaufsItemAdapter
     private lateinit var sonstigesAdapter: EinkaufsItemAdapter
 
+    // Aktuelles Datum
+    private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    private var selectedDate = Calendar.getInstance()
+
+    // Datenhaltung für Artikel pro Datum
+    private val itemsByDate = mutableMapOf<String, List<Produkt>>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -39,6 +43,8 @@ class EinkaufslisteFragment : Fragment() {
         setupRecyclerViews()
         setupFab()
         setupSwipeHandlers()
+        setupDateSelector()
+        loadItemsForDate()
 
         return root
     }
@@ -75,37 +81,40 @@ class EinkaufslisteFragment : Fragment() {
         }
     }
 
-    // Fügt das neue Produkt zur entsprechenden Kategorie hinzu und scrollt die Liste nach oben
+    // Fügt das neue Produkt zur entsprechenden Kategorie hinzu und aktualisiert die Anzeige
     private fun addItemToList(newItem: Produkt) {
-        val containerToMove: ViewGroup? = when (newItem.category) {
-            "Lebensmittel" -> {
-                lebensmittelAdapter.addItem(newItem)
-                binding.recyclerLebensmittel.scrollToPosition(0)
-                binding.containerLebensmittel
-            }
-            "Getränke" -> {
-                getrankeAdapter.addItem(newItem)
-                binding.recyclerGetranke.scrollToPosition(0)
-                binding.containerGetranke
-            }
-            "Haushalt" -> {
-                haushaltAdapter.addItem(newItem)
-                binding.recyclerHaushalt.scrollToPosition(0)
-                binding.containerHaushalt
-            }
-            "Sonstiges" -> {
-                sonstigesAdapter.addItem(newItem)
-                binding.recyclerSonstiges.scrollToPosition(0)
-                binding.containerSonstiges
-            }
-            else -> null
-        }
+        val itemDate = newItem.date ?: dateFormat.format(selectedDate.time)
+        val dateKey = itemDate
 
-        // Wenn der Container existiert, wird er an die erste Position verschoben
-        containerToMove?.let {
-            val parent = it.parent as ViewGroup
-            parent.removeView(it)
-            parent.addView(it, 0)  // Container an die erste Position verschieben
+        // Speichern des neuen Artikels
+        val currentItems = itemsByDate[dateKey]?.toMutableList() ?: mutableListOf()
+        currentItems.add(0, newItem)
+        itemsByDate[dateKey] = currentItems
+
+        // Falls der Artikel für das aktuell ausgewählte Datum ist, zur Liste hinzufügen
+        if (dateKey == dateFormat.format(selectedDate.time)) {
+            when (newItem.category) {
+                "Lebensmittel" -> {
+                    lebensmittelAdapter.addItem(newItem)
+                    binding.recyclerLebensmittel.scrollToPosition(0)
+                }
+                "Getränke" -> {
+                    getrankeAdapter.addItem(newItem)
+                    binding.recyclerGetranke.scrollToPosition(0)
+                }
+                "Haushalt" -> {
+                    haushaltAdapter.addItem(newItem)
+                    binding.recyclerHaushalt.scrollToPosition(0)
+                }
+                "Sonstiges" -> {
+                    sonstigesAdapter.addItem(newItem)
+                    binding.recyclerSonstiges.scrollToPosition(0)
+                }
+                else -> {
+                    sonstigesAdapter.addItem(newItem)
+                    binding.recyclerSonstiges.scrollToPosition(0)
+                }
+            }
         }
     }
 
@@ -130,9 +139,16 @@ class EinkaufslisteFragment : Fragment() {
                 val item = adapter.getItem(position)
 
                 if (direction == ItemTouchHelper.LEFT) {
+                    // Element als gelöscht markieren
                     adapter.markItemForDeletion(position)
                 } else if (direction == ItemTouchHelper.RIGHT) {
-                    showRestoreConfirmationDialog(position, adapter)
+                    if (item.isChecked) {
+                        // Gelöschtes Element wiederherstellen
+                        showRestoreConfirmationDialog(position, adapter)
+                    } else {
+                        // Nicht gelöschtes Element kann nicht wiederhergestellt werden
+                        adapter.notifyItemChanged(position)
+                    }
                 }
             }
 
@@ -142,15 +158,35 @@ class EinkaufslisteFragment : Fragment() {
             ) {
                 val itemView = viewHolder.itemView
                 val paint = Paint()
+                val background: RectF
+
                 if (dX < 0) {
+                    // Linkswisch - Rot
                     paint.color = Color.RED
-                    val background = RectF(itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
-                    c.drawRect(background, paint)
-                } else {
+                    background = RectF(
+                        itemView.right + dX,
+                        itemView.top.toFloat(),
+                        itemView.right.toFloat(),
+                        itemView.bottom.toFloat()
+                    )
+                } else if (dX > 0) {
+                    // Rechtswisch - Grün
                     paint.color = Color.GREEN
-                    val background = RectF(itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + dX, itemView.bottom.toFloat())
-                    c.drawRect(background, paint)
+                    background = RectF(
+                        itemView.left.toFloat(),
+                        itemView.top.toFloat(),
+                        itemView.left + dX,
+                        itemView.bottom.toFloat()
+                    )
+                } else {
+                    // Kein Wischen - kein Hintergrund zeichnen
+                    background = RectF(0f, 0f, 0f, 0f)
                 }
+
+                // Hintergrund zeichnen
+                c.drawRect(background, paint)
+
+                // Vordere Ansicht zeichnen
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
@@ -159,6 +195,70 @@ class EinkaufslisteFragment : Fragment() {
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerGetranke)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerHaushalt)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerSonstiges)
+    }
+
+    // Datumsauswahl einrichten
+    private fun setupDateSelector() {
+        updateDateInView()
+
+        binding.btnDatePrev.setOnClickListener {
+            selectedDate.add(Calendar.DAY_OF_MONTH, -1)
+            updateDateInView()
+            loadItemsForDate()
+        }
+
+        binding.btnDateNext.setOnClickListener {
+            selectedDate.add(Calendar.DAY_OF_MONTH, 1)
+            updateDateInView()
+            loadItemsForDate()
+        }
+
+        binding.etSelectedDate.setOnClickListener {
+            showDatePickerDialog()
+        }
+    }
+
+    private fun updateDateInView() {
+        binding.etSelectedDate.setText(dateFormat.format(selectedDate.time))
+    }
+
+    private fun showDatePickerDialog() {
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                selectedDate.set(Calendar.YEAR, year)
+                selectedDate.set(Calendar.MONTH, month)
+                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                updateDateInView()
+                loadItemsForDate()
+            },
+            selectedDate.get(Calendar.YEAR),
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
+
+    // Lädt die Artikel für das ausgewählte Datum
+    private fun loadItemsForDate() {
+        val dateKey = dateFormat.format(selectedDate.time)
+        val itemsForDate = itemsByDate[dateKey] ?: emptyList()
+
+        // Listen leeren
+        lebensmittelAdapter.setItems(emptyList())
+        getrankeAdapter.setItems(emptyList())
+        haushaltAdapter.setItems(emptyList())
+        sonstigesAdapter.setItems(emptyList())
+
+        // Artikel hinzufügen
+        itemsForDate.forEach { item ->
+            when (item.category) {
+                "Lebensmittel" -> lebensmittelAdapter.addItem(item)
+                "Getränke" -> getrankeAdapter.addItem(item)
+                "Haushalt" -> haushaltAdapter.addItem(item)
+                "Sonstiges" -> sonstigesAdapter.addItem(item)
+            }
+        }
     }
 
     // Zeigt einen Bestätigungsdialog an, um ein gelöschtes Produkt wiederherzustellen
@@ -171,6 +271,7 @@ class EinkaufslisteFragment : Fragment() {
             }
             .setNegativeButton("Nein") { dialog, _ ->
                 dialog.dismiss()
+                adapter.notifyItemChanged(position)
             }
             .show()
     }

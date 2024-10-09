@@ -30,4 +30,11 @@
         <item>Andere</item>
     </string-array>
 
+    <!-- Behalten Sie dieses Array in arrays.xml -->
+    <string-array name="einkaufsliste_category_array">
+        <item>Lebensmittel</item>
+        <item>Getränke</item>
+        <item>Haushalt</item>
+        <item>Sonstiges</item>
+    </string-array>
 </resources>

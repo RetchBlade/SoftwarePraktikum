@@ -1,63 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <EditText
-        android:id="@+id/editItemName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Produktname"
-        android:padding="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/edit_text_background" />
-
-    <EditText
-        android:id="@+id/editItemQuantity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Menge"
-        android:padding="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/edit_text_background" />
-
-    <Spinner
-        android:id="@+id/spinnerUnit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/spinner_background"
-        android:spinnerMode="dropdown"
-        android:padding="8dp" />
-
-    <Spinner
-        android:id="@+id/spinnerCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/spinner_background"
-        android:spinnerMode="dropdown"
-        android:padding="8dp" />
+    android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/addItemLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
+        android:orientation="vertical"
+        android:background="@drawable/metallischer_hintergrund"
+        android:padding="16dp">
 
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="wrap_content"
+        <!-- Produktname Eingabe -->
+        <EditText
+            android:id="@+id/editItemName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Abbrechen"
-            android:layout_marginEnd="8dp" />
+            android:hint="Produktname"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/edit_text_background" />
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="wrap_content"
+        <!-- Menge Eingabe -->
+        <EditText
+            android:id="@+id/editItemQuantity"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hinzufügen" />
+            android:hint="Menge"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/edit_text_background" />
+
+        <!-- Einheit Spinner -->
+        <Spinner
+            android:id="@+id/spinnerUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/spinner_background"
+            android:spinnerMode="dropdown"
+            android:padding="8dp" />
+
+        <!-- Kategorie Spinner -->
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/spinner_background"
+            android:spinnerMode="dropdown"
+            android:padding="8dp" />
+
+        <!-- Datum auswählen -->
+        <EditText
+            android:id="@+id/etSelectedDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Datum auswählen"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/edit_text_background"
+            android:focusable="false"
+            android:cursorVisible="false" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Abbrechen"
+                android:layout_marginEnd="8dp"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hinzufügen"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

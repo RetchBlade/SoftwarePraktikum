@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Livable</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -5,7 +6,7 @@
     <string name="nav_username">Username</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <!--String zum menu -->
+    <!-- Strings zum Menü -->
     <string name="DrawerName">Navigation Drawer</string>
     <string name="open_nav">Open Navigation Drawer</string>
     <string name="close_nav">Close Navigation Drawer</string>
@@ -14,17 +15,17 @@
     <string name="menu_einkaufsliste">Einkaufsliste</string>
     <string name="menu_haushaltsbuch">Haushaltsbuch</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings für den Login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="action_sign_in">Anmelden oder registrieren</string>
+    <string name="action_sign_in_short">Anmelden</string>
+    <string name="welcome">Willkommen!</string>
+    <string name="invalid_username">Ungültiger Benutzername</string>
+    <string name="invalid_password">Passwort muss länger als 5 Zeichen sein</string>
+    <string name="login_failed">Anmeldung fehlgeschlagen</string>
 
-    <!-- Strings zum ToDo -->
+    <!-- Strings für ToDo -->
     <string name="todo_heute">Heute</string>
     <string name="todo_morgen">Morgen</string>
     <string name="todo_woche">Diese Woche</string>
@@ -32,10 +33,9 @@
     <string name="todo_add">Hinzufügen</string>
     <string name="todo_del">Löschen</string>
     <string name="todo_edit">Bearbeiten</string>
-    <string name="add_item" />
+    <string name="add_item">Artikel hinzufügen</string>
 
     <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
-
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>
     <string name="task_points">Punkte</string>
@@ -51,6 +51,7 @@
     <string name="add_task">Aufgabe hinzufügen</string>
     <string name="product_image">Produktbild</string>
 
+    <!-- Einheit-Array für die Einkaufsliste -->
     <string-array name="unit_array">
         <item>Stück</item>
         <item>kg</item>
@@ -58,6 +59,7 @@
         <item>Dose</item>
     </string-array>
 
+    <!-- Kategorie-Array für das Haushaltsbuch -->
     <string-array name="category_array">
         <item>Haushalt</item>
         <item>Lebensmittel</item>
@@ -72,6 +74,7 @@
         <item>Sonstiges</item>
     </string-array>
 
+    <!-- Weitere Strings für das Haushaltsbuch -->
     <string name="name">Haushaltsbuch</string>
     <string name="ausgaben_nach_kategorie">Ausgaben nach Kategorie</string>
     <string name="einnahme_button_text">Einnahme</string>
@@ -87,8 +90,6 @@
     <string name="error_amount_required">Einnahme benötigt.</string>
     <string name="error_date_required">Datum benötigt.</string>
 
-    <string name="left_arrow">Left Arrow</string>
-    <string name="right_arrow">Right Arrow</string>
-
-
+    <string name="left_arrow">Pfeil links</string>
+    <string name="right_arrow">Pfeil rechts</string>
 </resources>
