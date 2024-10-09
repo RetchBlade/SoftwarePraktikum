@@ -30,4 +30,10 @@
         <item>Andere</item>
     </string-array>
 
+    <string-array name="wg_roles">
+        <item>WG-Mitglied</item>
+        <item>WG-Leiter</item>
+
+    </string-array>
+
 </resources>

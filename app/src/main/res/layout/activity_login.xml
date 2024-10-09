@@ -106,13 +106,13 @@
                     <!-- Login Button -->
                     <Button
                         android:id="@+id/loginButton"
-                        android:layout_width="159dp"
+                        android:layout_width="285dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginStart="25dp"
+                        android:layout_marginLeft="7dp"
                         android:layout_marginTop="25dp"
                         android:layout_marginEnd="25dp"
-                        android:layout_marginLeft="7dp"
                         android:backgroundTint="@color/own_navy_Blau"
                         android:paddingLeft="24dp"
                         android:paddingRight="24dp"
