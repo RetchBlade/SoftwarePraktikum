@@ -118,7 +118,10 @@
                         android:paddingRight="24dp"
                         android:text="Login"
                         android:textColor="@color/own_helle_Beige"
-                        android:textSize="19sp" />
+                        android:textSize="19sp"
+                        android:textAllCaps="false"
+                        />
+
 
                     <!-- Registrieren TextView -->
                     <TextView

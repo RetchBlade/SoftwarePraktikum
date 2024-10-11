@@ -27,113 +27,114 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_below="@id/toolbar"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="60dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="24dp"
-    android:background="@drawable/rounded_corners"
-    android:elevation="10dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_corners"
+        android:elevation="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp"
         tools:ignore="NotSibling">
 
-    <!-- Profilbild -->
-    <ImageView
-        android:id="@+id/profileImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="12dp"
-        android:background="@drawable/rounded_corners"
-        android:contentDescription="Profilbild"
-        android:elevation="6dp"
-        android:padding="2dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/pp" />
+        <!-- Profilbild -->
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/rounded_corners"
+            android:contentDescription="Profilbild"
+            android:elevation="6dp"
+            android:padding="2dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/pp" />
 
-    <!-- Begrüßungstext -->
-    <TextView
-        android:id="@+id/greetingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:text="Willkommen zurück, Haneen!"
-        android:textAlignment="center"
-        android:textColor="@color/own_navy_Blau"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-</LinearLayout>
+        <!-- Begrüßungstext -->
+        <TextView
+            android:id="@+id/greetingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="Willkommen zurück, Haneen!"
+            android:textAlignment="center"
+            android:textColor="@color/own_navy_Blau"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <!-- Hauptaktionen als Kacheln -->
-<GridLayout
-android:id="@+id/actionGrid"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_below="@id/headerSection"
-android:layout_marginTop="20dp"
-android:columnCount="2"
-android:alignmentMode="alignMargins"
-android:useDefaultMargins="true"
-android:padding="12dp">
-
-<!-- WG-Verwaltung Kachel -->
-<FrameLayout
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_rowWeight="1"
-    android:layout_columnWeight="1"
-    android:background="@drawable/gradient_beige"
-    android:elevation="6dp"
-    android:padding="16dp"
-    android:layout_margin="8dp">
-
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/ic_wg" />
-
-    <TextView
-        android:layout_width="wrap_content"
+    <GridLayout
+        android:id="@+id/actionGrid"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:text="WG-Verwaltung"
-        android:textStyle="bold"
-        android:textColor="@color/own_navy_Dunkelblau"
-        android:textSize="16sp" />
-</FrameLayout>
+        android:layout_below="@id/headerSection"
+        android:layout_marginTop="20dp"
+        android:columnCount="2"
+        android:alignmentMode="alignMargins"
+        android:useDefaultMargins="true"
+        android:padding="12dp">
 
-<!-- Raumplaner Kachel -->
-<FrameLayout
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_columnWeight="1"
-    android:layout_rowWeight="1"
-    android:background="@drawable/gradient_beige"
-    android:elevation="6dp"
-    android:padding="16dp"
-    android:layout_margin="8dp">
-
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/toDolist"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
+        <!-- WG-Verwaltung Kachel -->
+        <FrameLayout
+            android:id="@+id/wgVerwaltungButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:textStyle="bold"
-        android:text="To-Do list"
-        android:textColor="@color/own_navy_Dunkelblau"
-        android:textSize="16sp" />
-</FrameLayout>
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:background="@drawable/gradient_beige"
+        android:elevation="6dp"
+        android:padding="16dp"
+        android:layout_margin="8dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_wg" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:text="WG-Verwaltung"
+            android:textStyle="bold"
+            android:textColor="@color/own_navy_Dunkelblau"
+            android:textSize="16sp" />
+    </FrameLayout>
+
+    <!-- Raumplaner Kachel -->
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:background="@drawable/gradient_beige"
+        android:elevation="6dp"
+        android:padding="16dp"
+        android:layout_margin="8dp">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_wg" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold"
+            android:text="To-Do list"
+            android:textColor="@color/own_navy_Dunkelblau"
+            android:textSize="16sp" />
+    </FrameLayout>
 </GridLayout>
 
     <!-- Benachrichtigungen oder Neuigkeiten -->
@@ -150,15 +151,4 @@ android:textColor="@color/own_navy_Dunkelblau"
 android:textSize="18sp"
 android:textStyle="bold" />
 
-    <ScrollView
-        android:id="@+id/notificationsSection"
-        android:layout_width="367dp"
-        android:layout_height="254dp"
-        android:layout_below="@id/notificationsTitle"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="21dp"
-        android:background="@drawable/rounded_corners">
-
-    </ScrollView>
-</RelativeLayout>
+    </RelativeLayout>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/gradient_beige"
+    android:elevation="12dp"
+    android:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WG-Verwaltung Optionen"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/poppinsregular" /> <!-- Schriftart hinzufügen -->
+
+    <!-- Schriftart hinzufügen -->
+
+    <Button
+        android:id="@+id/createWGButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:backgroundTint="@color/own_navy_Dunkelblau"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG anlegen"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textAllCaps="false"/>
+
+
+
+    <Button
+        android:id="@+id/joinWGButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:backgroundTint="@color/own_navy_Dunkelblau"
+        android:padding="10dp"
+        android:text="WG beitreten"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppinsregular"
+        android:textAllCaps="false" /> <!-- Schriftart hinzufügen -->
+
+    <Button
+        android:id="@+id/leaveWGButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:backgroundTint="@color/own_navy_Dunkelblau"
+        android:padding="10dp"
+        android:text="WG verlassen"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppinsregular"
+        android:textAllCaps="false"/> <!-- Schriftart hinzufügen -->
+
+</LinearLayout>
