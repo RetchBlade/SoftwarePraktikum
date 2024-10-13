@@ -1,17 +1,22 @@
 package com.serenitysystems.livable.ui.login
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.serenitysystems.livable.ui.register.data.User
+import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserToken
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = FirebaseFirestore.getInstance()
     val loginSuccess = MutableLiveData<Boolean>()
     val loginError = MutableLiveData<String>()
+    private val userPreferences = UserPreferences(application)
 
     suspend fun loginUser(email: String, password: String) {
         try {
@@ -23,11 +28,15 @@ class LoginViewModel : ViewModel() {
 
             if (existingUser.exists()) {
                 // Hole das Benutzerobjekt
-                val user = existingUser.toObject(User::class.java)
+                val user = existingUser.toObject(UserToken::class.java)
                 user?.let {
                     // Vergleiche das gehashte Passwort
                     val hashedPassword = hashPassword(password)
                     if (it.password == hashedPassword) {
+                        // Speichere UserToken in DataStore
+                        viewModelScope.launch {
+                            userPreferences.saveUserToken(it)
+                        }
                         loginSuccess.postValue(true)
                     } else {
                         loginError.postValue("Falsches Passwort")

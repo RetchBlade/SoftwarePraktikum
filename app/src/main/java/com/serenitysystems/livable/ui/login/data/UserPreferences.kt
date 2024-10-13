@@ -1,10 +1,12 @@
-package com.serenitysystems.livable.ui.login.data
+package com.serenitysystems.livable.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
+import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -34,7 +36,7 @@ class UserPreferences(private val context: Context) {
     // Löschen des Tokens
     suspend fun clearUserToken() {
         context.dataStore.edit { preferences ->
-            preferences.clear() // Löscht alle gespeicherten Daten im DataStore
+            preferences.remove(USER_TOKEN_KEY)
         }
     }
 }
