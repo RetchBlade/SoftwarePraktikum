@@ -36,7 +36,7 @@ class UserPreferences(private val context: Context) {
     // Löschen des Tokens
     suspend fun clearUserToken() {
         context.dataStore.edit { preferences ->
-            preferences.remove(USER_TOKEN_KEY)
+            preferences.clear() // Löscht alle gespeicherten Daten im DataStore
         }
     }
 }

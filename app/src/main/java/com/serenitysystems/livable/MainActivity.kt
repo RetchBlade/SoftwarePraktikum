@@ -2,6 +2,7 @@ package com.serenitysystems.livable
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             userPreferences.userToken.collect { userToken ->
                 if (userToken != null) {
                     // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken.email,userToken.wgId) // Übergebe WgId für die Sidebar
+                    setupMainActivity(userToken.email, userToken.wgId) // Übergebe email und WgId für die Sidebar
                 } else {
                     // Kein Benutzer eingeloggt, navigiere zur LoginActivity
                     navigateToLoginActivity()
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupMainActivity(email: String? ,wgId: String?) {
+    private fun setupMainActivity(email: String?, wgId: String?) {
         // Aktivieren des randlosen Designs
         enableEdgeToEdge()
 
@@ -75,13 +76,35 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         // Sidebar (NavigationView) anpassen, um WgId und E-Mail anzuzeigen
-        val headerView: View = navView.getHeaderView(0) // Header-Layout des NavigationView abrufen
-        val wgIdTextView: TextView = headerView.findViewById(R.id.textViewWgId) // Füge ein TextView für WgId hinzu
+        val headerView: View = navView.getHeaderView(0)
+        val wgIdTextView: TextView = headerView.findViewById(R.id.textViewWgId)
         val userEmailTextView = headerView.findViewById<TextView>(R.id.user_email_text_view)
 
         // Setze die E-Mail und WgId im Sidebar-Header
-        wgIdTextView.text = "WG ID: $wgId"
         userEmailTextView.text = "User: $email"
+        wgIdTextView.text = "WG ID: $wgId"
+
+        // Setze einen Listener für den Logout
+        navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_logout -> {
+                    // Führe den Logout durch
+                    performLogout()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun performLogout() {
+        // Lösche den UserToken
+        lifecycleScope.launch {
+            userPreferences.clearUserToken()
+
+            // Navigiere zur LoginActivity und beende die MainActivity
+            navigateToLoginActivity()
+        }
     }
 
     private fun navigateToLoginActivity() {
