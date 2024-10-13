@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         userEmailTextView.text = "User: $email"
         wgIdTextView.text = "WG ID: $wgId"
 
-        // Setze einen Listener für den Logout
+        // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_logout -> {
@@ -92,9 +92,16 @@ class MainActivity : AppCompatActivity() {
                     performLogout()
                     true
                 }
-                else -> false
+                else -> {
+                    // Navigiere zu den Fragmenten
+                    val navController = findNavController(R.id.nav_host_fragment_content_main)
+                    navController.navigate(item.itemId)
+                    drawerLayout.closeDrawers() // Schließe das DrawerLayout
+                    true // Gebe true zurück, um anzuzeigen, dass das Element verarbeitet wurde
+                }
             }
         }
+
     }
 
     private fun performLogout() {
