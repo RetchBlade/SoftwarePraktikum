@@ -10,11 +10,11 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewWgId"
+        android:layout_width="83dp"
         android:layout_height="wrap_content"
-        android:text="Livable"
-        android:textColor="@color/white"
-        android:textStyle="bold"/>
+        android:text="WG ID: "
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <ImageView
         android:layout_width="147dp"
@@ -22,11 +22,11 @@
         android:src="@drawable/logo" />
 
     <TextView
+        android:id="@+id/user_email_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="contact@androidknowledge.com"
         android:textColor="@color/white"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
+        android:text="User: "
+        android:textSize="14sp"/>
 
 </LinearLayout>
