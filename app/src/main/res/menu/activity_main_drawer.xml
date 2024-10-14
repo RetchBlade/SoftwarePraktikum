@@ -2,40 +2,47 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn = "navigation_view">
+    tools:showIn="navigation_view">
 
-    <group
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
 
+        <!-- Wochenplan Item -->
         <item
             android:id="@+id/nav_wochenplan"
             android:icon="@android:drawable/ic_menu_week"
-            android:title="@string/menu_Wochenplan" />
+            android:title="@string/menu_Wochenplan"
+            />
 
+
+
+
+        <!-- To-Do Item -->
         <item
             android:id="@+id/nav_todo"
             android:icon="@android:drawable/ic_menu_edit"
             android:title="@string/menu_todo" />
 
+        <!-- Einkaufsliste Item -->
         <item
             android:id="@+id/nav_einkaufsliste"
             android:icon="@drawable/shoppingcarticon"
             android:title="@string/menu_einkaufsliste" />
+
+        <!-- Haushaltsbuch Item -->
         <item
             android:id="@+id/nav_haushaltsbuch"
             android:icon="?attr/actionModePasteDrawable"
             android:title="@string/menu_haushaltsbuch" />
     </group>
-    <item
-        android:title="">
 
+    <!-- Logout Item -->
+    <item android:title="">
         <menu>
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/logouticon"
                 android:title="Logout" />
         </menu>
-
     </item>
 
 </menu>

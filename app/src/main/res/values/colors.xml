@@ -30,6 +30,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="lavender">#8692f7</color>
 
+    <!-- res/values/colors.xml -->
+
+        <color name="nav_text_color">#FFFFFF</color> <!-- Weiße Schrift -->
+        <color name="nav_icon_color">#FF4081</color>  <!-- Farbe für Icons -->
+
+
+
     <!-- Priority Farbpalette -->
     <color name="priority_high">#FF0000</color> <!-- Rot -->
     <color name="priority_medium">#FFFF00</color> <!-- Gelb -->
@@ -41,5 +48,7 @@
     <!-- Ekstra Renkler -->
     <color name="material_grey_300">#E0E0E0</color>
 
-
+    <color name="online_green">#4CAF50</color>  <!-- Green for online -->
+    <color name="busy_yellow">#FFC107</color>   <!-- Yellow for busy -->
+    <color name="offline_red">#F44336</color>    <!-- Red for offline -->
 </resources>

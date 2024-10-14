@@ -75,7 +75,9 @@
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             android:hint="Email Adresse"
-                            android:padding="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="15dp"
+
                             android:textSize="17sp"
                             android:textColor="@color/own_very_dark_gray" />
 
@@ -85,7 +87,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="300dp"
                         android:layout_height="60dp"
-                        android:padding="20dp"
+                        android:padding="23dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="7dp"
                         app:cardCornerRadius="8dp">
@@ -97,7 +99,9 @@
                             android:background="@android:color/transparent"
                             android:hint="Passwort"
                             android:inputType="textWebPassword"
-                            android:padding="20dp"
+                           android:layout_marginTop="20dp"
+                            android:layout_marginStart="15dp"
+
                             android:textSize="17sp"
                             android:textColor="@color/own_very_dark_gray" />
 

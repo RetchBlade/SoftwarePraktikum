@@ -1,32 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="176dp"
     android:gravity="bottom"
     android:padding="16dp"
-    android:background="@color/own_navy_Dunkelblau"
+    android:background="@drawable/nav_gradient_background"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
+
+
+    <!-- User Profile Picture -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:cardBackgroundColor="@color/own_helle_Beige"
+        app:cardCornerRadius="77.5dp"
+        app:cardElevation="4dp"
+        android:layout_gravity="center">
+
+        <!-- Avatar-Bild -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/pp" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Username TextView -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Livable"
+        android:gravity="center"
+        android:layout_marginStart="60dp"
+        android:text="Benutzer"
         android:textColor="@color/white"
-        android:textStyle="bold"/>
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppinsregular"
 
-    <ImageView
-        android:layout_width="147dp"
-        android:layout_height="78dp"
-        android:src="@drawable/logo" />
+        />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="contact@androidknowledge.com"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
 
 </LinearLayout>

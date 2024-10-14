@@ -1,65 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="150dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/gradient_beige"
-    android:elevation="12dp"
-    android:layout_gravity="center">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
+    <LinearLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp"
+    android:background="@color/own_helle_Beige"
+    android:elevation="12dp"
+    android:maxWidth="150dp"
+    android:maxHeight="400dp"
+    android:minWidth="100dp"
+    android:orientation="vertical">
+
+    <!-- Titel des Dialogs -->
     <TextView
         android:id="@+id/dialogTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="147dp"
+        android:layout_height="44dp"
+        android:fontFamily="@font/poppinsregular"
         android:text="WG-Verwaltung Optionen"
         android:textColor="@color/own_navy_Blau"
-        android:textSize="12sp"
+        android:textSize="10sp"
         android:textStyle="bold"
-        android:layout_marginBottom="12dp"
-        android:fontFamily="@font/poppinsregular" /> <!-- Schriftart hinzufügen -->
+        android:paddingTop="15dp"/>
 
-    <!-- Schriftart hinzufügen -->
+    <!-- Trennlinie zwischen Titel und den Buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/own_helle_Beige" />
 
+    <!-- Erster Button (WG anlegen) -->
     <Button
         android:id="@+id/createWGButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="145dp"
+        android:layout_height="37dp"
         android:layout_marginBottom="6dp"
-        android:backgroundTint="@color/own_navy_Dunkelblau"
+        android:background="@drawable/button_klick_effect"
         android:fontFamily="@font/poppinsregular"
-        android:padding="10dp"
         android:text="WG anlegen"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:textAllCaps="false"/>
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="10sp"
+        android:paddingEnd="30dp"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/own_helle_Beige" />
 
-
+    <!-- Zweiter Button (WG beitreten) -->
     <Button
         android:id="@+id/joinWGButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="148dp"
+        android:layout_height="38dp"
         android:layout_marginBottom="6dp"
-        android:backgroundTint="@color/own_navy_Dunkelblau"
-        android:padding="10dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
         android:text="WG beitreten"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:fontFamily="@font/poppinsregular"
-        android:textAllCaps="false" /> <!-- Schriftart hinzufügen -->
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="10sp"
+        android:paddingEnd="30dp"/>
 
-    <Button
-        android:id="@+id/leaveWGButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <!-- Trennlinie zwischen den Optionen -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         android:layout_marginBottom="6dp"
-        android:backgroundTint="@color/own_navy_Dunkelblau"
-        android:padding="10dp"
-        android:text="WG verlassen"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:fontFamily="@font/poppinsregular"
-        android:textAllCaps="false"/> <!-- Schriftart hinzufügen -->
+        android:background="@color/own_helle_Beige" />
 
-</LinearLayout>
+    <!-- Dritter Button (WG verlassen) -->
+        <Button
+            android:id="@+id/leaveWGButton"
+            android:layout_width="146dp"
+            android:layout_height="37dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/button_klick_effect"
+            android:fontFamily="@font/poppinsregular"
+            android:text="WG verlassen"
+            android:textAllCaps="false"
+            android:textColor="@color/own_navy_Blau"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    </RelativeLayout>

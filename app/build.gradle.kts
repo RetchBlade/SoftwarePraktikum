@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("androidx.gridlayout:gridlayout:1.0.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.ui.text.android)
+    implementation(libs.androidx.gridlayout)
 
 
     testImplementation(libs.junit)
