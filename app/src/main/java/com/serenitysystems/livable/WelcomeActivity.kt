@@ -25,31 +25,18 @@ class WelcomeActivity : AppCompatActivity() {
         val logoAnim = AnimationUtils.loadAnimation(this, R.anim.logo_animation)
         val textFadeIn = AnimationUtils.loadAnimation(this, R.anim.text_fade_in)
 
-        // Start logo animation
+        // Set visibility to VISIBLE before starting animations
+        motivText.visibility = TextView.INVISIBLE
+
+        // Start both animations simultaneously
         logoImage.startAnimation(logoAnim)
+        motivText.startAnimation(textFadeIn)
 
-        // Set an animation listener for when the logo animation ends
-        logoAnim.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {
-                // Do something when animation starts (if needed)
-            }
-
-            override fun onAnimationEnd(animation: Animation) {
-                // When the logo animation ends, fade in the text
-                motivText.visibility = TextView.VISIBLE
-                motivText.startAnimation(textFadeIn)
-            }
-
-            override fun onAnimationRepeat(animation: Animation) {
-                // Handle animation repeat (if needed)
-            }
-        })
-
-        // Navigate to the login activity after a 4-second delay
+        // Navigate to the login activity after a 3-second delay
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this@WelcomeActivity, LoginActivity::class.java)
             startActivity(intent)
             finish() // Finish WelcomeActivity so users can't go back to it
-        }, 4000) // 4-second delay
+        }, 3000) // seconds kann man einstellen
     }
 }
