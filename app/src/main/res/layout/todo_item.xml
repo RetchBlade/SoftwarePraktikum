@@ -3,16 +3,24 @@
     android:id="@+id/todo_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="@drawable/todo_item_background"
     android:padding="16dp"
     android:layout_marginTop="8dp">
+
+    <CheckBox
+        android:id="@+id/todoCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" />
 
     <TextView
         android:id="@+id/todoDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem"
-        android:textSize="18sp" />
-
+        android:textSize="18sp"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="center_vertical"/>
 </LinearLayout>
+
