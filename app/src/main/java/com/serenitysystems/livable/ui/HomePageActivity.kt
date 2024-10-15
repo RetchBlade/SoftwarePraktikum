@@ -6,16 +6,36 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.serenitysystems.livable.R
+import com.serenitysystems.livable.data.UserPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomePageActivity : AppCompatActivity() {
 
     private var dialog: AlertDialog? = null // Variable to hold the dialog reference
+    private lateinit var userPreferences: UserPreferences // UserPreferences instance
+    private lateinit var welcomeMessageTextView: TextView // TextView for welcome message
+    private lateinit var userNicknameTextView: TextView // TextView for user nickname
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_home_page)
+
+        // Initialize UserPreferences
+        userPreferences = UserPreferences(this)
+
+        // Get references to the TextViews
+        welcomeMessageTextView = findViewById(R.id.greetingText)
+        userNicknameTextView = findViewById(R.id.userNickname)
+
+        // Fetch user nickname from preferences
+        fetchUserNickname()
 
         // WG-Verwaltung Button (Kachel) Referenz
         val wgVerwaltungButton: FrameLayout = findViewById(R.id.wgVerwaltungButton)
@@ -23,6 +43,19 @@ class HomePageActivity : AppCompatActivity() {
         // Setze einen Click-Listener auf den WG-Verwaltung Button
         wgVerwaltungButton.setOnClickListener {
             showWGOptionsDialog(it) // Pass the view reference to position the dialog
+        }
+    }
+
+    private fun fetchUserNickname() {
+        CoroutineScope(Dispatchers.Main).launch {
+            userPreferences.userToken.collect { userToken ->
+                // Check if userToken is not null, then set the nickname
+                if (userToken != null) {
+                    userNicknameTextView.text = userToken.nickname // Set the user nickname
+                } else {
+                    userNicknameTextView.text = "" // Or set to a default value
+                }
+            }
         }
     }
 

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             userPreferences.userToken.collect { userToken ->
                 if (userToken != null) {
                     // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken.email, userToken.wgId) // Übergebe email und WgId für die Sidebar
+                    setupMainActivity(userToken.nickname, userToken.wgId) // Übergebe email und WgId für die Sidebar
                 } else {
                     // Kein Benutzer eingeloggt, navigiere zur LoginActivity
                     navigateToLoginActivity()
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupMainActivity(email: String?, wgId: String?) {
+    private fun setupMainActivity(user: String?, wgId: String?) {
         // Aktivieren des randlosen Designs
         enableEdgeToEdge()
 
@@ -78,12 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         // Sidebar (NavigationView) anpassen, um WgId und E-Mail anzuzeigen
         val headerView: View = navView.getHeaderView(0)
-        val wgIdTextView: TextView = headerView.findViewById(R.id.textViewWgId)
         val userEmailTextView = headerView.findViewById<TextView>(R.id.user_email_text_view)
 
-        // Setze die E-Mail und WgId im Sidebar-Header
-        userEmailTextView.text = "User: $email"
-        wgIdTextView.text = "WG ID: $wgId"
+        // Setze die E-Mail  im Sidebar-Header
+        userEmailTextView.text = "$user"
+
 
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->

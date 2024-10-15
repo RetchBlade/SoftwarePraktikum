@@ -10,7 +10,7 @@
         <item name="colorSecondaryVariant">@color/own_navy_Blau</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/own_navy_Blau</item>
         <!-- Customize your theme here. -->
         <item name="buttonStyle">@style/CustomButtonStyle</item> <!-- Button Style anpassen -->
     </style>

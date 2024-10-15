@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_beige">
+    android:background="@drawable/backgroundbeige">
 
     <!-- AppBarLayout and Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
@@ -26,14 +26,13 @@
     <!-- Profile Section -->
     <LinearLayout
         android:id="@+id/headerSection"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_width="363dp"
+        android:layout_height="202dp"
         android:layout_below="@id/toolbar"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="23dp"
         android:layout_marginTop="70dp"
-        android:background="@drawable/container_background"
-        android:backgroundTint="@color/own_helle_Beige"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/gradient_beige"
         android:elevation="8dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -41,28 +40,49 @@
         tools:ignore="NotSibling">
 
         <!-- Profile Image -->
-        <ImageView
-            android:id="@+id/profileImage"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/circle_shape"
-            android:contentDescription="Profilbild"
-            android:elevation="4dp"
-            android:padding="2dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/pp" />
+        <androidx.cardview.widget.CardView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="110dp"
+            android:layout_marginTop="-20dp"
+
+            app:cardBackgroundColor="@color/own_helle_Beige"
+            app:cardCornerRadius="77.5dp"
+            app:cardElevation="10dp">
+
+            <!-- Avatar-Bild -->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/pp" />
+        </androidx.cardview.widget.CardView>
 
         <!-- Greeting Text -->
         <TextView
             android:id="@+id/greetingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Willkommen zurück, Haneen!"
+            android:layout_marginStart="-170dp"
+            android:layout_marginTop="55dp"
+
+            android:text="Willkommen zurück "
             android:textAlignment="center"
             android:textColor="@color/own_navy_Dunkelblau"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="55dp"
+            android:text=""
+            android:textColor="@color/own_navy_Dunkelblau"
+            android:textStyle="bold"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <!-- GridLayout for Action Buttons -->
@@ -74,7 +94,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/headerSection"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="4dp"
         android:padding="16dp"
         app:alignmentMode="alignMargins"
         app:columnCount="2"
@@ -166,7 +186,7 @@
             android:id="@+id/notificationsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Neuigkeiten"
+            android:text="Zu tun:"
             android:textColor="@color/own_navy_Dunkelblau"
             android:textSize="18sp"
             android:textStyle="bold" />
