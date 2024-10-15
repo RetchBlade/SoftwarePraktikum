@@ -1,33 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/todo_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.todo.ToDoFragment">
 
-    <ScrollView
+    <!-- Text und RecyclerView für "Heute" -->
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:text="Heute"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:id="@+id/headerTextView" />
 
-        <LinearLayout
-            android:id="@+id/todoLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-        </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todoListRecyclerView"
+        android:layout_below="@id/headerTextView"
+        android:backgroundTint="@color/design_default_color_background" />
 
-    </ScrollView>
+    <!-- Text und RecyclerView für "Morgen" -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Morgen"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:id="@+id/headerTextView2"
+        android:layout_below="@id/todoListRecyclerView" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addTodoButton"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todoListRecyclerView2"
+        android:layout_below="@id/headerTextView2"
+        android:backgroundTint="@color/design_default_color_background" />
+
+    <!-- Text und RecyclerView für "Diese Woche" -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Diese Woche"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:id="@+id/headerTextView3"
+        android:layout_below="@id/todoListRecyclerView2" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todoListRecyclerView3"
+        android:layout_below="@id/headerTextView3"
+        android:backgroundTint="@color/design_default_color_background" />
+
+    <!-- Text und RecyclerView für "Später" -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Später"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:id="@+id/headerTextView4"
+        android:layout_below="@id/todoListRecyclerView3" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todoListRecyclerView4"
+        android:layout_below="@id/headerTextView4"
+        android:backgroundTint="@color/design_default_color_background" />
+
+    <!-- Floating Action Button zum Hinzufügen neuer Todos -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="add_todo"
-        android:backgroundTint="@color/own_navy_Blau" />
-
-</FrameLayout>
+        android:text="Neue Aufgabe"
+        android:id="@+id/newTaskButton"
+        android:backgroundTint="@color/own_navy_Blau"
+        android:textColor="?colorOnPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"
+        android:layout_margin="20dp"
+        app:icon="@drawable/baseline_add_24"
+        app:iconTint="?colorOnPrimary" />
+</RelativeLayout>
