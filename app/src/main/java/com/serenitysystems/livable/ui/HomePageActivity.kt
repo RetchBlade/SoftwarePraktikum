@@ -23,6 +23,7 @@ class HomePageActivity : AppCompatActivity() {
     private lateinit var welcomeMessageTextView: TextView // TextView for welcome message
     private lateinit var userNicknameTextView: TextView // TextView for user nickname
 
+    /*
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_home_page)
@@ -45,6 +46,7 @@ class HomePageActivity : AppCompatActivity() {
             showWGOptionsDialog(it) // Pass the view reference to position the dialog
         }
     }
+     */
 
     private fun fetchUserNickname() {
         CoroutineScope(Dispatchers.Main).launch {

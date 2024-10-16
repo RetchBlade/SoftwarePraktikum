@@ -120,7 +120,6 @@ android:padding="12dp">
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/toDolist"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp" />
 
