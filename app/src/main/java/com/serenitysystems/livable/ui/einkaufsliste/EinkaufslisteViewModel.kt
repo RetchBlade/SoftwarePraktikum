@@ -6,27 +6,49 @@ import androidx.lifecycle.ViewModel
 
 class EinkaufslisteViewModel : ViewModel() {
 
-    private val _produkte = MutableLiveData<List<Produkt>>()
-    val produkte: LiveData<List<Produkt>> = _produkte
+    // Map zum Speichern der Produkte nach Datum
+    private val _itemsByDate = MutableLiveData<MutableMap<String, MutableList<Produkt>>>()
+    val itemsByDate: LiveData<MutableMap<String, MutableList<Produkt>>> = _itemsByDate
 
     init {
-        _produkte.value = emptyList()
+        _itemsByDate.value = mutableMapOf()
     }
 
-    // Fügt ein neues Produkt zur Liste hinzu
-    fun addProdukt(produkt: Produkt) {
-        val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
-        currentList.add(produkt)
-        _produkte.value = currentList
+    // Produkt hinzufügen
+    fun addItem(date: String, item: Produkt) {
+        val currentMap = _itemsByDate.value ?: mutableMapOf()
+        val itemsForDate = currentMap[date] ?: mutableListOf()
+        itemsForDate.add(0, item)
+        currentMap[date] = itemsForDate
+        _itemsByDate.value = currentMap
     }
 
-    // Aktualisiert ein bestehendes Produkt
-    fun updateProdukt(updatedProdukt: Produkt) {
-        val currentList = _produkte.value?.toMutableList() ?: mutableListOf()
-        val index = currentList.indexOfFirst { it.name == updatedProdukt.name }
-        if (index != -1) {
-            currentList[index] = updatedProdukt
-            _produkte.value = currentList
+    // Produkt zu einem neuen Datum verschieben
+    fun moveItemToNewDate(oldDate: String, newDate: String, item: Produkt) {
+        val currentMap = _itemsByDate.value ?: mutableMapOf()
+
+        // Entferne das Produkt vom alten Datum
+        currentMap[oldDate]?.remove(item)
+        if (currentMap[oldDate]?.isEmpty() == true) {
+            currentMap.remove(oldDate)
         }
+
+        // Füge das Produkt dem neuen Datum hinzu
+        val itemsForNewDate = currentMap[newDate] ?: mutableListOf()
+        itemsForNewDate.add(item)
+        currentMap[newDate] = itemsForNewDate
+
+        _itemsByDate.value = currentMap
+    }
+
+    // Aktualisiere den Status eines Produkts
+    fun updateItemStatus(date: String, item: Produkt, isPurchased: Boolean) {
+        item.isChecked = isPurchased
+        _itemsByDate.value = _itemsByDate.value // Trigger für LiveData-Update
+    }
+
+    // Hole die Produkte für ein bestimmtes Datum
+    fun getItemsForDate(date: String): List<Produkt> {
+        return _itemsByDate.value?.get(date) ?: emptyList()
     }
 }

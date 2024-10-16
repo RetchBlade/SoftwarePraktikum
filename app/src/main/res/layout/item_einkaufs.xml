@@ -53,6 +53,13 @@
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:layout_marginStart="4dp" />
+
+            <ImageView
+                android:id="@+id/itemIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

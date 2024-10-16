@@ -1,14 +1,18 @@
+// AddItemDialogFragment.kt
 package com.serenitysystems.livable.ui.einkaufsliste
-
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.DialogAddItemBinding
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class AddItemDialogFragment : DialogFragment() {
 
@@ -25,7 +29,7 @@ class AddItemDialogFragment : DialogFragment() {
         _binding = DialogAddItemBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Metallischer Hintergrund für den Dialog
+        // Hintergrund für den Dialog
         dialog?.window?.setBackgroundDrawableResource(R.drawable.metallischer_hintergrund)
 
         // Einheit-Spinner einrichten

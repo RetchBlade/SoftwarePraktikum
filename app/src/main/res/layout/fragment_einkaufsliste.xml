@@ -47,7 +47,7 @@
             android:id="@+id/btn_date_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_right_arrow   "
+            android:src="@drawable/ic_right_arrow"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Nächster Tag"
             android:tint="@android:color/black" />
