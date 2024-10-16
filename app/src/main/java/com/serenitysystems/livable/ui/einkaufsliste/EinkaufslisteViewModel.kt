@@ -1,3 +1,5 @@
+// EinkaufslisteViewModel.kt
+
 package com.serenitysystems.livable.ui.einkaufsliste
 
 import androidx.lifecycle.LiveData
@@ -45,6 +47,18 @@ class EinkaufslisteViewModel : ViewModel() {
     fun updateItemStatus(date: String, item: Produkt, isPurchased: Boolean) {
         item.isChecked = isPurchased
         _itemsByDate.value = _itemsByDate.value // Trigger für LiveData-Update
+    }
+
+    // Aktualisiere das Bild eines Produkts
+    fun updateItemImage(date: String, item: Produkt) {
+        val currentMap = _itemsByDate.value ?: mutableMapOf()
+        val itemsForDate = currentMap[date] ?: mutableListOf()
+        val index = itemsForDate.indexOfFirst { it == item }
+        if (index != -1) {
+            itemsForDate[index] = item
+            currentMap[date] = itemsForDate
+            _itemsByDate.value = currentMap
+        }
     }
 
     // Hole die Produkte für ein bestimmtes Datum

@@ -33,18 +33,18 @@ class HomePageActivity : AppCompatActivity() {
 
         // Get references to the TextViews
         welcomeMessageTextView = findViewById(R.id.greetingText)
-        userNicknameTextView = findViewById(R.id.userNickname)
+        //userNicknameTextView = findViewById(R.id.userNickname)
 
         // Fetch user nickname from preferences
         fetchUserNickname()
 
         // WG-Verwaltung Button (Kachel) Referenz
-        val wgVerwaltungButton: FrameLayout = findViewById(R.id.wgVerwaltungButton)
+        //val wgVerwaltungButton: FrameLayout = findViewById(R.id.wgVerwaltungButton)
 
         // Setze einen Click-Listener auf den WG-Verwaltung Button
-        wgVerwaltungButton.setOnClickListener {
-            showWGOptionsDialog(it) // Pass the view reference to position the dialog
-        }
+       // wgVerwaltungButton.setOnClickListener {
+            //showWGOptionsDialog(it) // Pass the view reference to position the dialog
+        //}
     }
      */
 

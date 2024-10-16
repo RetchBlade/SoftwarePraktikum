@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui.register
+package drawable.register
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -16,7 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.login.LoginActivity
-import com.serenitysystems.livable.ui.register.data.User
+import drawable.register.data.User
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.*
@@ -24,7 +24,7 @@ import java.util.*
 class RegistrierungFragment : Fragment() {
 
     // Initialisierung des ViewModels für die Registrierung
-    private val viewModel: RegistrationViewModel by viewModels()
+    private val viewModel: drawable.register.RegistrationViewModel by viewModels()
 
     // Deklaration der UI-Elemente
     private lateinit var editTextBirthdate: TextView
@@ -86,7 +86,8 @@ class RegistrierungFragment : Fragment() {
 
             val hashedPassword = hashPassword(password)
             // Erstellt ein User-Objekt mit den eingegebenen Daten
-            val user = User(email, nickname, hashedPassword, birthdate, gender)
+            val user =
+                drawable.register.data.User(email, nickname, hashedPassword, birthdate, gender)
 
             // Startet die Registrierung im Hintergrund
             lifecycleScope.launch {

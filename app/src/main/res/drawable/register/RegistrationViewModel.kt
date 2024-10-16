@@ -1,8 +1,8 @@
-package com.serenitysystems.livable.ui.register
+package drawable.register
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.serenitysystems.livable.ui.register.data.User
+import drawable.register.data.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -12,7 +12,7 @@ class RegistrationViewModel : ViewModel() {
     val registrationSuccess = MutableLiveData<Boolean>()
     val registrationError = MutableLiveData<String>()
 
-    suspend fun registerUser(user: User) {
+    suspend fun registerUser(user: drawable.register.data.User) {
         try {
             // Überprüfe, ob die E-Mail-Adresse bereits existiert
             val existingUser = db.collection("users")

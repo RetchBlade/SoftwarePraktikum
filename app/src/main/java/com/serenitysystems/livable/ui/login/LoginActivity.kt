@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import com.serenitysystems.livable.MainActivity
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.ActivityLoginBinding
-import com.serenitysystems.livable.ui.register.RegistrierungFragment
+//import drawable.register.RegistrierungFragment
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -25,16 +25,16 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Setup Click Listener for registration
-        binding.Registrieren.setOnClickListener {
-            val fragment = RegistrierungFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.fragment_container,
-                    fragment
-                )
-                .addToBackStack(null)
-                .commit()
-        }
+        //binding.Registrieren.setOnClickListener {
+            //val fragment = drawable.register.RegistrierungFragment()
+            //supportFragmentManager.beginTransaction()
+                //.replace(
+                   // R.id.fragment_container,
+                    //fragment
+               // )
+                //.addToBackStack(null)
+                //.commit()
+        //}
 
         binding.loginButton.setOnClickListener {
             val email = binding.usernameEditText.text.toString()

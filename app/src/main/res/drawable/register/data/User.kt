@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui.register.data
+package drawable.register.data
 
 data class User(
     val email: String = "",

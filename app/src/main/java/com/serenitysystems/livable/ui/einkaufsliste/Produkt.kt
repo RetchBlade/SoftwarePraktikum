@@ -1,16 +1,19 @@
+// Produkt.kt
+
 package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.graphics.Color
 
+// Datenklasse für ein Produkt in der Einkaufsliste
 data class Produkt(
     val name: String,
     val quantity: String,
     val unit: String,
     val category: String,
-    val imageResId: Int, // Bildreferenz
-    var date: String? = null, // Ausgewähltes Datum
-    var isChecked: Boolean = false, // Artikel abgehakt oder nicht
-    var isPurchasedToday: Boolean = false, // Wird heute gekauft oder nicht
-    var statusColor: Int = Color.WHITE, // Statusfarbe des Artikels
-    var statusIcon: Int? = null // Symbol für den Status des Artikels (Häkchen oder Ausrufezeichen)
+    var imageUri: String? = null,        // URI des Produktfotos
+    var date: String? = null,            // Datum, an dem das Produkt benötigt wird
+    var isChecked: Boolean = false,      // Gibt an, ob das Produkt abgehakt wurde
+    var isPurchasedToday: Boolean = false, // Gibt an, ob das Produkt heute gekauft wurde
+    var statusColor: Int = Color.WHITE,  // Farbe zur Darstellung des Status
+    var statusIcon: Int? = null          // Icon zur Darstellung des Status (z.B. Häkchen, Warnung)
 )

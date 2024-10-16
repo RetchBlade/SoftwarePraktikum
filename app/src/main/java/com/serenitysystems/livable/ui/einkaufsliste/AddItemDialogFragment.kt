@@ -1,18 +1,19 @@
-// AddItemDialogFragment.kt
 package com.serenitysystems.livable.ui.einkaufsliste
+
 import android.app.DatePickerDialog
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.DialogAddItemBinding
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
+import android.database.Cursor
+import android.provider.OpenableColumns
 
 class AddItemDialogFragment : DialogFragment() {
 
@@ -23,13 +24,40 @@ class AddItemDialogFragment : DialogFragment() {
     private var selectedDate: Calendar? = null
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
+    private var selectedImageUri: Uri? = null // Ausgewähltes Produktbild
+
+    // Maximale Bildgröße in Bytes (hier 2 MB)
+    private val MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2 MB
+
+    // ActivityResultLauncher für die Bildauswahl
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            // Überprüfe die Dateigröße des ausgewählten Bildes
+            val fileSize = getFileSize(uri)
+            if (fileSize <= MAX_IMAGE_SIZE) {
+                // Wenn die Dateigröße innerhalb des Limits liegt, Bild setzen
+                selectedImageUri = uri
+                binding.productImage.setImageURI(uri)
+            } else {
+                // Wenn die Datei zu groß ist, Fehlermeldung anzeigen
+                Toast.makeText(
+                    requireContext(),
+                    "Das Bild ist zu groß. Bitte wählen Sie ein Bild, das kleiner als 2 MB ist.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = DialogAddItemBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Hintergrund für den Dialog
+        // Hintergrund für den Dialog setzen
         dialog?.window?.setBackgroundDrawableResource(R.drawable.metallischer_hintergrund)
 
         // Einheit-Spinner einrichten
@@ -58,6 +86,11 @@ class AddItemDialogFragment : DialogFragment() {
             datePicker.show()
         }
 
+        // Klick-Listener für das Produktbild hinzufügen
+        binding.productImage.setOnClickListener {
+            selectImage()
+        }
+
         // Hinzufügen-Button
         binding.btnAdd.setOnClickListener {
             val name = binding.editItemName.text.toString()
@@ -66,9 +99,16 @@ class AddItemDialogFragment : DialogFragment() {
             val category = binding.spinnerCategory.selectedItem.toString()
             val date = selectedDate?.let { dateFormat.format(it.time) }
 
-            val imageResId = getImageResourceId(name)
+            val imageUriString = selectedImageUri?.toString()
 
-            val newItem = Produkt(name, quantity, unit, category, imageResId, date)
+            val newItem = Produkt(
+                name = name,
+                quantity = quantity,
+                unit = unit,
+                category = category,
+                imageUri = imageUriString,
+                date = date
+            )
             onAddItem?.invoke(newItem)
 
             dismiss()
@@ -88,13 +128,24 @@ class AddItemDialogFragment : DialogFragment() {
         dialog?.window?.attributes = params as WindowManager.LayoutParams
     }
 
-    private fun getImageResourceId(productName: String): Int {
-        return when (productName.toLowerCase(Locale.ROOT)) {
-            "apfel" -> R.drawable.apple
-            "banane" -> R.drawable.banana
-            "bier" -> R.drawable.beer
-            else -> R.drawable.ic_placeholder_image
+    // Funktion zum Auswählen eines Bildes aus der Galerie
+    private fun selectImage() {
+        imagePickerLauncher.launch("image/*")
+    }
+
+    // Funktion zum Ermitteln der Dateigröße eines ausgewählten Bildes
+    private fun getFileSize(uri: Uri): Long {
+        var fileSize: Long = 0
+        val cursor: Cursor? = requireContext().contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+                if (sizeIndex != -1) {
+                    fileSize = it.getLong(sizeIndex)
+                }
+            }
         }
+        return fileSize
     }
 
     override fun onDestroyView() {

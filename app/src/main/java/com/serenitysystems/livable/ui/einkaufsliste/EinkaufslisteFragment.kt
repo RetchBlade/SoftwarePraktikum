@@ -1,3 +1,5 @@
+// EinkaufslisteFragment.kt
+
 package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.app.AlertDialog
@@ -6,23 +8,18 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.FragmentEinkaufslisteBinding
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.GregorianCalendar
-import java.util.Locale
+import java.util.*
+import androidx.activity.result.contract.ActivityResultContracts
 
 class EinkaufslisteFragment : Fragment() {
 
@@ -39,6 +36,19 @@ class EinkaufslisteFragment : Fragment() {
     // Aktuelles Datum
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private var selectedDate = Calendar.getInstance()
+
+    // Temporär ausgewähltes Produkt für Bildänderung
+    private var selectedItemForImageChange: Produkt? = null
+    private val selectedDateKey get() = dateFormat.format(selectedDate.time)
+
+    // ActivityResultLauncher für die Bildauswahl
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null && selectedItemForImageChange != null) {
+            selectedItemForImageChange?.imageUri = uri.toString()
+            viewModel.updateItemImage(selectedDateKey, selectedItemForImageChange!!)
+            loadItemsForDate()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -73,22 +83,26 @@ class EinkaufslisteFragment : Fragment() {
         lebensmittelAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) }
+            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
+            onImageClicked = { item -> handleImageClick(item) }
         )
         getrankeAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) }
+            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
+            onImageClicked = { item -> handleImageClick(item) }
         )
         haushaltAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) }
+            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
+            onImageClicked = { item -> handleImageClick(item) }
         )
         sonstigesAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) }
+            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
+            onImageClicked = { item -> handleImageClick(item) }
         )
 
         binding.recyclerLebensmittel.layoutManager = LinearLayoutManager(requireContext())
@@ -138,6 +152,17 @@ class EinkaufslisteFragment : Fragment() {
         item.isChecked = false
 
         viewModel.moveItemToNewDate(currentDateKey, neuesDatum, item)
+    }
+
+    // Bildklick behandeln
+    private fun handleImageClick(item: Produkt) {
+        selectedItemForImageChange = item
+        selectImage()
+    }
+
+    // Funktion zum Auswählen eines Bildes
+    private fun selectImage() {
+        imagePickerLauncher.launch("image/*")
     }
 
     // Datumsauswahl für ein Produkt anzeigen
