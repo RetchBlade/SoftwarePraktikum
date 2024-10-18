@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/nav_wochenplan">
+    app:startDestination="@id/nav_homepage">
 
+    <fragment
+        android:id="@+id/nav_homepage"
+        android:name="com.serenitysystems.livable.ui.HomePageFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home_page" />
     <fragment
         android:id="@+id/nav_wochenplan"
         android:name="com.serenitysystems.livable.ui.wochenplan.WochenplanFragment"
@@ -22,9 +27,21 @@
         android:name="com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteFragment"
         android:label="@string/menu_einkaufsliste"
         tools:layout="@layout/fragment_einkaufsliste" />
+
     <fragment
         android:id="@+id/nav_haushaltsbuch"
         android:name="com.serenitysystems.livable.ui.haushaltsbuch.HaushaltsbuchFragment"
         android:label="@string/menu_haushaltsbuch"
         tools:layout="@layout/fragment_haushaltsbuch" />
+
+    <fragment
+        android:id="@+id/nav_wg_registrierung"
+        android:name="com.serenitysystems.livable.ui.wohngesellschaft.Wg_registrierungFragment"
+        android:label="@string/menu_wg_registrierung"
+        tools:layout="@layout/fragment_wg_registrierung" />
+
+    <!-- Adding navigation action from HomePageFragment to Wg_registrierungFragment -->
+    <action
+        android:id="@+id/action_homePageFragment_to_wg_registrierung"
+        app:destination="@id/nav_wg_registrierung" />
 </navigation>

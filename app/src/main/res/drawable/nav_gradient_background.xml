@@ -6,7 +6,7 @@
                 android:endColor="@color/hell_blau"
                 android:angle="120" />
             <corners
-                android:topRightRadius="100dp"
+                android:topRightRadius="0dp"
                 android:topLeftRadius="0dp"
                 android:bottomRightRadius="0dp"
                 android:bottomLeftRadius="0dp" />

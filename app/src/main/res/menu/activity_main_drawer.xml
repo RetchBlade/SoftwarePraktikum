@@ -6,15 +6,17 @@
 
     <group android:checkableBehavior="single">
 
+        <!-- HomePage Item (Startseite) -->
+        <item
+            android:id="@+id/nav_homepage"
+
+        android:title="@string/menu_home_page" />
+
         <!-- Wochenplan Item -->
         <item
             android:id="@+id/nav_wochenplan"
             android:icon="@android:drawable/ic_menu_week"
-            android:title="@string/menu_Wochenplan"
-            />
-
-
-
+            android:title="@string/menu_Wochenplan" />
 
         <!-- To-Do Item -->
         <item

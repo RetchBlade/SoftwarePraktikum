@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/gradient_beige"
+    android:layout_gravity="center"
+  >
+
+<TextView
+android:id="@+id/dialogTitle"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Gebe deinen WG-ID ein:"
+android:textSize="18sp"
+android:textStyle="bold"
+android:textColor="@color/own_navy_Dunkelblau"
+android:layout_gravity="center"
+android:paddingBottom="8dp" />
+
+    <EditText
+        android:id="@+id/wgIdInput"
+        android:layout_width="331dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/edit_text_background"
+        android:hint="WG-ID"
+        android:inputType="text"
+        android:padding="10dp"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/own_navy_Dunkelblau"
+        android:text="Eingeben"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
+
+    </LinearLayout>

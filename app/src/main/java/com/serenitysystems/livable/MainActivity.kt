@@ -1,4 +1,3 @@
-
 package com.serenitysystems.livable
 
 import android.content.Intent
@@ -68,7 +67,11 @@ class MainActivity : AppCompatActivity() {
         // Festlegen der Top-Level-Ziele für die Navigation
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_wochenplan, R.id.nav_todo, R.id.nav_einkaufsliste, R.id.nav_haushaltsbuch
+                R.id.nav_homepage,  // HomePageFragment hinzugefügt als Top-Level-Ziel
+                R.id.nav_wochenplan,
+                R.id.nav_todo,
+                R.id.nav_einkaufsliste,
+                R.id.nav_haushaltsbuch
             ), drawerLayout
         )
         // Einrichten der ActionBar mit dem NavController
@@ -83,7 +86,6 @@ class MainActivity : AppCompatActivity() {
         // Setze die E-Mail  im Sidebar-Header
         userEmailTextView.text = "$user"
 
-
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -94,14 +96,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> {
                     // Navigiere zu den Fragmenten
-                    val navController = findNavController(R.id.nav_host_fragment_content_main)
                     navController.navigate(item.itemId)
                     drawerLayout.closeDrawers() // Schließe das DrawerLayout
                     true // Gebe true zurück, um anzuzeigen, dass das Element verarbeitet wurde
                 }
             }
         }
-
     }
 
     private fun performLogout() {

@@ -25,32 +25,34 @@
             android:layout_marginTop="60dp">
 
             <!-- Profilbild Section -->
+
+            <!-- Profilbild ändern Button -->
+
             <ImageView
                 android:id="@+id/profileImageView"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:src="@drawable/pp"
-                android:scaleType="centerCrop"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
                 android:contentDescription="Profile Image"
                 android:elevation="4dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="16dp" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/pp" />
 
-            <!-- Profilbild ändern Button -->
+
+            <!-- CardView für die Eingabefelder und Buttons -->
             <Button
                 android:id="@+id/uploadImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:backgroundTint="@color/own_helle_Beige"
+                android:gravity="center"
                 android:text="Profilbild ändern"
                 android:textColor="@color/hell_blau"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="24dp"/>
+                android:textStyle="bold" />
 
-
-            <!-- CardView für die Eingabefelder und Buttons -->
             <androidx.cardview.widget.CardView
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
