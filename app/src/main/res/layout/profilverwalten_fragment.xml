@@ -28,19 +28,29 @@
 
             <!-- Profilbild ändern Button -->
 
-            <ImageView
-                android:id="@+id/profileImageView"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="16dp"
-                android:contentDescription="Profile Image"
-                android:elevation="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/pp" />
+            <!-- Kreisförmiger Rahmen -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="155dp"
+                android:layout_height="155dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
 
+                app:cardBackgroundColor="@color/own_helle_Beige"
+                app:cardCornerRadius="77.5dp"
+                app:cardElevation="8dp">
 
+                <!-- Avatar-Bild -->
+                <ImageView
+                    android:id="@+id/profileImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Profile Image"
+                    android:src="@drawable/pp" />
+            </androidx.cardview.widget.CardView>
             <!-- CardView für die Eingabefelder und Buttons -->
+
+
             <Button
                 android:id="@+id/uploadImageButton"
                 android:layout_width="wrap_content"
@@ -49,15 +59,17 @@
                 android:backgroundTint="@color/own_helle_Beige"
                 android:gravity="center"
                 android:text="Profilbild ändern"
-                android:textColor="@color/hell_blau"
+                android:textColor="@color/own_text_Farbe"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:background="@drawable/gradient_beige"
+                android:background="@drawable/gradient_blau"
                 app:cardCornerRadius="20dp"
                 android:elevation="8dp">
 
@@ -72,24 +84,24 @@
                         android:id="@+id/wgId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="-30dp"
                         android:background="@android:color/transparent"
                         android:padding="20dp"
-                        android:layout_marginBottom="-30dp"
 
                         android:text="WG-ID: "
                         android:textColor="@color/own_very_dark_gray"
-                        android:textSize="17sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/roleTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="-20dp"
                         android:background="@android:color/transparent"
                         android:padding="20dp"
-                        android:layout_marginBottom="-20dp"
                         android:text="WG-Rolle: Mitglied"
                         android:textColor="@color/own_very_dark_gray"
-                        android:textSize="17sp" />
+                        android:textSize="15dp" />
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="300dp"
@@ -106,7 +118,7 @@
                             android:hint="Benutzername ändern"
                             android:padding="20dp"
                             android:textColor="@color/own_very_dark_gray"
-                            android:textSize="17sp" />
+                            android:textSize="14sp" />
                     </androidx.cardview.widget.CardView>
 
                     <!-- E-Mail ändern Section -->
@@ -125,7 +137,26 @@
                             android:hint="E-Mail Adresse ändern"
                             android:padding="20dp"
                             android:textColor="@color/own_very_dark_gray"
-                            android:textSize="17sp" />
+                            android:textSize="14sp" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="300dp"
+                        android:layout_height="60dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="20dp"
+                        app:cardCornerRadius="8dp">
+
+                        <EditText
+                            android:id="@+id/emailconfirm"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:hint="Email Adresse bestätigen"
+                            android:inputType="textPassword"
+                            android:padding="20dp"
+                            android:textColor="@color/own_very_dark_gray"
+                            android:textSize="14sp" />
                     </androidx.cardview.widget.CardView>
 
                     <!-- Passwort ändern Section -->
@@ -145,35 +176,57 @@
                             android:inputType="textPassword"
                             android:padding="20dp"
                             android:textColor="@color/own_very_dark_gray"
-                            android:textSize="17sp" />
+                            android:textSize="14sp" />
                     </androidx.cardview.widget.CardView>
 
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="300dp"
+                        android:layout_height="60dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="20dp"
+                        app:cardCornerRadius="8dp">
+
+                        <EditText
+                            android:id="@+id/passworconfirm"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:hint="Passwort bestätigen"
+                            android:inputType="textPassword"
+                            android:padding="20dp"
+                            android:textColor="@color/own_very_dark_gray"
+                            android:textSize="14sp" />
+                    </androidx.cardview.widget.CardView>
                     <!-- Rolle anzeigen -->
 
 
-
-
                     <!-- Profil speichern Button -->
+
+                    <!-- Abmelden Button -->
+
                     <Button
                         android:id="@+id/saveProfileButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="290dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="25dp"
-                        android:backgroundTint="#5fa3b6"
+                        android:layout_marginTop="50dp"
+                        android:backgroundTint="@color/own_navy_Dunkelblau"
                         android:text="Änderungen speichern"
+                        android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="19sp" />
 
-                    <!-- Abmelden Button -->
                     <Button
                         android:id="@+id/logoutButton"
                         android:layout_width="290dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="12dp"
+                        android:layout_marginBottom="50dp"
+
                         android:backgroundTint="#03DAC5"
                         android:text="Abmelden"
+                        android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="19sp" />
                 </LinearLayout>

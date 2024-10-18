@@ -1,4 +1,4 @@
-package com.serenitysystems.livable
+package com.serenitysystems.livable.ui
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -6,10 +6,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.serenitysystems.livable.R
+import com.serenitysystems.livable.UploadResponse
+import com.serenitysystems.livable.UserService
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -21,18 +28,25 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.IOException
 
-class ProfilverwaltenActivity : AppCompatActivity() {
+class ProfilverwaltenFragment : Fragment() {
 
     private lateinit var profileImageView: ImageView
     private val PICK_IMAGE_REQUEST = 1
     private var imageUri: Uri? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profilverwalten)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.profilverwalten_fragment, container, false)
+    }
 
-        profileImageView = findViewById(R.id.profileImageView)
-        val uploadImageButton = findViewById<Button>(R.id.uploadImageButton)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        profileImageView = view.findViewById(R.id.profileImageView)
+        val uploadImageButton = view.findViewById<Button>(R.id.uploadImageButton)
 
         // Open image chooser on button click
         uploadImageButton.setOnClickListener {
@@ -68,40 +82,44 @@ class ProfilverwaltenActivity : AppCompatActivity() {
                 service.uploadProfilePicture(body).enqueue(object : Callback<UploadResponse> {
                     override fun onResponse(call: Call<UploadResponse>, response: Response<UploadResponse>) {
                         if (response.isSuccessful) {
-                            Toast.makeText(this@ProfilverwaltenActivity, "Bild erfolgreich hochgeladen!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Bild erfolgreich hochgeladen!", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(this@ProfilverwaltenActivity, "Fehler beim Hochladen: ${response.message()}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Fehler beim Hochladen: ${response.message()}", Toast.LENGTH_SHORT).show()
                         }
                     }
 
                     override fun onFailure(call: Call<UploadResponse>, t: Throwable) {
-                        Toast.makeText(this@ProfilverwaltenActivity, "Fehler: ${t.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Fehler: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
             } else {
-                Toast.makeText(this, "Die Datei existiert nicht", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Die Datei existiert nicht", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
 
     // Handle the result after selecting an image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null && data.data != null) {
             imageUri = data.data
 
             try {
-                val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
                 profileImageView.setImageBitmap(bitmap)
 
                 // Call uploadImage method to upload the selected image to the server
                 uploadImage()
             } catch (e: IOException) {
                 e.printStackTrace()
-                Toast.makeText(this, "Fehler beim Laden des Bildes", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Fehler beim Laden des Bildes", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        // You can do additional operations here if needed
     }
 }

@@ -1,0 +1,15 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:startColor="@color/own_navy_Dunkelblau"
+                android:endColor="@color/hell_blau"
+                android:angle="120" />
+            <corners
+                android:topRightRadius="00dp"
+                android:topLeftRadius="100dp"
+                android:bottomRightRadius="100dp"
+                android:bottomLeftRadius="00dp" />
+        </shape>
+    </item>
+</layer-list>

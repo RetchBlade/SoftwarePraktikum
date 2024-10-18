@@ -67,6 +67,7 @@ dependencies {
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
+
     // Firebase Libraries
     implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
     implementation("com.google.firebase:firebase-firestore-ktx")
@@ -80,4 +81,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+
+
+
+    //icons dependecies
+    implementation ("com.google.android.material:material:1.10.0")
 }

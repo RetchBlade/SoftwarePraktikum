@@ -11,10 +11,12 @@
     <string name="open_nav">Open Navigation Drawer</string>
     <string name="close_nav">Close Navigation Drawer</string>
     <string name="menu_Wochenplan">Wochenplan</string>
-    <string name="menu_todo">ToDo Liste</string>
+    <string name="menu_todo">To-Do Liste</string>
     <string name="menu_einkaufsliste">Einkaufsliste</string>
     <string name="menu_haushaltsbuch">Haushaltsbuch</string>
     <string name="menu_home_page">Home</string>
+    <string name="menu_settings">Einstellungen</string>
+
 
 
     <!-- Strings für den Login -->

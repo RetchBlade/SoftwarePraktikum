@@ -8,6 +8,14 @@
     android:layout_marginTop="8dp">
 
     <TextView
+        android:id="@+id/taskDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#094249"
+    android:textSize="16sp" />
+
+
+    <TextView
         android:id="@+id/taskDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

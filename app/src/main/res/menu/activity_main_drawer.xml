@@ -10,24 +10,26 @@
         <item
             android:id="@+id/nav_homepage"
 
-        android:title="@string/menu_home_page" />
+        android:title="@string/menu_home_page"
+            android:icon="@drawable/ic_home"
+            />
 
         <!-- Wochenplan Item -->
         <item
             android:id="@+id/nav_wochenplan"
-            android:icon="@android:drawable/ic_menu_week"
+            android:icon="@drawable/ic_week"
             android:title="@string/menu_Wochenplan" />
 
         <!-- To-Do Item -->
         <item
             android:id="@+id/nav_todo"
-            android:icon="@android:drawable/ic_menu_edit"
+            android:icon="@drawable/ic_todolist"
             android:title="@string/menu_todo" />
 
         <!-- Einkaufsliste Item -->
         <item
             android:id="@+id/nav_einkaufsliste"
-            android:icon="@drawable/shoppingcarticon"
+            android:icon="@drawable/ic_einkaufsliste"
             android:title="@string/menu_einkaufsliste" />
 
         <!-- Haushaltsbuch Item -->
@@ -41,9 +43,13 @@
     <item android:title="">
         <menu>
             <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings"
+                android:title="@string/menu_settings" />
+            <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/logouticon"
-                android:title="Logout" />
+                android:title="Abmelden" />
         </menu>
     </item>
 
