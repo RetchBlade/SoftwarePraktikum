@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_homepage"
-        android:name="com.serenitysystems.livable.ui.HomePageFragment"
+        android:name="com.serenitysystems.livable.ui.home.HomePageFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home_page" />
     <fragment
