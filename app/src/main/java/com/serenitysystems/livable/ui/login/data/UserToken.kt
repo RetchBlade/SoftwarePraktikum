@@ -6,8 +6,9 @@ data class UserToken(
     val password: String = "",
     val birthdate: String = "",
     val gender: String = "",
-    val wgId: String = ""
+    val wgId: String = "",
+    val wgRole: String = ""
 ) {
     // Parameterloser Konstruktor wird von der Data Class automatisch bereitgestellt
-    constructor() : this("", "", "", "", "", "")
+    constructor() : this("", "", "", "", "", "", "")
 }
