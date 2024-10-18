@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.data.UserPreferences
 
 class HomePageFragment : Fragment() {
 
@@ -55,7 +54,7 @@ class HomePageFragment : Fragment() {
     }
 
     private fun showWGOptionsDialog(anchorView: View) {
-        val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_wg_options, null)
+        val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.home_dialog_wg_options, null)
 
         dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
             .setView(dialogView)
@@ -91,7 +90,7 @@ class HomePageFragment : Fragment() {
     }
 
     private fun showJoinWGDialog() {
-        val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_join_wg, null)
+        val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.home_dialog_join_wg, null)
 
         val joinWGDialog = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
             .setView(dialogView)
