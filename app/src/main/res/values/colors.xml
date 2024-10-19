@@ -38,9 +38,9 @@
 
 
     <!-- Priority Farbpalette -->
-    <color name="priority_high">#FF0000</color> <!-- Rot -->
-    <color name="priority_medium">#FFFF00</color> <!-- Gelb -->
-    <color name="priority_low">#00FF00</color> <!-- Grün -->
+    <color name="priority_high">#A40303</color> <!-- Rot -->
+    <color name="priority_medium">#FFC107</color> <!-- Gelb -->
+    <color name="priority_low">#269239</color> <!-- Grün -->
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
 
@@ -48,7 +48,4 @@
     <!-- Ekstra Renkler -->
     <color name="material_grey_300">#E0E0E0</color>
 
-    <color name="online_green">#4CAF50</color>  <!-- Green for online -->
-    <color name="busy_yellow">#FFC107</color>   <!-- Yellow for busy -->
-    <color name="offline_red">#F44336</color>    <!-- Red for offline -->
 </resources>

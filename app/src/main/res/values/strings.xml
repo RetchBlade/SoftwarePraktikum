@@ -16,6 +16,8 @@
     <string name="menu_haushaltsbuch">Haushaltsbuch</string>
     <string name="menu_home_page">Home</string>
     <string name="menu_settings">Einstellungen</string>
+    <string name="next_day">nächster</string>
+    <string name="previous_day">vorheriger</string>
 
 
 
@@ -48,6 +50,15 @@
     <string name="task_priority">Priorität</string>
     <string name="task_points">Punkte</string>
     <string name="task_assignee">Zuständiger</string>
+    <string name="select_date">Datum</string>
+    <string name="repeating_task">Wiederholend</string>
+    <string name="repeat_on">Wiederholend an</string>
+    <string name="repeat_frequency">Häufigkeit</string>
+
+
+
+
+
 
     <string name="task_options">Aufgabenoptionen</string>
     <string name="task_not_due">Diese Aufgabe kann nur am Fälligkeitsdatum als erledigt markiert werden.</string>

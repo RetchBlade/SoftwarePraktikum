@@ -76,6 +76,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore-core:1.0.0")
     implementation(libs.androidx.gridlayout)
+    implementation(libs.androidx.material3.android)
 
     // Test Dependencies
     testImplementation(libs.junit)
@@ -83,6 +84,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
 
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
 
 
 
