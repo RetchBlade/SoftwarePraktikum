@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.home
 
+import HomePageViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -103,13 +104,26 @@ class HomePageFragment : Fragment() {
         submitButton.setOnClickListener {
             val wgId = wgIdInput.text.toString().trim()
             if (wgId.isNotEmpty()) {
-                homePageViewModel.joinWG(wgId)
-                joinWGDialog.dismiss()
+                homePageViewModel.joinWG(wgId) { errorMessage ->
+                    showErrorDialog(errorMessage)
+                }
+                joinWGDialog.dismiss() // Nur hier schließen, wenn WG-ID gültig
             } else {
-                Toast.makeText(requireContext(), "Bitte geben Sie eine WG-ID ein.", Toast.LENGTH_SHORT).show()
+                showErrorDialog("Bitte geben Sie eine WG-ID ein.")
             }
         }
 
         joinWGDialog.show()
     }
+
+
+
+    private fun showErrorDialog(message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Fehler")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
 }
