@@ -8,6 +8,7 @@ class WgRegistrierungViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
 
+    // Methode zum Registrieren der WG
     fun registerWg(wg: Wg, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         db.collection("WGs")
             .add(wg)
@@ -21,15 +22,15 @@ class WgRegistrierungViewModel : ViewModel() {
     }
 
     // Methode zum Aktualisieren der Benutzerdaten in der Firestore-Datenbank
-    fun updateUserInFirestore(email: String, wgId: String, wgRole: String) {
-        val userRef = db.collection("Users").document(email)
+    fun updateUserInFirestore(email: String, wgId: String, wgRole: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val userRef = db.collection("users").document(email)
         userRef.update(mapOf(
-            "wgId" to wgId.toString(),
-            "wgRole" to wgRole.toString()
+            "wgId" to wgId,
+            "wgRole" to wgRole
         )).addOnSuccessListener {
-            // Erfolgreiche Aktualisierung
+            onSuccess() // Erfolgreiche Aktualisierung
         }.addOnFailureListener { exception ->
-            // Fehlerfall
+            onFailure(exception) // Fehlerfall
         }
     }
 }

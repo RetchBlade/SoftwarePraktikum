@@ -1,16 +1,20 @@
 package com.serenitysystems.livable.ui.wgregister
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.serenitysystems.livable.R
 import com.google.android.material.button.MaterialButton
+import com.serenitysystems.livable.R
+import com.serenitysystems.livable.data.UserPreferences
 import com.serenitysystems.livable.ui.wohngesellschaft.data.Wg
+import kotlinx.coroutines.launch
 
 class WgRegistrierungFragment : Fragment() {
 
@@ -19,6 +23,7 @@ class WgRegistrierungFragment : Fragment() {
     private lateinit var groesseInput: EditText
     private lateinit var zimmerInput: EditText
     private lateinit var bewohnerInput: EditText
+    private lateinit var userPreferences: UserPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +32,7 @@ class WgRegistrierungFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_wg_registrierung, container, false)
 
         viewModel = ViewModelProvider(this).get(WgRegistrierungViewModel::class.java)
+        userPreferences = UserPreferences(requireContext())
 
         adresseInput = view.findViewById(R.id.adresseInput)
         groesseInput = view.findViewById(R.id.groesseInput)
@@ -46,41 +52,39 @@ class WgRegistrierungFragment : Fragment() {
         val zimmer = zimmerInput.text.toString().trim()
         val bewohner = bewohnerInput.text.toString().trim()
 
-        var isValid = true
-
-        // Leere Felder prüfen und Fehlermeldungen setzen
-        if (adresse.isEmpty()) {
-            adresseInput.error = "Adresse darf nicht leer sein"
-            isValid = false
-        }
-        if (groesse.isEmpty()) {
-            groesseInput.error = "Größe darf nicht leer sein"
-            isValid = false
-        }
-        if (zimmer.isEmpty()) {
-            zimmerInput.error = "Zimmeranzahl darf nicht leer sein"
-            isValid = false
-        }
-        if (bewohner.isEmpty()) {
-            bewohnerInput.error = "Bewohneranzahl darf nicht leer sein"
-            isValid = false
-        }
-
-        if (!isValid) {
-            return // Falls ein Feld leer ist, wird die Registrierung nicht ausgeführt
+        if (adresse.isEmpty() || groesse.isEmpty() || zimmer.isEmpty() || bewohner.isEmpty()) {
+            // Error handling for empty fields
+            adresseInput.error = "Alle Felder müssen ausgefüllt sein"
+            return
         }
 
         val wg = Wg(adresse, groesse, zimmer, bewohner)
 
-        viewModel.registerWg(wg, {
-            // Erfolgreiche Registrierung -> Navigation zur HomePage
-            findNavController().navigate(R.id.nav_homepage)
+        viewModel.registerWg(wg, { wgId ->
+            lifecycleScope.launch {
+                userPreferences.userToken.collect { userToken ->
+                    userToken?.let {
+                        viewModel.updateUserInFirestore(it.email, wgId, "Wg-Leiter", {
+                            // UserToken und UI aktualisieren
+                            val updatedToken = it.copy(wgId = wgId, wgRole = "Wg-Leiter")
+                            lifecycleScope.launch {
+                                userPreferences.saveUserToken(updatedToken)
+                            }
+                            // Navigation zur Homepage
+                            requireActivity().supportFragmentManager.popBackStack()
+                        }, { exception ->
+                            Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
+                            adresseInput.error = "Fehler beim Aktualisieren des Benutzers"
+                        })
+                    } ?: run {
+                        Log.e("WgRegistrierungFragment", "User token is null")
+                    }
+                }
+            }
         }, { exception ->
-            // Fehlerfall -> Setze eine allgemeine Fehlermeldung in den Feldern
-            adresseInput.error = "Fehler bei der Registrierung, bitte überprüfen"
-            groesseInput.error = null
-            zimmerInput.error = null
-            bewohnerInput.error = null
+            Log.e("WgRegistrierungFragment", "Error registering WG: ${exception.message}")
+            adresseInput.error = "Fehler beim Erstellen der WG"
         })
     }
+
 }

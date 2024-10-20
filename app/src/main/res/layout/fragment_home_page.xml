@@ -2,8 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-  >
+    android:layout_height="match_parent">
 
 
     <!-- Profile Section -->
@@ -15,53 +14,52 @@
         android:id="@+id/headerSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-    android:layout_below="@id/toolbar"
-    android:layout_marginTop="20dp"
-    android:elevation="8dp"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:ignore="NotSibling">
-
-    <!-- Profile Image (in einer CardView) -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="203dp"
-        android:layout_height="195dp"
-        app:cardBackgroundColor="@color/own_helle_Beige"
-        app:cardCornerRadius="600dp"
-        app:cardElevation="10dp"
-        android:layout_gravity="center"
->
-
-        <!-- Avatar-Bild -->
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/pp" />
-    </androidx.cardview.widget.CardView>
-
-    <!-- Greeting Text -->
-    <TextView
-        android:id="@+id/greetingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_extrabold"
-        android:shadowColor="@color/black"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowRadius="4"
-        android:text="Willkommen zurück!"
-        android:textAlignment="center"
-        android:textColor="@color/own_helle_Beige"
-        android:textSize="25sp"
-        android:textStyle="bold"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="20dp"
+        android:elevation="8dp"
         android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:ignore="NotSibling">
 
-    <!-- User Nickname Text -->
+        <!-- Profile Image (in einer CardView) -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="203dp"
+            android:layout_height="195dp"
+            android:layout_gravity="center"
+            app:cardBackgroundColor="@color/own_helle_Beige"
+            app:cardCornerRadius="600dp"
+            app:cardElevation="10dp">
+
+            <!-- Avatar-Bild -->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/pp" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Greeting Text -->
+        <TextView
+            android:id="@+id/greetingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_extrabold"
+            android:gravity="center"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text="Willkommen zurück!"
+            android:textAlignment="center"
+            android:textColor="@color/own_helle_Beige"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <!-- User Nickname Text -->
         <TextView
             android:id="@+id/userNickname"
             android:layout_width="wrap_content"
@@ -79,7 +77,7 @@
             android:textColor="@color/own_helle_Beige"
             android:textSize="20sp"
             android:textStyle="bold" /> <!-- Weniger Abstand für dynamische Nähe zum Greeting-Text -->
-</LinearLayout>
+    </LinearLayout>
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/actionGrid"
@@ -173,24 +171,24 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/gradient_beige"
         android:backgroundTint="@color/own_helle_Beige"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         android:shadowColor="@color/black"
         android:shadowDx="2"
         android:shadowDy="2"
-        android:shadowRadius="10"
-        android:elevation="10dp"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:shadowRadius="10">
 
         <!-- Title for News Section -->
         <TextView
             android:id="@+id/notificationsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsregular"
             android:text="Zu tun:"
             android:textColor="@color/own_navy_Dunkelblau"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/poppinsregular"/>
+            android:textStyle="bold" />
 
         <!-- Example News Item -->
         <TextView
@@ -198,10 +196,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppinsregular"
             android:text="Heute ist ein schöner Tag. Bleiben Sie informiert!"
             android:textColor="@color/own_navy_Dunkelblau"
-            android:textSize="14sp"
-            android:fontFamily="@font/poppinsregular"/>
+            android:textSize="14sp" />
 
     </LinearLayout>
 
