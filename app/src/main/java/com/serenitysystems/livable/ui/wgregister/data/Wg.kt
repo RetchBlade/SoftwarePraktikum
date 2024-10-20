@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui.wohngesellschaft.data
+package com.serenitysystems.livable.ui.wgregister.data
 
 data class Wg(
     val adresse: String = "",

@@ -9,11 +9,10 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.data.UserPreferences
-import com.serenitysystems.livable.ui.wohngesellschaft.data.Wg
+import com.serenitysystems.livable.ui.wgregister.data.Wg
 import kotlinx.coroutines.launch
 
 class WgRegistrierungFragment : Fragment() {

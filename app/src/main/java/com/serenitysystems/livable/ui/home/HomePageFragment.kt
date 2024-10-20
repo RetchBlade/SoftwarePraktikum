@@ -48,7 +48,7 @@ class HomePageFragment : Fragment() {
         // To-Do List Button Referenz
         val toDoButton: FrameLayout = view.findViewById(R.id.toDoButton)
         toDoButton.setOnClickListener {
-            // TODO: Handle To-Do list actions
+            findNavController().navigate(R.id.nav_todo)
         }
 
         return view

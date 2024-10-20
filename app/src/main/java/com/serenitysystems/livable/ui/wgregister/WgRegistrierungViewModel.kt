@@ -2,7 +2,7 @@ package com.serenitysystems.livable.ui.wgregister
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
-import com.serenitysystems.livable.ui.wohngesellschaft.data.Wg
+import com.serenitysystems.livable.ui.wgregister.data.Wg
 
 class WgRegistrierungViewModel : ViewModel() {
 
