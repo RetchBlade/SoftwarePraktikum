@@ -17,7 +17,7 @@
             android:id="@+id/arrowLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_left"
+            android:src="@drawable/ic_left_arrow"
             android:contentDescription="@string/previous_day"
             android:layout_marginEnd="16dp" />
 
@@ -34,7 +34,7 @@
             android:id="@+id/arrowRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_right"
+            android:src="@drawable/ic_right_arrow"
             android:contentDescription="@string/next_day"
             android:layout_marginStart="16dp" />
     </LinearLayout>
