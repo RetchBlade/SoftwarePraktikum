@@ -1,4 +1,4 @@
-package com.serenitysystems.livable
+package com.serenitysystems.livable.ui.userprofil
 
 import okhttp3.MultipartBody
 import retrofit2.Call

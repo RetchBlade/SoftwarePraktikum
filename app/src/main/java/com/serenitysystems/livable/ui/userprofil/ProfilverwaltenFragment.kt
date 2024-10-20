@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui
+package com.serenitysystems.livable.ui.userprofil
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,8 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.UploadResponse
-import com.serenitysystems.livable.UserService
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -39,7 +37,7 @@ class ProfilverwaltenFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.profilverwalten_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_profilverwalten, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wavesblur"
-    tools:context=".ui.SettingsFragment">
+    tools:context=".ui.settings.SettingsFragment">
 
     <!-- Container for Profile Image and Edit Profile Button with curved edges -->
     <LinearLayout

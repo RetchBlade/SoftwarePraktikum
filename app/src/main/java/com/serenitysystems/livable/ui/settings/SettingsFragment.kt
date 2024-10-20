@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui
+package com.serenitysystems.livable.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,18 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.databinding.SettingsFragmentBinding
+import com.serenitysystems.livable.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
 
-    private var _binding: SettingsFragmentBinding? = null
+    private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = SettingsFragmentBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
