@@ -44,16 +44,16 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
 
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
-                       // val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
+                       val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
-                            /*
 
                             .addOnSuccessListener {
-                                viewModelScope.launch(Dispatchers.IO) {
+                                val updatedToken = userToken.copy(wgId = "", wgRole = "")
+                                viewModelScope.launch {
                                     userPreferences.saveUserToken(updatedToken)
                                 }
                             }
-                             */
+
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
                             }
@@ -75,12 +75,10 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                 userRef.update("wgId", "", "wgRole", "")
                     .addOnSuccessListener {
                         Log.d("HomePageViewModel", "Erfolgreich aus der WG verlassen.")
-                        /*
                         val updatedToken = userToken.copy(wgId = "", wgRole = "")
-                        viewModelScope.launch(Dispatchers.IO) {
+                        viewModelScope.launch {
                             userPreferences.saveUserToken(updatedToken)
                         }
-                         */
                     }
                     .addOnFailureListener { exception ->
                         Log.e("HomePageViewModel", "Error leaving the WG: ${exception.message}")
