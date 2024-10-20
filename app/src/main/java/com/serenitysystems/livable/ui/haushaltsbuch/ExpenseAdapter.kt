@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.ItemExpenseBinding
+import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 
 class ExpenseAdapter(
     private var expenses: MutableList<Expense>,

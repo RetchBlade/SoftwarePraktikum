@@ -3,6 +3,7 @@ package com.serenitysystems.livable.ui.haushaltsbuch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

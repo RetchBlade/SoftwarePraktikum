@@ -1,6 +1,6 @@
 // Produkt.kt
 
-package com.serenitysystems.livable.ui.einkaufsliste
+package com.serenitysystems.livable.ui.einkaufsliste.data
 
 import android.graphics.Color
 

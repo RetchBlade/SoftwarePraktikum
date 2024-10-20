@@ -1,4 +1,4 @@
-package com.serenitysystems.livable.ui.haushaltsbuch
+package com.serenitysystems.livable.ui.haushaltsbuch.data
 
 import android.os.Parcel
 import android.os.Parcelable
