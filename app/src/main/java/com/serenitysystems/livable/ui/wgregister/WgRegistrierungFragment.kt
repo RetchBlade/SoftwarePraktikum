@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.serenitysystems.livable.R
 import com.google.android.material.button.MaterialButton
 import com.serenitysystems.livable.ui.wohngesellschaft.data.Wg
@@ -45,17 +46,41 @@ class WgRegistrierungFragment : Fragment() {
         val zimmer = zimmerInput.text.toString().trim()
         val bewohner = bewohnerInput.text.toString().trim()
 
-        if (adresse.isEmpty() || groesse.isEmpty() || zimmer.isEmpty() || bewohner.isEmpty()) {
-            // Hier plane ich noch die fehlermeldungen
-            return
+        var isValid = true
+
+        // Leere Felder prüfen und Fehlermeldungen setzen
+        if (adresse.isEmpty()) {
+            adresseInput.error = "Adresse darf nicht leer sein"
+            isValid = false
+        }
+        if (groesse.isEmpty()) {
+            groesseInput.error = "Größe darf nicht leer sein"
+            isValid = false
+        }
+        if (zimmer.isEmpty()) {
+            zimmerInput.error = "Zimmeranzahl darf nicht leer sein"
+            isValid = false
+        }
+        if (bewohner.isEmpty()) {
+            bewohnerInput.error = "Bewohneranzahl darf nicht leer sein"
+            isValid = false
+        }
+
+        if (!isValid) {
+            return // Falls ein Feld leer ist, wird die Registrierung nicht ausgeführt
         }
 
         val wg = Wg(adresse, groesse, zimmer, bewohner)
 
         viewModel.registerWg(wg, {
-            // Erfolgreiche Registrierung ->
+            // Erfolgreiche Registrierung -> Navigation zur HomePage
+            findNavController().navigate(R.id.nav_homepage)
         }, { exception ->
-            // Fehlerfall ->
+            // Fehlerfall -> Setze eine allgemeine Fehlermeldung in den Feldern
+            adresseInput.error = "Fehler bei der Registrierung, bitte überprüfen"
+            groesseInput.error = null
+            zimmerInput.error = null
+            bewohnerInput.error = null
         })
     }
 }
