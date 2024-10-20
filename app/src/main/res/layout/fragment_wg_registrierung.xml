@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".ui.wohngesellschaft.Wg_registrierungFragment">
+    tools:context=".ui.wgregister.WgRegistrierungFragment">
 
 
     <ImageView
@@ -69,6 +69,7 @@
                     app:cardElevation="4dp">
 
                     <EditText
+                        android:id="@+id/adresseInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
@@ -85,6 +86,7 @@
                     app:cardElevation="4dp">
 
                     <EditText
+                        android:id="@+id/groesseInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
@@ -101,6 +103,7 @@
                     app:cardElevation="4dp">
 
                     <EditText
+                        android:id="@+id/zimmerInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
@@ -117,6 +120,7 @@
                     app:cardElevation="4dp">
 
                     <EditText
+                        android:id="@+id/bewohnerInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/own_helle_Beige"
