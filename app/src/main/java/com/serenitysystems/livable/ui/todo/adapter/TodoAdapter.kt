@@ -3,6 +3,7 @@ package com.serenitysystems.livable.ui.todo.adapter
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,21 +27,28 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
             binding.todoDescription.text = todo.description
             binding.todoCheckBox.isChecked = todo.isDone
 
-            // Streichen des Textes, wenn das Todo erledigt ist
-            if (todo.isDone) {
-                binding.todoDescription.paintFlags = binding.todoDescription.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            } else {
-                binding.todoDescription.paintFlags = binding.todoDescription.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            }
+            // Set the initial strike-through based on the todo's done status
+            updateStrikeThrough(binding.todoDescription, todo.isDone)
 
-            // Entferne den Klicklistener, der das Dialogfenster aufruft
-            // Hier könnte man eine andere Aktion beim Klick hinzufügen, wenn gewünscht
-            // binding.root.setOnClickListener {
-            //     // Zum Beispiel: eine Snackbar anzeigen oder keine Aktion ausführen
-            // }
+            // Set a listener for the checkbox to update the UI and the item's state
+            binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                // Update the UI to reflect the new state
+                updateStrikeThrough(binding.todoDescription, isChecked)
+
+                // Optionally, trigger any logic when a todo's done state changes
+                val updatedTodo = todo.copy(isDone = isChecked)
+                onTodoClick(updatedTodo)
+            }
+        }
+
+        private fun updateStrikeThrough(textView: TextView, isChecked: Boolean) {
+            if (isChecked) {
+                textView.paintFlags = textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            }
         }
     }
-
 
     class TodoDiffCallback : DiffUtil.ItemCallback<TodoItem>() {
         override fun areItemsTheSame(oldItem: TodoItem, newItem: TodoItem): Boolean {
@@ -52,4 +60,5 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
         }
     }
 }
+
 

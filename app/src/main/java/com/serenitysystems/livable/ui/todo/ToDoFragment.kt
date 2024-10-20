@@ -36,10 +36,10 @@ class ToDoFragment : Fragment() {
         todoViewModel = ViewModelProvider(this).get(ToDoViewModel::class.java)
         _binding = FragmentTodoBinding.inflate(inflater, container, false)
 
-        todayAdapter = TodoAdapter { todo -> showTodoOptions(todo) }
-        tomorrowAdapter = TodoAdapter { todo -> showTodoOptions(todo) }
-        weekAdapter = TodoAdapter { todo -> showTodoOptions(todo) }
-        laterAdapter = TodoAdapter { todo -> showTodoOptions(todo) }
+        todayAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
+        tomorrowAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
+        weekAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
+        laterAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
 
         setupRecyclerViews()
 
