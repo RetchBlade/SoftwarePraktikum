@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:textColor="@color/own_text_Farbe"
-        android:textSize="24sp"
+        android:textSize="17sp"
         android:layout_marginEnd="8dp" />
 
     <!-- Date (e.g., 19 October 2024) -->
@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:textColor="@color/own_text_Farbe"
-        android:textSize="20sp" />
+
+        android:textSize="17sp" />
 
 </LinearLayout>

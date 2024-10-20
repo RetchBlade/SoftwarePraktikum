@@ -23,7 +23,7 @@ class WochenplanFragment : Fragment() {
     private var _binding: FragmentWochenplanBinding? = null
     private val binding get() = _binding!!
     private lateinit var wochenplanViewModel: WochenplanViewModel
-    private val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,14 +50,13 @@ class WochenplanFragment : Fragment() {
 
         return root
     }
-
     private fun setupDaysList() {
         val calendar = Calendar.getInstance()
         val days = mutableListOf<String>()
 
-        calendar.add(Calendar.DAY_OF_YEAR, -7)
-        for (i in 0 until 15) {
-            days.add(dateFormat.format(calendar.time))
+        calendar.add(Calendar.DAY_OF_YEAR, -7)  // Adjust the starting point if needed
+        for (i in 0 until 15) {  // Assuming 15 days in your pager
+            days.add(dateFormat.format(calendar.time))  // Adds "EEEE, dd MMMM yyyy" format
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
