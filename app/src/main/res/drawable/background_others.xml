@@ -1,0 +1,20 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <!-- Background Gradient -->
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#92FA97"
+                android:centerColor="#DCFBDE"
+                android:endColor="#92FA97"
+                android:angle="45"/> <!-- Adjust angle for a different look -->
+            <corners android:radius="20dp"/> <!-- Rounded corners -->
+        </shape>
+    </item>
+    <item>
+        <!-- Optional Inner Shadow Effect -->
+        <shape android:shape="rectangle">
+            <solid android:color="#22767676"/> <!-- Semi-transparent black for shadow effect -->
+            <corners android:radius="16dp"/>
+        </shape>
+    </item>
+</layer-list>

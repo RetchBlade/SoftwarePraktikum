@@ -6,10 +6,10 @@
         <item name="android:textAppearance">@style/CustomTextAppearance</item>
 
         <!-- Optionally, add these to define Material colors -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/hell_blau</item>
+        <item name="colorPrimaryVariant">@color/own_navy_Blau</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorSecondary">@color/own_navy_Dunkelblau</item>
     </style>
 
     <!-- Custom text appearance -->
@@ -23,9 +23,12 @@
     <style name="CustomDialogTheme" parent="Theme.MaterialComponents.Dialog">
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item> <!-- Apply custom background -->
+        <item name="android:backgroundDimEnabled">true</item> <!-- Dim the background when showing the dialog -->
+        <item name="android:windowNoTitle">true</item> <!-- Hide the title -->
+        <item name="android:windowElevation">16dp</item> <!-- Add shadow effect by raising the elevation -->
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:textColorPrimary">@color/own_text_Farbe</item> <!-- Change text color to own_navy_blue -->
     </style>
 
     <!-- Dialog animation -->

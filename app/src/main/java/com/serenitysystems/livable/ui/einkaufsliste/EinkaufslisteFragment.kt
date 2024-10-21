@@ -2,9 +2,8 @@ package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
@@ -83,28 +82,28 @@ class EinkaufslisteFragment : Fragment() {
     private fun setupRecyclerViews() {
         lebensmittelAdapter = EinkaufsItemAdapter(
             mutableListOf(),
-            onItemClicked = { item -> handleItemClick(item) },   // Produktklick verarbeiten
+            onItemClicked = { item -> showEditItemDialog(item) },   // Directly edit the product without alert
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },  // Datum ändern
             onImageClicked = { item -> handleImageClick(item) }, // Bildklick verarbeiten
             onItemDeleted = { item -> deleteItem(item) }         // Produkt löschen
         )
         getrankeAdapter = EinkaufsItemAdapter(
             mutableListOf(),
-            onItemClicked = { item -> handleItemClick(item) },
+            onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) }
         )
         haushaltAdapter = EinkaufsItemAdapter(
             mutableListOf(),
-            onItemClicked = { item -> handleItemClick(item) },
+            onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) }
         )
         sonstigesAdapter = EinkaufsItemAdapter(
             mutableListOf(),
-            onItemClicked = { item -> handleItemClick(item) },
+            onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) }
@@ -127,22 +126,7 @@ class EinkaufslisteFragment : Fragment() {
         setupSwipeHandlers()
     }
 
-    // Funktion zur Behandlung des Klicks auf ein Produkt
-    private fun handleItemClick(item: Produkt) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Aktion wählen")
-            .setMessage("Möchten Sie das Produkt bearbeiten oder prüfen, ob es heute gekauft wurde?")
-            .setPositiveButton("Bearbeiten") { _, _ ->
-                // Produkt bearbeiten
-                showEditItemDialog(item)
-            }
-            .setNegativeButton("Heute gekauft?") { _, _ ->
-                checkIfPurchasedToday(item)  // Funktion zum Überprüfen, ob es heute gekauft wurde
-            }
-            .show()
-    }
-
-    // Dialog zum Bearbeiten eines Produkts anzeigen
+    // Dialog zum Bearbeiten eines Produkts anzeigen (no confirmation alert)
     private fun showEditItemDialog(item: Produkt) {
         val dialog = AddItemDialogFragment()
         dialog.setCurrentItem(item)
@@ -318,59 +302,82 @@ class EinkaufslisteFragment : Fragment() {
                 val item = adapter.getItem(position)
 
                 if (direction == ItemTouchHelper.LEFT) {
-                    // Bestätigungsdialog für das Löschen anzeigen
+                    // Show delete confirmation dialog
                     showDeleteConfirmationDialog(item, adapter, position)
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     if (item.isChecked) {
-                        // Gelöschtes Produkt wiederherstellen
+                        // Only allow restoring if the item is marked as bought
                         showRestoreConfirmationDialog(position, adapter)
                     } else {
-                        adapter.notifyItemChanged(position)
+                        // Optionally notify user that the item cannot be restored
+                        adapter.notifyItemChanged(position) // Restore the item to its original state
                     }
-                }
+
             }
 
-            override fun onChildDraw(
+        }override fun onChildDraw(
                 c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float,
                 dY: Float, actionState: Int, isCurrentlyActive: Boolean
             ) {
                 val itemView = viewHolder.itemView
-                val paint = Paint()
+                val iconWidth = 100f // Set a size for your icons
+                val iconMargin = 20f // Margin from the edge of the item view
 
-                if (dX < 0) {
-                    // Zeichnet nur roten Hintergrund, ohne Symbol
-                    paint.color = Color.RED
-                    val background = RectF(
-                        itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat()
+                // Load your icons
+                val trashBinIcon = BitmapFactory.decodeResource(recyclerView.context.resources, R.drawable.ic_trash_bin)
+                val restoreIcon = BitmapFactory.decodeResource(recyclerView.context.resources, R.drawable.ic_restore1)
+
+                // Get the adapter and the position of the swiped item
+                val position = viewHolder.adapterPosition
+                val adapter = recyclerView.adapter as EinkaufsItemAdapter
+                val item = adapter.getItem(position)
+
+                if (dX < 0) { // Swipe left for delete
+                    // Draw trash bin icon
+                    val trashBinIconRect = RectF(
+                        itemView.right + dX + iconMargin,
+                        itemView.top + (itemView.height / 2 - iconWidth / 2),
+                        itemView.right + dX + iconMargin + iconWidth,
+                        itemView.bottom - (itemView.height / 2 - iconWidth / 2)
                     )
-                    c.drawRect(background, paint)
-                } else if (dX > 0) {
-                    // Zeichnet grünen Hintergrund für Swipe nach rechts
-                    paint.color = Color.GREEN
-                    val background = RectF(
-                        itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + dX, itemView.bottom.toFloat()
+                    c.drawBitmap(trashBinIcon, null, trashBinIconRect, null) // Draw the trash bin icon
+                } else if (dX > 0 && item.isChecked) { // Swipe right for restore, only if item is marked as bought
+                    // Draw restore icon
+                    val restoreIconRect = RectF(
+                        itemView.left + dX - iconWidth - iconMargin,
+                        itemView.top + (itemView.height / 2 - iconWidth / 2),
+                        itemView.left + dX - iconMargin,
+                        itemView.bottom - (itemView.height / 2 - iconWidth / 2)
                     )
-                    c.drawRect(background, paint)
+                    c.drawBitmap(restoreIcon, null, restoreIconRect, null) // Draw the restore icon
                 }
+
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
+
         }
 
-        // Swipe-to-Delete Funktion für die RecyclerViews der Kategorien verbinden
+        // Attach swipe handlers to each RecyclerView
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerLebensmittel)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerGetranke)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerHaushalt)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerSonstiges)
     }
 
+    // Confirmation dialog for deleting a product
     // Bestätigungsdialog für das Löschen eines Produkts anzeigen
     private fun showDeleteConfirmationDialog(item: Produkt, adapter: EinkaufsItemAdapter, position: Int) {
         AlertDialog.Builder(requireContext())
             .setTitle("Bestätigung")
-            .setMessage("Möchten Sie dieses Produkt wirklich löschen?")
+            .setMessage("Möchten Sie dieses Produkt löschen?")
             .setPositiveButton("Ja") { _, _ ->
-                adapter.markItemForDeletion(position)
-                deleteItem(item)
+                // Check if position is valid before deleting
+                if (position >= 0 && position < adapter.itemCount) {
+                    adapter.markItemForDeletion(position)
+                    deleteItem(item)
+                } else {
+                    // Handle case where position is invalid (optional)
+                }
             }
             .setNegativeButton("Nein") { dialog, _ ->
                 dialog.dismiss()
@@ -379,13 +386,20 @@ class EinkaufslisteFragment : Fragment() {
             .show()
     }
 
-    // Bestätigungsdialog zum Wiederherstellen eines gelöschten Produkts
+
+    // Confirmation dialog for restoring a deleted product
     private fun showRestoreConfirmationDialog(position: Int, adapter: EinkaufsItemAdapter) {
         AlertDialog.Builder(requireContext())
             .setTitle("Bestätigung")
             .setMessage("Möchten Sie diesen Artikel wiederherstellen?")
             .setPositiveButton("Ja") { _, _ ->
-                adapter.restoreItem(position)
+                val item = adapter.getItem(position)
+
+                // Restore the item and mark it as "not bought"
+                item.isChecked = false  // Mark as not bought
+                item.statusIcon = null  // Remove the green check icon
+
+                adapter.restoreItem(position) // Restore the item in the adapter
             }
             .setNegativeButton("Nein") { dialog, _ ->
                 dialog.dismiss()
@@ -393,6 +407,7 @@ class EinkaufslisteFragment : Fragment() {
             }
             .show()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

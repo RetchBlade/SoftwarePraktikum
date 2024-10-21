@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
@@ -12,22 +11,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/metallischer_hintergrund"
+        android:background="@drawable/dialog_background"
         android:padding="16dp">
 
         <!-- Produktbild -->
         <ImageView
             android:id="@+id/productImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_camera_placeholder"
-        android:contentDescription="Produktbild"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="centerInside"
-        android:background="@drawable/rounded_corners"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginBottom="8dp" />
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_add_image"
+
+            android:contentDescription="Produktbild"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_corners"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="8dp" />
 
         <!-- Hinweistext unter dem Produktbild -->
         <TextView
@@ -46,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Produktname"
-            android:padding="8dp"
-            android:layout_marginBottom="8dp"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background" />
 
         <!-- Menge Eingabe -->
@@ -57,8 +57,8 @@
             android:layout_height="wrap_content"
             android:hint="Menge"
             android:inputType="numberDecimal"
-            android:padding="8dp"
-            android:layout_marginBottom="8dp"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background" />
 
         <!-- Einheit Spinner -->
@@ -66,20 +66,20 @@
             android:id="@+id/spinnerUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/spinner_background"
             android:spinnerMode="dropdown"
-            android:padding="8dp" />
+            android:padding="10dp" />
 
         <!-- Kategorie Spinner -->
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/spinner_background"
             android:spinnerMode="dropdown"
-            android:padding="8dp" />
+            android:padding="10dp" />
 
         <!-- Datum auswählen -->
         <EditText
@@ -87,8 +87,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Datum auswählen"
-            android:padding="8dp"
-            android:layout_marginBottom="8dp"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background"
             android:focusable="false"
             android:cursorVisible="false" />
@@ -102,18 +102,28 @@
 
             <Button
                 android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="55dp"
+                android:layout_marginEnd="76dp"
+                android:backgroundTint="@color/own_navy_Dunkelblau"
+                android:drawableLeft="@drawable/ic_close"
+                android:drawablePadding="8dp"
+                android:padding="10dp"
                 android:text="Abbrechen"
-                android:layout_marginEnd="8dp"
+                android:textColor="@android:color/white"
                 android:textSize="14sp" />
 
             <Button
                 android:id="@+id/btnAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hinzufügen"
-                android:textSize="14sp" />
+            android:text="Hinzufügen"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:padding="10dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/ic_add"
+            android:backgroundTint="@color/own_navy_Dunkelblau"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

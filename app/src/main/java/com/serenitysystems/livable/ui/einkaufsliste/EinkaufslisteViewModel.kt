@@ -3,6 +3,7 @@ package com.serenitysystems.livable.ui.einkaufsliste
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 
 class EinkaufslisteViewModel : ViewModel() {
@@ -55,10 +56,23 @@ class EinkaufslisteViewModel : ViewModel() {
     }
 
     // Aktualisiere den Status eines Produkts
+    // Aktualisiere den Status eines Produkts
     fun updateItemStatus(date: String, item: Produkt, isPurchased: Boolean) {
-        item.isChecked = isPurchased
-        _itemsByDate.value = _itemsByDate.value // Trigger für LiveData-Update
+        val currentMap = _itemsByDate.value ?: mutableMapOf()
+        val itemsForDate = currentMap[date] ?: mutableListOf()
+
+        // Find the product and update its status
+        val index = itemsForDate.indexOfFirst { it.name == item.name }
+        if (index != -1) {
+            itemsForDate[index].isChecked = isPurchased
+            itemsForDate[index].statusIcon = if (isPurchased) R.drawable.ic_check else null // Update the icon as well
+
+            // Update the map with the modified list
+            currentMap[date] = itemsForDate
+            _itemsByDate.value = currentMap  // This triggers LiveData update
+        }
     }
+
 
     // Aktualisiere das Bild eines Produkts
     fun updateItemImage(date: String, item: Produkt) {
