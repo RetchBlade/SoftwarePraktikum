@@ -85,7 +85,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Geschlecht Icon"
                 android:src="@drawable/ic_gender"
-                android:tint="@color/own_navy_Blau" />
+             />
 
             <TextView
                 android:id="@+id/genderText"
@@ -114,7 +114,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Email Icon"
                 android:src="@drawable/ic_email"
-                android:tint="@color/own_navy_Blau" />
+        />
 
             <TextView
                 android:id="@+id/emailText"
@@ -143,7 +143,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Geburtsdatum Icon"
                 android:src="@drawable/ic_calendar"
-                android:tint="@color/own_navy_Blau" />
+ />
 
             <TextView
                 android:id="@+id/birthdateText"
@@ -173,7 +173,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="WG-Rolle Icon"
                 android:src="@drawable/ic_role"
-                android:tint="@color/own_navy_Blau" />
+               />
 
             <TextView
                 android:id="@+id/roleText"
