@@ -23,7 +23,7 @@ class WochenplanFragment : Fragment() {
     private var _binding: FragmentWochenplanBinding? = null
     private val binding get() = _binding!!
     private lateinit var wochenplanViewModel: WochenplanViewModel
-    private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("de", "DE"))
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +56,7 @@ class WochenplanFragment : Fragment() {
 
         calendar.add(Calendar.DAY_OF_YEAR, -7)  // Adjust the starting point if needed
         for (i in 0 until 15) {  // Assuming 15 days in your pager
-            days.add(dateFormat.format(calendar.time))  // Adds "EEEE, dd MMMM yyyy" format
+            days.add(dateFormat.format(calendar.time))
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
@@ -94,7 +94,6 @@ class WochenplanFragment : Fragment() {
     private fun getSelectedDay(): String {
         return wochenplanViewModel.daysOfWeek[binding.dayViewPager.currentItem]
     }
-
     private fun showTaskDialog(existingTask: DynamicTask? = null) {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
@@ -144,7 +143,7 @@ class WochenplanFragment : Fragment() {
         }
 
         val dialogTitle = if (existingTask == null) R.string.add_task else R.string.edit_task
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)  // Apply custom dialog theme here
             .setTitle(dialogTitle)
             .setView(dialogView)
             .setPositiveButton(R.string.save) { _, _ ->
@@ -184,6 +183,7 @@ class WochenplanFragment : Fragment() {
 
         dialog.show()
     }
+
 
     private fun displayTasksForDay(day: String) {
         val dayTasks = wochenplanViewModel.tasks.value?.filter {

@@ -5,139 +5,133 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="466dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/gradient_beige"
-        android:elevation="12dp"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+    android:layout_height="wrap_content"
 
-        <!-- Title of the Dialog -->
+    android:paddingBottom="16dp"
+    android:background="@android:color/transparent"
+    android:elevation="12dp"
+    android:orientation="vertical">
 
-        <!-- Divider between title and buttons -->
+    <!-- Title of the Dialog -->
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/nav_gradient_background"
+    android:fontFamily="@font/poppins_extrabold"
+    android:paddingTop="25dp"
+    android:paddingBottom="20dp"
+    android:text="WG Optionen"
+    android:textAlignment="center"
+    android:textColor="@color/own_helle_Beige"
+    android:textSize="16sp"
+    android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/dialogTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/nav_gradient_background"
-            android:fontFamily="@font/poppins_extrabold"
-            android:paddingTop="25dp"
-            android:paddingBottom="20dp"
-            android:text="WG Optionen"
-            android:textAlignment="center"
-            android:textColor="@color/own_helle_Beige"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+    <!-- Divider between title and buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/own_navy_Blau" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/own_navy_Blau"
+    <!-- First Button (Create WG) -->
+    <Button
+        android:id="@+id/createWGButton"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG anlegen"
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="14sp" />
 
+    <!-- Divider between buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/own_navy_Blau" />
 
-            />
+    <!-- Second Button (Join WG) -->
+    <Button
+        android:id="@+id/joinWGButton"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG beitreten"
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="14sp" />
 
-        <!-- First Button (Create WG) -->
-        <Button
-            android:id="@+id/createWGButton"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginBottom="6dp"
-            android:background="@drawable/button_klick_effect"
-            android:fontFamily="@font/poppinsregular"
-            android:padding="10dp"
-            android:text="WG anlegen"
-            android:textAllCaps="false"
-            android:textColor="@color/own_navy_Blau"
-            android:textSize="14sp" />
+    <!-- Divider between buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/own_navy_Blau" />
 
-        <!-- Divider between buttons -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="6dp"
-            android:background="@color/own_navy_Blau" />
+    <!-- Third Button (Leave WG) -->
+    <Button
+        android:id="@+id/leaveWGButton"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG verlassen"
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="14sp" />
 
-        <!-- Second Button (Join WG) -->
-        <Button
-            android:id="@+id/joinWGButton"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginBottom="6dp"
-            android:background="@drawable/button_klick_effect"
-            android:fontFamily="@font/poppinsregular"
-            android:padding="10dp"
-            android:text="WG beitreten"
-            android:textAllCaps="false"
-            android:textColor="@color/own_navy_Blau"
-            android:textSize="14sp" />
+    <!-- Divider between buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/own_navy_Blau" />
 
-        <!-- Divider between buttons -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="6dp"
-            android:background="@color/own_navy_Blau" />
+    <!-- Fourth Button (Delete WG) -->
+    <Button
+        android:id="@+id/deleteWGButton"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG löschen"
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="14sp" />
 
-        <!-- Third Button (Leave WG) -->
-        <Button
-            android:id="@+id/leaveWGButton"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:background="@drawable/button_klick_effect"
-            android:fontFamily="@font/poppinsregular"
-            android:padding="10dp"
-            android:text="WG verlassen"
-            android:textAllCaps="false"
-            android:textColor="@color/own_navy_Blau"
-            android:textSize="14sp" />
+    <!-- Divider between buttons -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/own_navy_Blau" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="6dp"
-            android:background="@color/own_navy_Blau" />
+    <!-- Fifth Button (Show WG Info) -->
+    <Button
+        android:id="@+id/showWGInfo"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/button_klick_effect"
+        android:fontFamily="@font/poppinsregular"
+        android:padding="10dp"
+        android:text="WG Info"
+        android:textAllCaps="false"
+        android:textColor="@color/own_navy_Blau"
+        android:textSize="14sp" />
 
-        <!-- Second Button (Join WG) -->
-        <Button
-            android:id="@+id/deleteWGButton"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginBottom="6dp"
-            android:background="@drawable/button_klick_effect"
-            android:fontFamily="@font/poppinsregular"
-            android:padding="10dp"
-            android:text="WG löschen"
-            android:textAllCaps="false"
-            android:textColor="@color/own_navy_Blau"
-            android:textSize="14sp" />
+</LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="6dp"
-            android:background="@color/own_navy_Blau" />
-
-        <!-- Second Button (Join WG) -->
-        <Button
-            android:id="@+id/showWGInfo"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_marginBottom="6dp"
-            android:background="@drawable/button_klick_effect"
-            android:fontFamily="@font/poppinsregular"
-            android:padding="10dp"
-            android:text="WG Info"
-            android:textAllCaps="false"
-            android:textColor="@color/own_navy_Blau"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-</RelativeLayout>
+    </RelativeLayout>
