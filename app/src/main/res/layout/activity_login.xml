@@ -38,6 +38,11 @@
 
         <!-- CardView für Eingabefelder und Buttons -->
 
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="350dp"
             android:layout_height="400dp"
@@ -130,15 +135,15 @@
                     <!-- Registrieren TextView -->
                     <TextView
                         android:id="@+id/Registrieren"
-                        android:layout_width="198dp"
-                        android:layout_height="48dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="43dp"
                         android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingLeft="10dp"
+                        android:padding="10dp"
                         android:text="Noch keinen Account?"
                         android:textColor="#1b7c97"
                         android:textSize="16sp" />
@@ -146,29 +151,16 @@
                     <!-- Passwort vergessen TextView -->
                     <TextView
                         android:id="@+id/DatenVergessen2"
-                        android:layout_width="229dp"
-                        android:layout_height="50dp"
+                        android:layout_width="228dp"
+                        android:layout_height="41dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="-10dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:paddingLeft="10dp"
                         android:paddingTop="10dp"
                         android:text="Benutzerdaten vergessen?"
-                        android:textColor="#1b7c97"
-                        android:textSize="16sp" />
-
-                    <!-- Benutzerdaten merken CheckBox -->
-                    <CheckBox
-                        android:id="@+id/checkBox"
-                        android:layout_width="261dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginStart="110dp"
-                        android:layout_marginTop="-30dp"
-                        android:layout_marginEnd="85dp"
-                        android:buttonTint="@color/own_navy_Blau"
-                        android:text="Benutzerdaten merken"
                         android:textColor="#1b7c97"
                         android:textSize="16sp" />
 
@@ -178,8 +170,4 @@
     </LinearLayout>
 
     <!-- Das muss hier unten bleiben, NavHostFragment hinzufügen -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </RelativeLayout>
