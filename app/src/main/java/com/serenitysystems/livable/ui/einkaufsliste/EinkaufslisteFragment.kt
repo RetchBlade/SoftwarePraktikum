@@ -1,5 +1,3 @@
-// EinkaufslisteFragment.kt
-
 package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.app.AlertDialog
@@ -20,6 +18,8 @@ import com.serenitysystems.livable.databinding.FragmentEinkaufslisteBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
+import com.serenitysystems.livable.ui.einkaufsliste.adapter.EinkaufsItemAdapter
+import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 
 class EinkaufslisteFragment : Fragment() {
 
@@ -46,10 +46,11 @@ class EinkaufslisteFragment : Fragment() {
         if (uri != null && selectedItemForImageChange != null) {
             selectedItemForImageChange?.imageUri = uri.toString()
             viewModel.updateItemImage(selectedDateKey, selectedItemForImageChange!!)
-            loadItemsForDate()
+            loadItemsForDate()  // Liste nach Bildänderung neu laden
         }
     }
 
+    // Fragment-Ansicht erstellen
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -74,37 +75,42 @@ class EinkaufslisteFragment : Fragment() {
     // Beobachte das ViewModel für Datenänderungen
     private fun observeViewModel() {
         viewModel.itemsByDate.observe(viewLifecycleOwner, Observer {
-            loadItemsForDate()
+            loadItemsForDate()  // Lädt die Artikel für das ausgewählte Datum neu
         })
     }
 
-    // RecyclerViews einrichten
+    // RecyclerViews und Adapter für die verschiedenen Kategorien einrichten
     private fun setupRecyclerViews() {
         lebensmittelAdapter = EinkaufsItemAdapter(
             mutableListOf(),
-            onItemClicked = { item -> handleItemClick(item) },
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
-            onImageClicked = { item -> handleImageClick(item) }
+            onItemClicked = { item -> handleItemClick(item) },   // Produktklick verarbeiten
+            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },  // Datum ändern
+            onImageClicked = { item -> handleImageClick(item) }, // Bildklick verarbeiten
+            onItemDeleted = { item -> deleteItem(item) }         // Produkt löschen
         )
         getrankeAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
-            onImageClicked = { item -> handleImageClick(item) }
+            onImageClicked = { item -> handleImageClick(item) },
+            onItemDeleted = { item -> deleteItem(item) }
         )
         haushaltAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
-            onImageClicked = { item -> handleImageClick(item) }
+            onImageClicked = { item -> handleImageClick(item) },
+            onItemDeleted = { item -> deleteItem(item) }
         )
         sonstigesAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> handleItemClick(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
-            onImageClicked = { item -> handleImageClick(item) }
+            onImageClicked = { item -> handleImageClick(item) },
+            onItemDeleted = { item -> deleteItem(item) }
         )
 
+        // RecyclerViews für die verschiedenen Kategorien verbinden
         binding.recyclerLebensmittel.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerLebensmittel.adapter = lebensmittelAdapter
 
@@ -117,50 +123,84 @@ class EinkaufslisteFragment : Fragment() {
         binding.recyclerSonstiges.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerSonstiges.adapter = sonstigesAdapter
 
-        // SwipeHandler einrichten
+        // Swipe-to-Delete Funktionalität einrichten
         setupSwipeHandlers()
     }
 
-    // Produktklick behandeln
+    // Funktion zur Behandlung des Klicks auf ein Produkt
     private fun handleItemClick(item: Produkt) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Aktion wählen")
+            .setMessage("Möchten Sie das Produkt bearbeiten oder prüfen, ob es heute gekauft wurde?")
+            .setPositiveButton("Bearbeiten") { _, _ ->
+                // Produkt bearbeiten
+                showEditItemDialog(item)
+            }
+            .setNegativeButton("Heute gekauft?") { _, _ ->
+                checkIfPurchasedToday(item)  // Funktion zum Überprüfen, ob es heute gekauft wurde
+            }
+            .show()
+    }
+
+    // Dialog zum Bearbeiten eines Produkts anzeigen
+    private fun showEditItemDialog(item: Produkt) {
+        val dialog = AddItemDialogFragment()
+        dialog.setCurrentItem(item)
+        dialog.onAddItem = { updatedItem, oldItem ->
+            val currentDateKey = dateFormat.format(selectedDate.time)
+
+            // Altes Produkt entfernen, neues hinzufügen
+            oldItem?.let { viewModel.deleteItem(currentDateKey, it) }
+            viewModel.addItem(currentDateKey, updatedItem)
+            loadItemsForDate()  // Liste nach dem Bearbeiten neu laden
+            true
+        }
+        dialog.show(childFragmentManager, "EditItemDialog")
+    }
+
+    // Funktion für den "Heute gekauft?" Dialog
+    private fun checkIfPurchasedToday(item: Produkt) {
         val today = dateFormat.format(Date())
 
-        if (item.date == today) {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Wurde das heute gekauft?")
-                .setPositiveButton("Ja") { _, _ ->
-                    // Produkt als gekauft markieren
-                    item.statusIcon = R.drawable.ic_check
-                    item.isChecked = true
-                    val dateKey = dateFormat.format(selectedDate.time)
-                    viewModel.updateItemStatus(dateKey, item, true)
-                }
-                .setNegativeButton("Nein") { _, _ ->
-                    // Produkt zu einem neuen Datum verschieben
-                    showDatePickerForItem(item)
-                }
-                .show()
-        }
+        AlertDialog.Builder(requireContext())
+            .setTitle("Wurde das heute gekauft?")
+            .setPositiveButton("Ja") { _, _ ->
+                // Produkt als gekauft markieren
+                item.statusIcon = R.drawable.ic_check
+                item.isChecked = true
+                viewModel.updateItemStatus(today, item, true)  // Status des Produkts aktualisieren
+                loadItemsForDate()  // Liste neu laden
+            }
+            .setNegativeButton("Nein") { _, _ ->
+                // Produkt zu einem neuen Datum verschieben
+                showDatePickerForItem(item)
+            }
+            .show()
     }
 
-    // Produkt zu einem neuen Datum verschieben
+    // Funktion zum Verschieben des Produkts zu einem neuen Datum
     private fun moveItemToNewDate(item: Produkt, neuesDatum: String) {
         val currentDateKey = dateFormat.format(selectedDate.time)
-
-        // Statusicon und isChecked aktualisieren
-        item.statusIcon = R.drawable.ic_warning
-        item.isChecked = false
-
+        item.statusIcon = R.drawable.ic_warning  // Warnsymbol setzen
+        item.isChecked = false  // Produkt als nicht erledigt markieren
         viewModel.moveItemToNewDate(currentDateKey, neuesDatum, item)
+        loadItemsForDate()  // Liste neu laden
     }
 
-    // Bildklick behandeln
+    // Funktion zum Löschen eines Produkts
+    private fun deleteItem(item: Produkt) {
+        val currentDateKey = dateFormat.format(selectedDate.time)
+        viewModel.deleteItem(currentDateKey, item)
+        loadItemsForDate()  // Liste nach dem Löschen neu laden
+    }
+
+    // Funktion zum Verarbeiten des Bildklicks eines Produkts
     private fun handleImageClick(item: Produkt) {
         selectedItemForImageChange = item
-        selectImage()
+        selectImage()  // Bildauswahl starten
     }
 
-    // Funktion zum Auswählen eines Bildes
+    // Bildauswahl für das Produkt
     private fun selectImage() {
         imagePickerLauncher.launch("image/*")
     }
@@ -171,7 +211,7 @@ class EinkaufslisteFragment : Fragment() {
             requireContext(), { _, year, month, day ->
                 val newDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
                     .format(GregorianCalendar(year, month, day).time)
-                moveItemToNewDate(item, newDate)
+                moveItemToNewDate(item, newDate)  // Produkt zu einem neuen Datum verschieben
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
@@ -180,35 +220,35 @@ class EinkaufslisteFragment : Fragment() {
         datePickerDialog.show()
     }
 
-    // FloatingActionButton einrichten
+    // FloatingActionButton einrichten - Neues Produkt hinzufügen
     private fun setupFab() {
         binding.fab.setOnClickListener {
             val dialog = AddItemDialogFragment()
-            dialog.onAddItem = { newItem ->
+            dialog.onAddItem = { newItem, _ ->
                 val dateKey = dateFormat.format(selectedDate.time)
-                viewModel.addItem(dateKey, newItem)
+                viewModel.addItem(dateKey, newItem)  // Neues Produkt zum ViewModel hinzufügen
                 true
             }
             dialog.show(childFragmentManager, "AddItemDialog")
         }
     }
 
-    // Datumsauswahl einrichten
+    // Datumsauswahl einrichten (vorher/nachher navigieren)
     private fun setupDateSelector() {
         binding.btnDatePrev.setOnClickListener {
             selectedDate.add(Calendar.DAY_OF_MONTH, -1)
             updateDateInView()
-            loadItemsForDate()
+            loadItemsForDate()  // Liste neu laden
         }
 
         binding.btnDateNext.setOnClickListener {
             selectedDate.add(Calendar.DAY_OF_MONTH, 1)
             updateDateInView()
-            loadItemsForDate()
+            loadItemsForDate()  // Liste neu laden
         }
 
         binding.etSelectedDate.setOnClickListener {
-            showDatePickerDialog()
+            showDatePickerDialog()  // Datumsauswahl-Dialog anzeigen
         }
     }
 
@@ -217,7 +257,7 @@ class EinkaufslisteFragment : Fragment() {
         binding.etSelectedDate.setText(dateFormat.format(selectedDate.time))
     }
 
-    // Datumsauswahl Dialog anzeigen
+    // Datumsauswahl-Dialog anzeigen
     private fun showDatePickerDialog() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
@@ -226,7 +266,7 @@ class EinkaufslisteFragment : Fragment() {
                 selectedDate.set(Calendar.MONTH, month)
                 selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 updateDateInView()
-                loadItemsForDate()
+                loadItemsForDate()  // Produkte für das neue Datum laden
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
@@ -240,11 +280,13 @@ class EinkaufslisteFragment : Fragment() {
         val dateKey = dateFormat.format(selectedDate.time)
         val itemsForDate = viewModel.getItemsForDate(dateKey)
 
+        // Listen der Kategorien leeren
         lebensmittelAdapter.setItems(emptyList())
         getrankeAdapter.setItems(emptyList())
         haushaltAdapter.setItems(emptyList())
         sonstigesAdapter.setItems(emptyList())
 
+        // Produkte den jeweiligen Kategorien hinzufügen
         itemsForDate.forEach { item ->
             when (item.category) {
                 "Lebensmittel" -> lebensmittelAdapter.addItem(item)
@@ -255,7 +297,7 @@ class EinkaufslisteFragment : Fragment() {
         }
     }
 
-    // SwipeHandler einrichten
+    // Swipe-to-Delete Funktionalität einrichten
     private fun setupSwipeHandlers() {
         val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
@@ -276,14 +318,13 @@ class EinkaufslisteFragment : Fragment() {
                 val item = adapter.getItem(position)
 
                 if (direction == ItemTouchHelper.LEFT) {
-                    // Produkt als gelöscht markieren
-                    adapter.markItemForDeletion(position)
+                    // Bestätigungsdialog für das Löschen anzeigen
+                    showDeleteConfirmationDialog(item, adapter, position)
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     if (item.isChecked) {
                         // Gelöschtes Produkt wiederherstellen
                         showRestoreConfirmationDialog(position, adapter)
                     } else {
-                        // Nichts tun, wenn das Produkt nicht gelöscht ist
                         adapter.notifyItemChanged(position)
                     }
                 }
@@ -297,14 +338,14 @@ class EinkaufslisteFragment : Fragment() {
                 val paint = Paint()
 
                 if (dX < 0) {
-                    // Nach links wischen - Rot
+                    // Zeichnet nur roten Hintergrund, ohne Symbol
                     paint.color = Color.RED
                     val background = RectF(
                         itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat()
                     )
                     c.drawRect(background, paint)
                 } else if (dX > 0) {
-                    // Nach rechts wischen - Grün
+                    // Zeichnet grünen Hintergrund für Swipe nach rechts
                     paint.color = Color.GREEN
                     val background = RectF(
                         itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + dX, itemView.bottom.toFloat()
@@ -315,10 +356,27 @@ class EinkaufslisteFragment : Fragment() {
             }
         }
 
+        // Swipe-to-Delete Funktion für die RecyclerViews der Kategorien verbinden
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerLebensmittel)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerGetranke)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerHaushalt)
         ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.recyclerSonstiges)
+    }
+
+    // Bestätigungsdialog für das Löschen eines Produkts anzeigen
+    private fun showDeleteConfirmationDialog(item: Produkt, adapter: EinkaufsItemAdapter, position: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Bestätigung")
+            .setMessage("Möchten Sie dieses Produkt wirklich löschen?")
+            .setPositiveButton("Ja") { _, _ ->
+                adapter.markItemForDeletion(position)
+                deleteItem(item)
+            }
+            .setNegativeButton("Nein") { dialog, _ ->
+                dialog.dismiss()
+                adapter.notifyItemChanged(position)
+            }
+            .show()
     }
 
     // Bestätigungsdialog zum Wiederherstellen eines gelöschten Produkts

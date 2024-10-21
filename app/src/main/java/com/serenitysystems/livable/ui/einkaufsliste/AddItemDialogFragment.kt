@@ -14,34 +14,37 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.database.Cursor
 import android.provider.OpenableColumns
+import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 
 class AddItemDialogFragment : DialogFragment() {
 
     private var _binding: DialogAddItemBinding? = null
     private val binding get() = _binding!!
 
-    var onAddItem: ((Produkt) -> Boolean)? = null
+    // Callback für das Hinzufügen oder Bearbeiten eines Produkts
+    var onAddItem: ((Produkt, Produkt?) -> Boolean)? = null
     private var selectedDate: Calendar? = null
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
-    private var selectedImageUri: Uri? = null // Ausgewähltes Produktbild
+    private var selectedImageUri: Uri? = null // Uri des ausgewählten Bildes
+    private var currentItem: Produkt? = null // Das aktuelle Produkt, wenn im Bearbeitungsmodus
 
     // Maximale Bildgröße in Bytes (hier 2 MB)
     private val MAX_IMAGE_SIZE = 2 * 1024 * 1024 // 2 MB
 
-    // ActivityResultLauncher für die Bildauswahl
+    // ActivityResultLauncher zum Auswählen eines Bildes aus der Galerie
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            // Überprüfe die Dateigröße des ausgewählten Bildes
+            // Überprüfen, ob die Dateigröße innerhalb des Limits liegt
             val fileSize = getFileSize(uri)
             if (fileSize <= MAX_IMAGE_SIZE) {
-                // Wenn die Dateigröße innerhalb des Limits liegt, Bild setzen
+                // Bild setzen, falls die Dateigröße gültig ist
                 selectedImageUri = uri
                 binding.productImage.setImageURI(uri)
             } else {
-                // Wenn die Datei zu groß ist, Fehlermeldung anzeigen
+                // Fehlermeldung anzeigen, falls das Bild zu groß ist
                 Toast.makeText(
                     requireContext(),
                     "Das Bild ist zu groß. Bitte wählen Sie ein Bild, das kleiner als 2 MB ist.",
@@ -74,6 +77,11 @@ class AddItemDialogFragment : DialogFragment() {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = categoryAdapter
 
+        // Wenn ein bestehendes Produkt bearbeitet wird, füllen Sie die Felder mit den vorhandenen Daten
+        currentItem?.let {
+            populateFields(it)  // Verwendet currentItem um Felder zu befüllen
+        }
+
         // Datumsauswahl einrichten
         binding.etSelectedDate.setOnClickListener {
             val calendar = Calendar.getInstance()
@@ -88,18 +96,19 @@ class AddItemDialogFragment : DialogFragment() {
 
         // Klick-Listener für das Produktbild hinzufügen
         binding.productImage.setOnClickListener {
-            selectImage()
+            selectImage() // Bildauswahl öffnen
         }
 
-        // Hinzufügen-Button
+        // Hinzufügen-Button: Neuen Artikel hinzufügen oder bestehendes Produkt aktualisieren
         binding.btnAdd.setOnClickListener {
             val name = binding.editItemName.text.toString()
             val quantity = binding.editItemQuantity.text.toString()
-            val unit = binding.spinnerUnit.selectedItem.toString()
-            val category = binding.spinnerCategory.selectedItem.toString()
+            val unit = binding.spinnerUnit.selectedItem?.toString() ?: ""
+            val category = binding.spinnerCategory.selectedItem?.toString() ?: ""
             val date = selectedDate?.let { dateFormat.format(it.time) }
 
-            val imageUriString = selectedImageUri?.toString()
+            // URI des ausgewählten Bildes als String speichern
+            val imageUriString = selectedImageUri?.toString() ?: currentItem?.imageUri
 
             val newItem = Produkt(
                 name = name,
@@ -107,21 +116,44 @@ class AddItemDialogFragment : DialogFragment() {
                 unit = unit,
                 category = category,
                 imageUri = imageUriString,
-                date = date
+                date = date,
+                isChecked = currentItem?.isChecked ?: false, // Status vom bestehenden Produkt beibehalten
+                statusIcon = currentItem?.statusIcon // Statusicon beibehalten
             )
-            onAddItem?.invoke(newItem)
+            onAddItem?.invoke(newItem, currentItem) // Callback für das Hinzufügen oder Aktualisieren aufrufen
 
-            dismiss()
+            dismiss() // Dialog schließen
         }
 
-        // Abbrechen-Button
+        // Abbrechen-Button: Dialog schließen
         binding.btnCancel.setOnClickListener { dismiss() }
 
         return view
     }
 
+    // Funktion zum Befüllen der Felder mit den vorhandenen Produktdaten (für Bearbeiten)
+    private fun populateFields(item: Produkt) {
+        binding.apply {
+            editItemName.setText(item.name)
+            editItemQuantity.setText(item.quantity)
+            spinnerUnit.setSelection((spinnerUnit.adapter as? ArrayAdapter<String>)?.getPosition(item.unit) ?: 0)
+            spinnerCategory.setSelection((spinnerCategory.adapter as? ArrayAdapter<String>)?.getPosition(item.category) ?: 0)
+            etSelectedDate.setText(item.date)
+            item.imageUri?.let {
+                selectedImageUri = Uri.parse(it)
+                productImage.setImageURI(selectedImageUri)
+            }
+        }
+    }
+
+    // Setzt das aktuelle Produkt zum Bearbeiten
+    fun setCurrentItem(item: Produkt) {
+        currentItem = item
+    }
+
     override fun onResume() {
         super.onResume()
+        // Setzt die Breite und Höhe des Dialogs
         val params = dialog?.window?.attributes
         params?.width = ViewGroup.LayoutParams.MATCH_PARENT
         params?.height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -130,10 +162,10 @@ class AddItemDialogFragment : DialogFragment() {
 
     // Funktion zum Auswählen eines Bildes aus der Galerie
     private fun selectImage() {
-        imagePickerLauncher.launch("image/*")
+        imagePickerLauncher.launch("image/*") // Bildauswahl starten
     }
 
-    // Funktion zum Ermitteln der Dateigröße eines ausgewählten Bildes
+    // Funktion zur Ermittlung der Dateigröße eines ausgewählten Bildes
     private fun getFileSize(uri: Uri): Long {
         var fileSize: Long = 0
         val cursor: Cursor? = requireContext().contentResolver.query(uri, null, null, null, null)

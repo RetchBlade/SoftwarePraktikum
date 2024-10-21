@@ -78,6 +78,15 @@
         <item>Dose</item>
     </string-array>
 
+
+        <!-- Bild vergrößern (Fullscreen) -->
+        <string name="fullscreen_image">Vollbildbild anzeigen</string>
+
+        <!-- Schließen Symbol für das Vollbildbild -->
+        <string name="close_image">Bild schließen</string>
+
+
+
     <!-- Kategorie-Array für das Haushaltsbuch -->
     <string-array name="category_array">
         <item>Haushalt</item>

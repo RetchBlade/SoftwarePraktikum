@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serenitysystems.livable.databinding.FragmentBuchungenBinding
+import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
