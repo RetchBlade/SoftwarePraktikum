@@ -2,8 +2,9 @@ package com.serenitysystems.livable
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
+import com.bumptech.glide.Glide
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.google.android.material.navigation.NavigationView
 import com.serenitysystems.livable.data.UserPreferences
 import com.serenitysystems.livable.databinding.ActivityMainBinding
 import com.serenitysystems.livable.ui.login.LoginActivity
+import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             userPreferences.userToken.collect { userToken ->
                 if (userToken != null) {
                     // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken.nickname, userToken.wgId) // Übergebe email und WgId für die Sidebar
+                    setupMainActivity(userToken) // Übergebe email und WgId für die Sidebar
                 } else {
                     // Kein Benutzer eingeloggt, navigiere zur LoginActivity
                     navigateToLoginActivity()
@@ -48,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupMainActivity(user: String?, wgId: String?) {
+    private fun setupMainActivity(userToken: UserToken) {
         // Aktivieren des randlosen Designs
         enableEdgeToEdge()
 
@@ -67,13 +69,14 @@ class MainActivity : AppCompatActivity() {
         // Festlegen der Top-Level-Ziele für die Navigation
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_homepage,  // HomePageFragment hinzugefügt als Top-Level-Ziel
+                R.id.nav_homepage,
                 R.id.nav_wochenplan,
                 R.id.nav_todo,
                 R.id.nav_einkaufsliste,
                 R.id.nav_haushaltsbuch
             ), drawerLayout
         )
+
         // Einrichten der ActionBar mit dem NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
         // Einrichten der NavigationView mit dem NavController
@@ -81,10 +84,17 @@ class MainActivity : AppCompatActivity() {
 
         // Sidebar (NavigationView) anpassen, um WgId und E-Mail anzuzeigen
         val headerView: View = navView.getHeaderView(0)
-        val userEmailTextView = headerView.findViewById<TextView>(R.id.user_email_text_view)
+        val userNicknameTextView = headerView.findViewById<TextView>(R.id.user_nickname_text_view)
+        val profileImageView = headerView.findViewById<ImageView>(R.id.imageView)
 
-        // Setze die E-Mail  im Sidebar-Header
-        userEmailTextView.text = "$user"
+        // Setze die E-Mail im Sidebar-Header
+        userNicknameTextView.text = userToken.nickname
+
+        // Lade das Profilbild in die ImageView mit Glide
+        Glide.with(this)
+            .load(userToken.profileImageUrl)
+            .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
+            .into(profileImageView)
 
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
@@ -103,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun performLogout() {
         // Lösche den UserToken

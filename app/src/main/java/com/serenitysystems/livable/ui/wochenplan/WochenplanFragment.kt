@@ -1,6 +1,6 @@
 package com.serenitysystems.livable.ui.wochenplan
 
-import DayPagerAdapter
+import com.serenitysystems.livable.ui.wochenplan.adapter.DayPagerAdapter
 import android.app.DatePickerDialog
 import android.graphics.Paint
 import android.os.Bundle
