@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             userPreferences.userToken.collect { userToken ->
                 if (userToken != null) {
                     // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken) // Übergebe email und WgId für die Sidebar
+                    setupMainActivity(userToken) // Übergebe usertoken für die Sidebar
                 } else {
                     // Kein Benutzer eingeloggt, navigiere zur LoginActivity
                     navigateToLoginActivity()
