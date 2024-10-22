@@ -32,27 +32,27 @@ class HomePageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
 
-        // Get references to the TextViews
+        // Referenzen zu den TextViews abrufen
         welcomeMessageTextView = view.findViewById(R.id.greetingText)
         userNicknameTextView = view.findViewById(R.id.userNickname)
         userPic = view.findViewById(R.id.imageView)
 
-        // Observe the user nickname from the ViewModel
+        // Den Benutzernamen vom ViewModel beobachten
         homePageViewModel.userNickname.observe(viewLifecycleOwner, Observer { nickname ->
             userNicknameTextView.text = nickname ?: ""
         })
 
-        // Observe the user picture from the ViewModel
+        // Das Benutzerbild vom ViewModel beobachten
         homePageViewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
             if (profileImageUrl != null) {
-                // Load the image with Glide
+                // Bild mit Glide laden
                 Glide.with(this)
                     .load(profileImageUrl)
-                    .placeholder(R.drawable.pp) // Placeholder image while loading
-                    .error(R.drawable.pp) // Error image if loading fails
+                    .placeholder(R.drawable.pp) // Platzhalterbild während des Ladens
+                    .error(R.drawable.pp) // Fehlerbild, falls das Laden fehlschlägt
                     .into(userPic)
             } else {
-                userPic.setImageResource(R.drawable.pp) // Set placeholder if no image
+                userPic.setImageResource(R.drawable.pp) // Platzhalter setzen, falls kein Bild vorhanden ist
             }
         })
 
