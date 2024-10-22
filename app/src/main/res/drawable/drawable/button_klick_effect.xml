@@ -1,0 +1,7 @@
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Zustand wenn der Button gedrückt wird -->
+    <item android:state_pressed="true" android:drawable="@color/own_navy_Blau" />
+    <!-- Normaler Zustand (kein Hintergrund) -->
+    <item android:drawable="@android:color/transparent" />
+</selector>

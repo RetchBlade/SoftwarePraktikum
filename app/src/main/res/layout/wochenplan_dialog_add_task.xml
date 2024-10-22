@@ -1,153 +1,155 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:padding="10dp">
+    android:background="?attr/colorSurface">
 
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:padding="20dp">
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:layout_marginBottom="16dp">
-
-    <ImageView
-        android:id="@+id/datePickerIcon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_calendar"
-        android:contentDescription="@string/select_date"
-        android:padding="8dp" />
-
-    <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/select_date"
-        android:textSize="18sp"
-        android:textColor="?attr/colorOnSurface"
-        android:textStyle="bold" />
-</LinearLayout>
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/blurred_card_background">
 
-<EditText
-    android:id="@+id/taskDescription"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:hint="@string/task_description"
-    android:textSize="16sp"
-    android:backgroundTint="?attr/colorPrimaryVariant"
-    android:padding="12dp" />
+        <!-- Date Picker Icon with modern style -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Priorität:"
-    android:textSize="16sp"
-    android:textColor="?attr/colorOnSurface"
-    android:layout_marginBottom="4dp" />
+            <ImageView
+                android:id="@+id/datePickerIcon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_calendar"
+                android:contentDescription="@string/select_date"
+                android:padding="8dp" />
 
-<Spinner
-    android:id="@+id/taskPriority"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:entries="@array/prio_liste" />
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/select_date"
+                android:textSize="18sp"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-<EditText
-    android:id="@+id/taskPoints"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/task_points"
-    android:inputType="number"
-    android:textSize="16sp"
-    android:backgroundTint="?attr/colorPrimaryVariant"
-    android:padding="12dp"
-    android:layout_marginBottom="20dp" />
+        <EditText
+            android:id="@+id/taskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="@string/task_description"
+            android:textSize="16sp"
+            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:padding="12dp" />
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Zuständiger:"
-    android:textSize="16sp"
-    android:textColor="?attr/colorOnSurface"
-    android:layout_marginBottom="4dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Priorität:"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="4dp" />
 
-<!-- Toggle for Repeating Task -->
-<Spinner
-    android:id="@+id/taskAssigneeSpinner"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:entries="@array/assignee_list" />
+        <Spinner
+            android:id="@+id/taskPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:entries="@array/prio_liste" />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="left"
-    android:layout_marginBottom="16dp">
+        <EditText
+            android:id="@+id/taskPoints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/task_points"
+            android:inputType="number"
+            android:textSize="16sp"
+            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:padding="12dp"
+            android:layout_marginBottom="20dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/repeating_task"
-        android:textSize="16sp"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginEnd="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zuständiger:"
+            android:textSize="16sp"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="4dp" />
 
-    <Switch
-        android:id="@+id/repeatingTaskToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        <!-- Toggle for Repeating Task -->
+        <Spinner
+            android:id="@+id/taskAssigneeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:entries="@array/assignee_list" />
 
-<!-- Repeating Task Details (Visibility Controlled) -->
-<LinearLayout
-    android:id="@+id/repeatingTaskDetails"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:visibility="gone"
-android:padding="12dp"
-android:layout_marginTop="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_marginBottom="16dp">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/repeat_on"
-    android:textSize="16sp"
-    android:textColor="?attr/colorOnSurface"
-    android:layout_marginBottom="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/repeating_task"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginEnd="8dp" />
 
-<Spinner
-    android:id="@+id/repeatDaySpinner"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:entries="@array/days_of_week"
-    android:layout_marginBottom="16dp" />
+            <Switch
+                android:id="@+id/repeatingTaskToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/repeat_frequency"
-    android:textSize="16sp"
-    android:textColor="?attr/colorOnSurface"
-    android:layout_marginBottom="8dp" />
+        <!-- Repeating Task Details (Visibility Controlled) -->
+        <LinearLayout
+            android:id="@+id/repeatingTaskDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/gradient_beige"
+            android:padding="12dp"
+            android:layout_marginTop="16dp">
 
-<Spinner
-    android:id="@+id/repeatFrequencySpinner"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:entries="@array/repeat_frequency_options"
-    android:layout_marginBottom="16dp" />
-</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/repeat_on"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/repeatDaySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/days_of_week"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/repeat_frequency"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/repeatFrequencySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/repeat_frequency_options"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
     </LinearLayout>
-    </ScrollView>
+</ScrollView>

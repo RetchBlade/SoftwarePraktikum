@@ -1,0 +1,16 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Rounded corners -->
+    <corners android:radius="20dp" />
+
+    <!-- Background color (semi-transparent beige) -->
+    <solid android:color="#74F0DCB5" /> <!-- F5DEB3 is a beige color; 80 = 50% opacity -->
+
+    <!-- Shadow Effect -->
+    <padding android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp" />
+
+</shape>

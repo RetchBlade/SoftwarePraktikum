@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.ItemEinkaufsBinding
 import com.serenitysystems.livable.ui.FullScreenImageDialogFragment
+import com.serenitysystems.livable.ui.einkaufsliste.ItemOptionsDialogFragment
 import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,15 +38,59 @@ class EinkaufsItemAdapter(
         val item = items[position]
         holder.bind(item)
 
-        // Klick-Listener nur für nicht erledigte Produkte aktivieren
-        if (!item.isChecked) {
-            holder.itemView.setOnClickListener {
-                onItemClicked(item)  // Callback für Produktklick
-            }
-        } else {
-            holder.itemView.setOnClickListener(null)  // Keine Aktion für erledigte Produkte
+        // Click listener to open the options dialog for this item
+        holder.itemView.setOnClickListener {
+            val fragmentManager = (holder.itemView.context as androidx.fragment.app.FragmentActivity).supportFragmentManager
+
+            val dialogFragment = ItemOptionsDialogFragment(
+                produkt = item,
+                onEditItem = { produkt ->
+                    onItemClicked(produkt) // Directly open the edit screen (Bearbeiten)
+                },
+                onMarkAsBought = { produkt ->
+                    // Update item status and UI
+                    produkt.isChecked = true
+                    produkt.statusIcon = R.drawable.ic_check // Assuming this is the green check icon
+                    notifyItemChanged(position) // Refresh the item in the RecyclerView
+                },
+
+                onMoveToAnotherDay = { produkt ->
+                    // Handle moving the item to another day
+                    val context = holder.itemView.context
+                    val calendar = Calendar.getInstance()
+
+                    produkt.date?.let {
+                        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                        val date = dateFormat.parse(it)
+                        if (date != null) {
+                            calendar.time = date
+                        }
+                    }
+
+                    val datePickerDialog = DatePickerDialog(
+                        context, { _, year, month, dayOfMonth ->
+                            val newDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                .format(GregorianCalendar(year, month, dayOfMonth).time)
+                            produkt.date = newDate
+                            produkt.statusIcon = R.drawable.ic_warning  // Set warning icon if date is changed
+                            produkt.isChecked = false
+                            onDateChanged(produkt, newDate)  // Call the date changed callback
+                        },
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    )
+                    datePickerDialog.show()
+                }
+            )
+
+            dialogFragment.show(fragmentManager, "item_options_dialog")
         }
     }
+
+
+
+
 
     // Gibt die Anzahl der Elemente in der Liste zurück
     override fun getItemCount(): Int = items.size
@@ -61,9 +106,12 @@ class EinkaufsItemAdapter(
 
     // Markiert ein Produkt für das Löschen
     fun markItemForDeletion(position: Int) {
-        items[position].isChecked = true
-        notifyItemChanged(position)
+        if (position >= 0 && position < items.size) {
+            items[position].isChecked = true
+            notifyItemChanged(position)
+        }
     }
+
 
     // Setzt die Liste der Produkte
     fun setItems(newItems: List<Produkt>) {
@@ -74,9 +122,13 @@ class EinkaufsItemAdapter(
 
     // Stellt ein zuvor gelöschtes Produkt wieder her
     fun restoreItem(position: Int) {
-        items[position].isChecked = false
+        // Ensure the item is marked as not bought
+        items[position].isChecked = false  // Mark as not checked
+        items[position].statusIcon = null  // Remove the status icon (e.g., green check)
+
         notifyItemChanged(position)
     }
+
 
     // Entfernt ein Produkt aus der Liste
     private fun removeItemFromCurrentDate(position: Int) {
@@ -96,7 +148,7 @@ class EinkaufsItemAdapter(
                 if (!item.imageUri.isNullOrEmpty()) {
                     itemImage.setImageURI(Uri.parse(item.imageUri))  // Bild anzeigen
                 } else {
-                    itemImage.setImageResource(R.drawable.ic_placeholder_image)  // Platzhalterbild anzeigen
+                    itemImage.setImageResource(R.drawable.ic_add_image)  // Platzhalterbild anzeigen
                 }
 
                 // Klick-Listener für das Produktbild

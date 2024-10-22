@@ -4,9 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".ui.wgregister.WgRegistrierungFragment">
 
-    <!-- Logo -->
+
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="100dp"
@@ -17,23 +18,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Title Text -->
     <TextView
         android:id="@+id/signUpText"
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="50dp"
+
         android:text="WG anlegen"
-        android:textColor="@color/own_navy_Dunkelblau"
+        android:textColor="@color/own_helle_Beige"
         android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintTop_toBottomOf="@+id/logoImage"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoImage" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- CardView wrapping the entire form -->
+
     <androidx.cardview.widget.CardView
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -44,83 +46,105 @@
         app:cardElevation="8dp"
         app:cardBackgroundColor="@android:color/transparent">
 
-        <!-- Form background and fields -->
+
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/gradient_beige"
             android:padding="16dp">
 
-            <!-- Inputs container -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Address input -->
-                <EditText
-                    android:id="@+id/adresseInput"
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/edit_text_background"
-                    android:hint="Adresse "
-                    android:padding="17dp"
-                    android:textSize="17sp" />
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
 
-                <!-- Size input -->
-                <EditText
-                    android:id="@+id/groesseInput"
+                    <EditText
+                        android:id="@+id/adresseInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/own_helle_Beige"
+                        android:hint="Adresse "
+                        android:padding="17dp"
+                        android:textSize="17sp" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/edit_text_background"
-                    android:hint="Größe der WG in qm "
-                    android:padding="17dp"
-                    android:textSize="17sp" />
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
 
-                <!-- Rooms input -->
-                <EditText
-                    android:id="@+id/zimmerInput"
+                    <EditText
+                        android:id="@+id/groesseInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/own_helle_Beige"
+                        android:hint="Größe der WG in qm "
+                        android:padding="17dp"
+                        android:textSize="17sp" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/edit_text_background"
-                    android:hint="Anzahl der Zimmer "
-                    android:padding="17dp"
-                    android:textSize="17sp" />
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
 
-                <!-- Residents input -->
-                <EditText
-                    android:id="@+id/bewohnerInput"
+                    <EditText
+                        android:id="@+id/zimmerInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/own_helle_Beige"
+                        android:hint="Anzahl der Zimmer "
+                        android:padding="17dp"
+                        android:textSize="17sp" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/edit_text_background"
-                    android:hint="Anzahl der Bewohner"
-                    android:padding="17dp"
-                    android:textSize="17sp" />
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
 
-                <!-- Submit button -->
-                <!-- Submit button -->
+                    <EditText
+                        android:id="@+id/bewohnerInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/own_helle_Beige"
+                        android:hint="Anzahl der Bewohner"
+                        android:padding="17dp"
+                        android:textSize="17sp" />
+                </androidx.cardview.widget.CardView>
+
+
                 <Button
                     android:id="@+id/registerButton"
-                    android:layout_width="match_parent"
+                    android:layout_width="331dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="25dp"
-                    android:background="@drawable/button_background"
-                android:text="Anlegen"
-                android:textColor="@color/own_helle_Beige"
-                android:textSize="22sp"
-                android:paddingLeft="24dp"
-                android:paddingRight="24dp"
-                android:textAllCaps="false"
-                android:elevation="6dp"
-                android:fontFamily="@font/poppinsregular"/>  <!-- Modern font -->
-
-
+                    android:backgroundTint="@color/own_navy_Blau"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:text="anlegen"
+                    android:textColor="@color/own_helle_Beige"
+                    android:textSize="22sp" />
             </LinearLayout>
         </RelativeLayout>
+
     </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
