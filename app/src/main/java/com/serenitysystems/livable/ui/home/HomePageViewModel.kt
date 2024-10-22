@@ -14,17 +14,28 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
 
     private val _userNickname = MutableLiveData<String?>()
     val userNickname: LiveData<String?> = _userNickname
+    private val _userPic = MutableLiveData<String?>()
+    val userPic: LiveData<String?> = _userPic // Hier auf _userPic korrigiert
 
     private val userPreferences: UserPreferences = UserPreferences(application)
 
     init {
         fetchUserNickname()
+        fetchUserPicture() // Füge diesen Aufruf hinzu, um das Bild zu laden
     }
 
     private fun fetchUserNickname() {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
                 _userNickname.postValue(userToken?.nickname)
+            }
+        }
+    }
+
+    private fun fetchUserPicture() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userPreferences.userToken.collect { userToken ->
+                _userPic.postValue(userToken?.profileImageUrl)
             }
         }
     }
@@ -44,16 +55,14 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
 
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
-                       val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
+                        val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
-
                             .addOnSuccessListener {
                                 val updatedToken = userToken.copy(wgId = "", wgRole = "")
                                 viewModelScope.launch {
                                     userPreferences.saveUserToken(updatedToken)
                                 }
                             }
-
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
                             }
@@ -66,7 +75,6 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 
     fun leaveWG() {
         fetchUserToken { token ->
@@ -86,5 +94,4 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-
 }

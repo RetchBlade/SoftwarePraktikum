@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.serenitysystems.livable.R
 
 class HomePageFragment : Fragment() {
@@ -23,6 +24,7 @@ class HomePageFragment : Fragment() {
     private var dialog: AlertDialog? = null
     private lateinit var welcomeMessageTextView: TextView
     private lateinit var userNicknameTextView: TextView
+    private lateinit var userPic: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,10 +35,25 @@ class HomePageFragment : Fragment() {
         // Get references to the TextViews
         welcomeMessageTextView = view.findViewById(R.id.greetingText)
         userNicknameTextView = view.findViewById(R.id.userNickname)
+        userPic = view.findViewById(R.id.imageView)
 
         // Observe the user nickname from the ViewModel
         homePageViewModel.userNickname.observe(viewLifecycleOwner, Observer { nickname ->
             userNicknameTextView.text = nickname ?: ""
+        })
+
+        // Observe the user picture from the ViewModel
+        homePageViewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
+            if (profileImageUrl != null) {
+                // Load the image with Glide
+                Glide.with(this)
+                    .load(profileImageUrl)
+                    .placeholder(R.drawable.pp) // Placeholder image while loading
+                    .error(R.drawable.pp) // Error image if loading fails
+                    .into(userPic)
+            } else {
+                userPic.setImageResource(R.drawable.pp) // Set placeholder if no image
+            }
         })
 
         // WG-Verwaltung Button (Kachel) Referenz
@@ -116,8 +133,6 @@ class HomePageFragment : Fragment() {
         joinWGDialog.show()
     }
 
-
-
     private fun showErrorDialog(message: String) {
         AlertDialog.Builder(requireContext())
             .setTitle("Fehler")
@@ -125,5 +140,4 @@ class HomePageFragment : Fragment() {
             .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-
 }

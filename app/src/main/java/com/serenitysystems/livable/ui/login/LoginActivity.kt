@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.login
 
+import RegistrierungFragment
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -10,7 +11,6 @@ import androidx.navigation.NavController
 import com.serenitysystems.livable.MainActivity
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.ActivityLoginBinding
-import com.serenitysystems.livable.ui.register.RegistrierungFragment
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
