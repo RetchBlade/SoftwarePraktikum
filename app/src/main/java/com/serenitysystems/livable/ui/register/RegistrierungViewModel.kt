@@ -5,7 +5,7 @@ import com.serenitysystems.livable.ui.register.data.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class RegistrationViewModel : ViewModel() {
+class RegistrierungViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     val registrationSuccess = MutableLiveData<Boolean>()
     val registrationError = MutableLiveData<String>()

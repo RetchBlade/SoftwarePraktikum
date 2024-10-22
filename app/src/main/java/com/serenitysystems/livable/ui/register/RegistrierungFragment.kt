@@ -24,7 +24,7 @@ import java.util.*
 class RegistrierungFragment : Fragment() {
 
     // Initialisierung des ViewModels für die Registrierung
-    private val viewModel: RegistrationViewModel by viewModels()
+    private val viewModel: RegistrierungViewModel by viewModels()
 
     // Deklaration der UI-Elemente
     private lateinit var editTextBirthdate: TextView
