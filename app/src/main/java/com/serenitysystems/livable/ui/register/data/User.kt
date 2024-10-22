@@ -7,5 +7,6 @@ data class User(
     val birthdate: String = "",
     val gender: String = "",
     val wgId: String = "",
-    val wgRole: String = ""
+    val wgRole: String = "",
+    val profileImageUrl: String = ""
 )

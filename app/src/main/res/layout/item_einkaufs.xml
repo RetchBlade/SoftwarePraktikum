@@ -1,51 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp"
-    app:cardBackgroundColor="@color/white"
-    android:backgroundTint="@color/white"
-    android:foreground="?attr/selectableItemBackground"
-    android:elevation="6dp">
+    android:orientation="vertical"
+    android:padding="8dp">
 
-    <!-- LinearLayout inside the CardView for content -->
+    <!-- Horizontales Layout für Produktbild und Informationen -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp">
+        android:orientation="horizontal">
 
-        <!-- CardView for circular product image -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white">
-
-            <!-- Produktbild -->
-            <ImageView
-                android:id="@+id/itemImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Produktbild"
-                android:src="@drawable/ic_camera_placeholder" />
-        </androidx.cardview.widget.CardView>
+        <!-- Produktbild -->
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Produktbild"
+            android:src="@drawable/ic_camera_placeholder"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_corners"
+            android:clickable="true"
+            android:focusable="true" />
 
         <!-- Vertikales Layout für Produktname und Menge -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingStart="12dp">
+            android:orientation="vertical">
 
             <!-- Produktname -->
             <TextView
@@ -54,9 +40,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:maxLines="1"
-                android:ellipsize="end" />
+                android:textColor="@android:color/black" />
 
             <!-- Menge und Einheit -->
             <LinearLayout
@@ -70,26 +54,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray" />
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:id="@+id/itemUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
+                    android:textColor="@android:color/black"
                     android:layout_marginStart="4dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Statusicon (optional) -->
+        <!-- Statusicon -->
         <ImageView
             android:id="@+id/itemIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="8dp"
             android:contentDescription="Statusicon"
             android:visibility="gone"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+    <!-- Trennlinie -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/gradient_line"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

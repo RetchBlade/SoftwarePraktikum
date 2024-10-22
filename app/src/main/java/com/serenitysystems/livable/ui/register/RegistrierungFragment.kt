@@ -1,21 +1,22 @@
-package com.serenitysystems.livable.ui.register
-
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.ContentValues.TAG
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.EditText
-import android.widget.Button
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.storage.FirebaseStorage
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.login.LoginActivity
+import com.serenitysystems.livable.ui.register.RegistrierungViewModel
 import com.serenitysystems.livable.ui.register.data.User
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
@@ -23,33 +24,34 @@ import java.util.*
 
 class RegistrierungFragment : Fragment() {
 
-    // Initialisierung des ViewModels für die Registrierung
-    private val viewModel: RegistrationViewModel by viewModels()
+    private val viewModel: RegistrierungViewModel by viewModels()
 
-    // Deklaration der UI-Elemente
+    // UI-Elemente deklarieren
     private lateinit var editTextBirthdate: TextView
     private lateinit var editTextEmail: EditText
     private lateinit var editTextNickname: EditText
     private lateinit var editTextPassword: EditText
     private lateinit var editTextPasswordConfirm: EditText
     private lateinit var radioGroupGender: RadioGroup
+    private lateinit var imageView : ImageView
     private lateinit var signUpButton: Button
-    private lateinit var backtologin : TextView
+    private lateinit var backtologin: TextView
+    private lateinit var uploadButton: ImageButton
+    private var imageUri: Uri? = null
+    private val storageReference = FirebaseStorage.getInstance().reference
 
-    // Methode, die aufgerufen wird, wenn das Fragment erstellt wird
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflating des Layouts für dieses Fragment
         val view = inflater.inflate(R.layout.fragment_registrierung, container, false)
 
-        // Initialisierung der UI-Elemente
+        // UI-Elemente initialisieren
         editTextBirthdate = view.findViewById(R.id.editTextBirthdate)
-        // Setzt einen OnClickListener, um das Datumsauswahl-Dialogfeld anzuzeigen
         editTextBirthdate.setOnClickListener { showDatePickerDialog() }
 
         backtologin = view.findViewById(R.id.Login)
+        uploadButton = view.findViewById(R.id.uploadButton)
 
         editTextEmail = view.findViewById(R.id.usernameEditText)
         editTextNickname = view.findViewById(R.id.editTextNickname)
@@ -57,102 +59,126 @@ class RegistrierungFragment : Fragment() {
         editTextPasswordConfirm = view.findViewById(R.id.PasswortBestätigung)
         radioGroupGender = view.findViewById(R.id.radioGroupGender)
         signUpButton = view.findViewById(R.id.signUpButton)
+        imageView = view.findViewById(R.id.imageView)
 
-        // Setzt einen OnClickListener, um die Benutzerdaten zu sammeln und die Registrierung zu starten
+        uploadButton.setOnClickListener {
+            openGalleryForImage()
+        }
+
         signUpButton.setOnClickListener { collectUserDataAndRegister() }
-        backtologin.setOnClickListener {navigateToLoginActivity()}
+        backtologin.setOnClickListener { navigateToLoginActivity() }
 
-
-        // Beobachtung des ViewModels
+        // Beobachte ViewModel
         observeViewModel()
 
         return view
     }
 
-    // Methode zum Sammeln der Benutzerdaten und zum Starten der Registrierung
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(Intent.createChooser(intent, "Bild auswählen"), 1000) // Image request code
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1000 && resultCode == Activity.RESULT_OK) {
+            imageUri = data?.data
+            // Bild in der ImageView anzeigen (optional)
+            view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+        }
+    }
+
     private fun collectUserDataAndRegister() {
         val email = editTextEmail.text.toString()
         val nickname = editTextNickname.text.toString()
         val password = editTextPassword.text.toString()
         val passwordConfirm = editTextPasswordConfirm.text.toString()
         val birthdate = editTextBirthdate.text.toString()
-
-        // Überprüfen, ob alle Felder ausgefüllt sind und die Passwörter übereinstimmen
+        val profileImageUrl = imageView.toString()
         if (email.isNotEmpty() && nickname.isNotEmpty() && password.isNotEmpty() &&
-            passwordConfirm.isNotEmpty() && birthdate.isNotEmpty() && password == passwordConfirm) {
+            passwordConfirm.isNotEmpty() && birthdate.isNotEmpty() && password == passwordConfirm
+        ) {
 
-            // Bestimmt das ausgewählte Geschlecht
             val selectedGenderId = radioGroupGender.checkedRadioButtonId
             val gender = if (selectedGenderId == R.id.radioMale) "Männlich" else "Weiblich"
-
             val hashedPassword = hashPassword(password)
-            // Erstellt ein User-Objekt mit den eingegebenen Daten
-            val user = User(email, nickname, hashedPassword, birthdate, gender)
 
-            // Startet die Registrierung im Hintergrund
-            lifecycleScope.launch {
-                viewModel.registerUser(user)
+            // Wenn ein Bild vorhanden ist, lade es hoch
+            if (imageUri != null) {
+                uploadImageToFirebase(imageUri!!) { imageUrl ->
+                    val user = User(email, nickname, hashedPassword, birthdate, gender, "", "", imageUrl)
+                    lifecycleScope.launch {
+                        viewModel.registerUser(user)
+                    }
+                }
+            } else {
+                // Registrierung ohne Bild
+                val user = User(email, nickname, hashedPassword, birthdate, gender)
+                lifecycleScope.launch {
+                    viewModel.registerUser(user)
+                }
             }
         } else {
-            // Setzt Fehlermeldungen für leere oder ungültige Felder
-            if (email.isEmpty()) {
-                editTextEmail.error = "Email darf nicht leer sein"
-            }
-            if (nickname.isEmpty()) {
-                editTextNickname.error = "Benutzername darf nicht leer sein"
-            }
-            if (password.isEmpty()) {
-                editTextPassword.error = "Passwort darf nicht leer sein"
-            }
-            if (passwordConfirm.isEmpty()) {
-                editTextPasswordConfirm.error = "Passwortbestätigung darf nicht leer sein"
-            }
-            if (birthdate.isEmpty()) {
-                editTextBirthdate.error = "Geburtsdatum darf nicht leer sein"
-            }
-            if (password != passwordConfirm) {
-                editTextPasswordConfirm.error = "Passwörter stimmen nicht überein"
-            }
+            // Fehlermeldungen für leere oder ungültige Felder setzen
+            if (email.isEmpty()) editTextEmail.error = "Email darf nicht leer sein"
+            if (nickname.isEmpty()) editTextNickname.error = "Benutzername darf nicht leer sein"
+            if (password.isEmpty()) editTextPassword.error = "Passwort darf nicht leer sein"
+            if (passwordConfirm.isEmpty()) editTextPasswordConfirm.error = "Passwortbestätigung darf nicht leer sein"
+            if (birthdate.isEmpty()) editTextBirthdate.error = "Geburtsdatum darf nicht leer sein"
+            if (password != passwordConfirm) editTextPasswordConfirm.error = "Passwörter stimmen nicht überein"
         }
     }
 
-    // Methode zur Beobachtung des ViewModels
+    // ViewModel-Beobachtung
     private fun observeViewModel() {
-        // Beobachtet den Registrierungserfolg
-        viewModel.registrationSuccess.observe(viewLifecycleOwner, Observer { success ->
+        viewModel.registrationSuccess.observe(viewLifecycleOwner, androidx.lifecycle.Observer { success ->
             if (success) {
                 navigateToLoginActivity()
             }
         })
 
-        // Beobachtet Registrierungsfehler
-        viewModel.registrationError.observe(viewLifecycleOwner, Observer { error ->
+        viewModel.registrationError.observe(viewLifecycleOwner, androidx.lifecycle.Observer { error ->
             error?.let {
-                when {
-                    it.contains("email") -> editTextEmail.error = "Diese Email ist bereits vergeben"
-                    else -> editTextEmail.error = "Ein unbekannter Fehler ist aufgetreten"
+                if (it.contains("email")) {
+                    editTextEmail.error = "Diese Email ist bereits vergeben"
+                } else {
+                    Toast.makeText(requireContext(), "Ein unbekannter Fehler ist aufgetreten", Toast.LENGTH_LONG).show()
                 }
             }
         })
     }
 
-    // Methode zum Anzeigen des Datumsauswahl-Dialogfelds
+    private fun uploadImageToFirebase(imageUri: Uri, onSuccess: (String) -> Unit) {
+        Log.d("Bildupload", "Starting image upload") // Logcat message
+
+        val fileReference = storageReference.child("User/${UUID.randomUUID()}.jpg")
+        fileReference.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                Log.d("Bildupload", "Image upload successful") // Logcat message
+                fileReference.downloadUrl.addOnSuccessListener { uri ->
+                    onSuccess(uri.toString()) // Gibt die Bild-URL zurück
+                    signUpButton.isEnabled = true // Re-enable the button
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Bildupload", "Image upload failed: ${exception.message}", exception) // Logcat error message
+                signUpButton.isEnabled = true // Re-enable the button
+            }
+    }
+
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Erstellt und zeigt das Datumsauswahl-Dialogfeld an
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
+        val datePickerDialog = DatePickerDialog(requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                // Setzt das ausgewählte Datum im TextView
                 val selectedDate = "$selectedDay.${selectedMonth + 1}.$selectedYear"
                 editTextBirthdate.text = selectedDate
-            },
-            year, month, day
-        )
+            }, year, month, day)
 
         datePickerDialog.show()
     }
@@ -169,5 +195,4 @@ class RegistrierungFragment : Fragment() {
         val hash = digest.digest(password.toByteArray())
         return hash.joinToString("") { "%02x".format(it) }
     }
-
 }
