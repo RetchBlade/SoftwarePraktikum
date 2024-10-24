@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -87,7 +88,6 @@
                     android:id="@+id/text_lebensmittel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Lebensmittel"
                     android:textColor="@color/own_helle_Beige"
                     android:textSize="24sp"
@@ -103,14 +103,14 @@
                     android:layout_height="30dp"
                     android:src="@drawable/ic_food"
                     android:layout_gravity="end"
-                    android:layout_marginTop="-30dp"  /> <!-- Adjust for positioning -->
+                    android:layout_marginTop="-30dp" />
 
+                <!-- RecyclerView für Lebensmittel -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_lebensmittel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    />
+                    android:orientation="vertical"/>
             </LinearLayout>
 
             <!-- Getränke Container -->
@@ -128,7 +128,6 @@
                     android:id="@+id/text_getranke"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Getränke"
                     android:textColor="@color/own_helle_Beige"
                     android:textSize="24sp"
@@ -144,8 +143,9 @@
                     android:layout_height="30dp"
                     android:src="@drawable/ic_drink"
                     android:layout_gravity="end"
-                    android:layout_marginTop="-30dp"  /> <!-- Adjust for positioning -->
+                    android:layout_marginTop="-30dp" />
 
+                <!-- RecyclerView für Getränke -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_getranke"
                     android:layout_width="match_parent"
@@ -168,7 +168,6 @@
                     android:id="@+id/text_haushalt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Haushalt"
                     android:textColor="@color/own_helle_Beige"
                     android:textSize="24sp"
@@ -184,8 +183,9 @@
                     android:layout_height="30dp"
                     android:src="@drawable/ic_household"
                     android:layout_gravity="end"
-                    android:layout_marginTop="-30dp" /> <!-- Adjust for positioning -->
+                    android:layout_marginTop="-30dp" />
 
+                <!-- RecyclerView für Haushalt -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_haushalt"
                     android:layout_width="match_parent"
@@ -208,7 +208,6 @@
                     android:id="@+id/text_sonstiges"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Sonstiges"
                     android:textColor="@color/own_helle_Beige"
                     android:textSize="24sp"
@@ -224,8 +223,9 @@
                     android:layout_height="30dp"
                     android:src="@drawable/ic_others"
                     android:layout_gravity="end"
-                    android:layout_marginTop="-30dp" /> <!-- Adjust for positioning -->
+                    android:layout_marginTop="-30dp" />
 
+                <!-- RecyclerView für Sonstiges -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_sonstiges"
                     android:layout_width="match_parent"
@@ -236,6 +236,7 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- FloatingActionButton bleibt unverändert -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"

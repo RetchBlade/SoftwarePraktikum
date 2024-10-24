@@ -3,9 +3,11 @@
 package com.serenitysystems.livable.ui.einkaufsliste.data
 
 import android.graphics.Color
+import java.util.UUID
 
 // Datenklasse für ein Produkt in der Einkaufsliste
 data class Produkt(
+    val id: String = UUID.randomUUID().toString(),
     val name: String,
     val quantity: String,
     val unit: String,
@@ -17,3 +19,5 @@ data class Produkt(
     var statusColor: Int = Color.WHITE,  // Farbe zur Darstellung des Status
     var statusIcon: Int? = null          // Icon zur Darstellung des Status (z.B. Häkchen, Warnung)
 )
+
+

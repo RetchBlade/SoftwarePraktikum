@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- item_einkauf.xml -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,7 +14,7 @@
     android:foreground="?attr/selectableItemBackground"
     android:elevation="6dp">
 
-    <!-- LinearLayout inside the CardView for content -->
+    <!-- Hauptlayout innerhalb der CardView -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
         android:gravity="center_vertical"
         android:padding="12dp">
 
-        <!-- CardView for circular product image -->
+        <!-- CardView für das kreisförmige Produktbild -->
         <androidx.cardview.widget.CardView
             android:layout_width="64dp"
             android:layout_height="64dp"
