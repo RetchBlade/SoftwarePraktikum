@@ -1,15 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- dialog_fullscreen_image.xml -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Bildanzeige -->
     <ImageView
         android:id="@+id/fullscreenImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:contentDescription="@string/fullscreen_image" />
+        android:contentDescription="Vollbild Bild" />
 
+    <!-- Schließen-Button -->
     <ImageView
         android:id="@+id/closeButton"
         android:layout_width="48dp"
@@ -17,5 +19,6 @@
         android:layout_gravity="top|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_close"
-        android:contentDescription="@string/close_image" />
+        android:contentDescription="Schließen"
+        android:background="?attr/selectableItemBackgroundBorderless" />
 </FrameLayout>
