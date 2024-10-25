@@ -1,12 +1,12 @@
+// FullScreenImageDialogFragment.kt
 package com.serenitysystems.livable.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.serenitysystems.livable.R
 
 class FullScreenImageDialogFragment : DialogFragment() {
@@ -17,11 +17,13 @@ class FullScreenImageDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         // Bild-URI vom Bundle erhalten und in Uri umwandeln
         imageUri = arguments?.getString("imageUri")?.let { Uri.parse(it) }
+        setStyle(STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar_Fullscreen) // Vollbildmodus ohne Titelzeile
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        // Layout für den Dialog laden
         val view = inflater.inflate(R.layout.dialog_fullscreen_image, container, false)
 
         // Vollbild-ImageView und Schließen-Button
@@ -29,8 +31,10 @@ class FullScreenImageDialogFragment : DialogFragment() {
         val closeButton: ImageView = view.findViewById(R.id.closeButton)
 
         // Bild anzeigen, falls ein URI vorhanden ist
-        if (imageUri != null) {
-            imageView.setImageURI(imageUri)
+        imageUri?.let {
+            Glide.with(requireContext())
+                .load(it)
+                .into(imageView)
         }
 
         // Schließen-Button für den Dialog

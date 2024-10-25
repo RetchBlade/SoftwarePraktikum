@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
 
+
     // Material Components
     implementation(libs.material) // Ensure this points to the latest Material Components version
 
