@@ -67,8 +67,14 @@ class WgRegistrierungFragment : Fragment() {
                             // UserToken und UI aktualisieren
                             val updatedToken = it.copy(wgId = wgId, wgRole = "Wg-Leiter")
                             lifecycleScope.launch {
-                                userPreferences.saveUserToken(updatedToken)
+                                try {
+                                    Log.e("WgRegistrierungFragment", "Erfolgreich die WG erstellt und den User zugewiesen.")
+                                    userPreferences.saveUserToken(updatedToken)
+                                } catch (e: Exception) {
+                                   Log.e("WgRegistrierungFragment", "Fehler beim Aktualisieren des UserToken: ${e.message}")
+                                }
                             }
+
                             // Navigation zur Homepage
                             requireActivity().supportFragmentManager.popBackStack()
                         }, { exception ->

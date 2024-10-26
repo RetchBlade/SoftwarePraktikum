@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     // Material Components
     implementation(libs.material) // Ensure this points to the latest Material Components version
