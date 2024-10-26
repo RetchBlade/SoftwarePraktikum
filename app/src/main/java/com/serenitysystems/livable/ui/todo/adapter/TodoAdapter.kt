@@ -2,6 +2,7 @@ package com.serenitysystems.livable.ui.todo.adapter
 
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -23,19 +24,28 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
     }
 
     inner class TodoViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private var isExpanded = false
+
         fun bind(todo: TodoItem) {
             binding.todoDescription.text = todo.description
             binding.todoCheckBox.isChecked = todo.isDone
 
-            // Set the initial strike-through based on the todo's done status
+            // Set initial state of the detailed description
+            binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+
+            // Set strike-through if the task is done
             updateStrikeThrough(binding.todoDescription, todo.isDone)
 
-            // Set a listener for the checkbox to update the UI and the item's state
-            binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                // Update the UI to reflect the new state
-                updateStrikeThrough(binding.todoDescription, isChecked)
+            // Toggle visibility of detailed description on click
+            binding.root.setOnClickListener {
+                isExpanded = !isExpanded
+                binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            }
 
-                // Optionally, trigger any logic when a todo's done state changes
+            // Handle checkbox state change
+            binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                updateStrikeThrough(binding.todoDescription, isChecked)
                 val updatedTodo = todo.copy(isDone = isChecked)
                 onTodoClick(updatedTodo)
             }
