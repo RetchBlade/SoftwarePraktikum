@@ -29,21 +29,14 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
 
         fun bind(todo: TodoItem) {
             binding.todoDescription.text = todo.description
-            binding.todoCheckBox.isChecked = todo.isDone
-
-            // Set initial state of the detailed description
+            binding.todoDetailedDescription.setText(todo.detailedDescription) // Detaillierte Beschreibung setzen
             binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
 
-            // Set strike-through if the task is done
-            updateStrikeThrough(binding.todoDescription, todo.isDone)
-
-            // Toggle visibility of detailed description on click
             binding.root.setOnClickListener {
                 isExpanded = !isExpanded
                 binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
             }
 
-            // Handle checkbox state change
             binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 updateStrikeThrough(binding.todoDescription, isChecked)
                 val updatedTodo = todo.copy(isDone = isChecked)

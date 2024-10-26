@@ -10,13 +10,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Feld für die Hauptaufgabe -->
         <EditText
             android:id="@+id/todoDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Aufgabe beschreiben"
+            android:hint="Aufgabe"
             android:layout_marginBottom="16dp" />
 
+        <!-- Neues Feld für die detaillierte Beschreibung -->
+        <EditText
+            android:id="@+id/todoDetailedDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Beschreibung"
+            android:layout_marginBottom="16dp" />
+
+        <!-- DatePicker für das Fälligkeitsdatum -->
         <DatePicker
             android:id="@+id/todoDatePicker"
             android:layout_width="match_parent"
@@ -24,5 +34,5 @@
             android:calendarViewShown="false" />
 
     </LinearLayout>
-
 </ScrollView>
+

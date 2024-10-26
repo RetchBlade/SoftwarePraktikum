@@ -132,6 +132,7 @@ class ToDoFragment : Fragment() {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.todo_dialog_add_todo, null)
         val todoDescription: EditText = dialogView.findViewById(R.id.todoDescription)
+        val todoDetailedDescription: EditText = dialogView.findViewById(R.id.todoDetailedDescription) // Neues Feld
         val todoDatePicker: DatePicker = dialogView.findViewById(R.id.todoDatePicker)
 
         val dialog = AlertDialog.Builder(context)
@@ -139,9 +140,14 @@ class ToDoFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Hinzufügen") { _, _ ->
                 val description = todoDescription.text.toString()
+                val detailedDescription = todoDetailedDescription.text.toString() // Detaillierte Beschreibung
                 val calendar = Calendar.getInstance()
                 calendar.set(todoDatePicker.year, todoDatePicker.month, todoDatePicker.dayOfMonth)
-                val newTodo = TodoItem(description = description, date = calendar.time)
+                val newTodo = TodoItem(
+                    description = description,
+                    detailedDescription = detailedDescription, // Speichere detaillierte Beschreibung
+                    date = calendar.time
+                )
 
                 todoViewModel.addTodo(newTodo)
             }
