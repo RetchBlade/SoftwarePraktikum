@@ -32,6 +32,7 @@ class HomePageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
 
+
         // Referenzen zu den TextViews abrufen
         welcomeMessageTextView = view.findViewById(R.id.greetingText)
         userNicknameTextView = view.findViewById(R.id.userNickname)
