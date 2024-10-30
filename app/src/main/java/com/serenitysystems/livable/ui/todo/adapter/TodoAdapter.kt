@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.databinding.TodoItemBinding
 import com.serenitysystems.livable.ui.todo.data.TodoItem
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<TodoItem, TodoAdapter.TodoViewHolder>(TodoDiffCallback()) {
 
@@ -29,13 +31,21 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
 
         fun bind(todo: TodoItem) {
             binding.todoDescription.text = todo.description
-            binding.todoDetailedDescription.setText(todo.detailedDescription) // Detaillierte Beschreibung setzen
-            binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            binding.todoDate.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(todo.date)
 
+            // Initial versteckte detaillierte Beschreibung
+            binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            binding.todoDetailedDescription.setText(todo.detailedDescription)
+
+            // Umschalten der detaillierten Beschreibung beim Klick
             binding.root.setOnClickListener {
                 isExpanded = !isExpanded
                 binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
             }
+
+            // Checkbox-Verhalten und Streichen des Textes bei Erledigung
+            binding.todoCheckBox.isChecked = todo.isDone
+            updateStrikeThrough(binding.todoDescription, todo.isDone)
 
             binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 updateStrikeThrough(binding.todoDescription, isChecked)
@@ -43,6 +53,7 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
                 onTodoClick(updatedTodo)
             }
         }
+
 
         private fun updateStrikeThrough(textView: TextView, isChecked: Boolean) {
             if (isChecked) {
