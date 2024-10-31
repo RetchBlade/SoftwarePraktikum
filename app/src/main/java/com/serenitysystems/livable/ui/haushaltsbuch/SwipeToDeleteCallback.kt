@@ -1,10 +1,11 @@
+package com.serenitysystems.livable.ui.haushaltsbuch
+
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.serenitysystems.livable.ui.haushaltsbuch.ExpenseAdapter
 
 class SwipeToDeleteCallback(
     private val context: Context,
@@ -36,11 +37,9 @@ class SwipeToDeleteCallback(
 
         when (direction) {
             ItemTouchHelper.RIGHT -> {
-                // Sağ kaydırma (silme) için onRequestDelete kullanılır
                 adapter.onRequestDelete(expense, position)
             }
             ItemTouchHelper.LEFT -> {
-                // Sol kaydırma (geri yükleme) için restoreExpense kullanılır
                 adapter.restoreExpense(expense)
             }
         }

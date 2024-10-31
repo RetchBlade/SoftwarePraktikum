@@ -1,14 +1,10 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.sin
 
 class PieChartView @JvmOverloads constructor(
     context: Context,
@@ -16,57 +12,88 @@ class PieChartView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private val paint = Paint().apply {
+    private data class PieSegment(
+        val startAngle: Float,
+        val sweepAngle: Float,
+        val color: Int,
+        val letter: String
+    )
+
+    private val segments = mutableListOf<PieSegment>()
+    private val piePaint = Paint().apply {
         isAntiAlias = true
-    }
-    private val linePaint = Paint().apply {
-        color = Color.BLACK
-        strokeWidth = 2f
-        style = Paint.Style.STROKE
-        isAntiAlias = true
+        style = Paint.Style.FILL
     }
     private val textPaint = Paint().apply {
-        color = Color.BLACK
-        textSize = 30f
         isAntiAlias = true
+        color = Color.WHITE
         textAlign = Paint.Align.CENTER
+        textSize = 40f
+        typeface = Typeface.DEFAULT_BOLD
     }
 
-    private var categories = listOf<String>()
-    private var percentages = listOf<Float>()
-    private var colors = listOf<Int>()
+    // Daten setzen und vorbereiten
+    fun setData(categories: List<String>, values: List<Double>, colors: List<Int>) {
+        prepareChartData(categories, values, colors)
+        invalidate() // Neu zeichnen
+    }
 
-    fun setData(categories: List<String>, percentages: List<Float>, colors: List<Int>) {
-        this.categories = categories
-        this.percentages = percentages
-        this.colors = colors
-        invalidate() // Ekranı yeniden çizer
+    // Vorbereitung der Daten außerhalb von onDraw()
+    private fun prepareChartData(categories: List<String>, values: List<Double>, colors: List<Int>) {
+        segments.clear()
+        if (categories.isEmpty() || values.isEmpty()) return
+
+        val total = values.sum()
+        var startAngle = -90f
+
+        for (i in categories.indices) {
+            val value = values[i]
+            val sweepAngle = (value / total * 360).toFloat()
+            val letter = categories[i].first().toString().uppercase()
+
+            segments.add(
+                PieSegment(
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    color = colors[i % colors.size],
+                    letter = letter
+                )
+            )
+            startAngle += sweepAngle
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (segments.isEmpty()) return
 
-        val total = percentages.sum()
-        var startAngle = -90f
-        val radius = min(width, height) / 2f * 0.7f
+        val diameter = min(width, height) * 0.8f
+        val radius = diameter / 2
         val cx = width / 2f
         val cy = height / 2f
+        val rectF = RectF(cx - radius, cy - radius, cx + radius, cy + radius)
 
-        for (i in percentages.indices) {
-            val sweepAngle = (percentages[i] / total) * 360f
-            paint.color = colors[i % colors.size]
-            canvas.drawArc(cx - radius, cy - radius, cx + radius, cy + radius, startAngle, sweepAngle, true, paint)
+        segments.forEach { segment ->
+            // Zeichnen des Segmentes
+            piePaint.color = segment.color
+            canvas.drawArc(rectF, segment.startAngle, segment.sweepAngle, true, piePaint)
 
-            val midAngle = startAngle + sweepAngle / 2f
-            val lineX = cx + radius * cos(Math.toRadians(midAngle.toDouble())).toFloat()
-            val lineY = cy + radius * sin(Math.toRadians(midAngle.toDouble())).toFloat()
-            val textX = cx + (radius + 20) * cos(Math.toRadians(midAngle.toDouble())).toFloat()
-            val textY = cy + (radius + 20) * sin(Math.toRadians(midAngle.toDouble())).toFloat()
+            // Berechnen der Position für den Buchstaben
+            val angle = Math.toRadians((segment.startAngle + segment.sweepAngle / 2).toDouble())
+            val textRadius = radius * 0.7f
+            val textX = cx + (textRadius * Math.cos(angle)).toFloat()
+            val textY = cy + (textRadius * Math.sin(angle)).toFloat() + textPaint.textSize / 2
 
-            canvas.drawLine(cx, cy, lineX, lineY, linePaint)
-            canvas.drawText("${"%.1f".format(percentages[i] * 100)}%", textX, textY, textPaint)
-
-            startAngle += sweepAngle
+            // Zeichnen des Buchstabens
+            canvas.drawText(segment.letter, textX, textY, textPaint)
         }
+
+        // Zeichnen des inneren Kreises für Donut-Effekt
+        val holePaint = Paint().apply {
+            isAntiAlias = true
+            color = Color.WHITE
+        }
+        val holeRadius = radius * 0.5f
+        canvas.drawCircle(cx, cy, holeRadius, holePaint)
     }
 }
