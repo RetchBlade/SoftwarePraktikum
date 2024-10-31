@@ -1,29 +1,24 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
-import SwipeToDeleteCallback
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 import com.serenitysystems.livable.databinding.FragmentEinnahmenBinding
+import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
+import com.serenitysystems.livable.ui.haushaltsbuch.viewmodel.HaushaltsbuchViewModel
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class EinnahmenFragment : Fragment() {
 
     private var _binding: FragmentEinnahmenBinding? = null
     private val binding get() = _binding!!
-    private lateinit var haushaltsbuchViewModel: HaushaltsbuchViewModel
+    private val haushaltsbuchViewModel: HaushaltsbuchViewModel by activityViewModels()
     private lateinit var adapter: ExpenseAdapter
 
     private var selectedDate: Calendar = Calendar.getInstance()
@@ -32,9 +27,6 @@ class EinnahmenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        haushaltsbuchViewModel =
-            ViewModelProvider(requireActivity()).get(HaushaltsbuchViewModel::class.java)
-
         _binding = FragmentEinnahmenBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -43,10 +35,9 @@ class EinnahmenFragment : Fragment() {
         adapter = ExpenseAdapter(
             mutableListOf(),
             onEditClick = { expense -> showEditTransactionDialog(expense) },
-            onExpenseUpdated = { haushaltsbuchViewModel.addExpense(it) },
-            onExpenseRemoved = { haushaltsbuchViewModel.clearExpensesForDate(selectedDate) },
-            onRequestDelete = { expense, position ->
-                // Burada silme işlemini onaylama mantığını ekleyebilirsiniz
+            onExpenseUpdated = { haushaltsbuchViewModel.updateExpense(it) },
+            onExpenseRemoved = { haushaltsbuchViewModel.deleteExpense(it) },
+            onRequestDelete = { expense, _ ->
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("Bestätigung")
                 builder.setMessage("Möchten Sie diesen Eintrag wirklich löschen?")
@@ -62,26 +53,24 @@ class EinnahmenFragment : Fragment() {
             }
         )
 
-
-
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner, Observer { expenses ->
+        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { expenses ->
             val einnahmen = expenses.filter { it.istEinnahme }
             adapter.updateExpenses(einnahmen)
             updateKontostand()
-        })
+        }
 
-        haushaltsbuchViewModel.kontostand.observe(viewLifecycleOwner, Observer { kontostand ->
+        haushaltsbuchViewModel.kontostand.observe(viewLifecycleOwner) { kontostand ->
             binding.textViewKontostand.text = "Kontostand: ${"%.2f".format(kontostand)} EUR"
-        })
+        }
 
         binding.fab.setOnClickListener {
             showAddTransactionDialog(true)
         }
 
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
+        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
 
         binding.leftArrow.setOnClickListener {
             changeDate(-1)
@@ -95,17 +84,8 @@ class EinnahmenFragment : Fragment() {
             showDatePickerDialog()
         }
 
-        // Swipe işlemleri
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(requireContext(), adapter))
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
-
-        setFragmentResultListener(AddTransactionDialogFragment.REQUEST_KEY) { _, bundle ->
-            val expense = bundle.getParcelable<Expense>("expense")
-            expense?.let {
-                haushaltsbuchViewModel.addExpense(it)
-                haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
-            }
-        }
 
         return root
     }
@@ -126,14 +106,13 @@ class EinnahmenFragment : Fragment() {
     }
 
     private fun updateDateDisplay() {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        binding.dateTextView.text = dateFormat.format(selectedDate.time)
+        binding.dateTextView.text = formatDate(selectedDate)
+        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
     }
 
     private fun changeDate(days: Int) {
         selectedDate.add(Calendar.DAY_OF_MONTH, days)
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
     }
 
     private fun showDatePickerDialog() {
@@ -144,13 +123,17 @@ class EinnahmenFragment : Fragment() {
                 selectedDate.set(Calendar.MONTH, monthOfYear)
                 selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 updateDateDisplay()
-                haushaltsbuchViewModel.loadExpensesForDate(selectedDate)
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
             selectedDate.get(Calendar.DAY_OF_MONTH)
         )
         datePickerDialog.show()
+    }
+
+    private fun formatDate(calendar: Calendar): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 
     override fun onDestroyView() {

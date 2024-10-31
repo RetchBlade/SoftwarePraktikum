@@ -39,19 +39,16 @@ class ExpenseAdapter(
     fun confirmDelete(expense: Expense) {
         val position = expenses.indexOf(expense)
         if (!expense.isDeleted) {
-            expense.isDeleted = true
-            notifyItemChanged(position)
+            expenses.removeAt(position)
+            notifyItemRemoved(position)
             onExpenseRemoved(expense)
         }
     }
 
     fun restoreExpense(expense: Expense) {
-        val position = expenses.indexOf(expense)
-        if (expense.isDeleted) {
-            expense.isDeleted = false
-            notifyItemChanged(position)
-            onExpenseUpdated(expense)
-        }
+        expenses.add(expense)
+        notifyItemInserted(expenses.size - 1)
+        onExpenseUpdated(expense)
     }
 
     inner class ExpenseViewHolder(
@@ -77,42 +74,17 @@ class ExpenseAdapter(
                 if (expense.istEinnahme) binding.root.context.getColor(R.color.green)
                 else binding.root.context.getColor(R.color.red)
             )
-
-            if (expense.isDeleted) {
-                setViewAsDeleted()
-            } else {
-                resetView()
-            }
-        }
-
-        private fun setViewAsDeleted() {
-            binding.textViewCategory.alpha = 0.5f
-            binding.textViewAmount.alpha = 0.5f
-            binding.textViewDate.alpha = 0.5f
-            binding.textViewNotiz.alpha = 0.5f
-            binding.textViewCategory.paintFlags = binding.textViewCategory.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            binding.textViewAmount.paintFlags = binding.textViewAmount.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            binding.textViewDate.paintFlags = binding.textViewDate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            binding.textViewNotiz.paintFlags = binding.textViewNotiz.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-        }
-
-        private fun resetView() {
-            binding.textViewCategory.alpha = 1.0f
-            binding.textViewAmount.alpha = 1.0f
-            binding.textViewDate.alpha = 1.0f
-            binding.textViewNotiz.alpha = 1.0f
-            binding.textViewCategory.paintFlags = binding.textViewCategory.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            binding.textViewAmount.paintFlags = binding.textViewAmount.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            binding.textViewDate.paintFlags = binding.textViewDate.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            binding.textViewNotiz.paintFlags = binding.textViewNotiz.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
 
         private fun showEditMenu(expense: Expense) {
             val builder = AlertDialog.Builder(binding.root.context)
             builder.setTitle("Aktion auswählen")
-            builder.setItems(arrayOf("Bearbeiten", "Abbrechen")) { dialog, which ->
-                if (which == 0) onEditClick(expense)
-                dialog.dismiss()
+            builder.setItems(arrayOf("Bearbeiten", "Löschen", "Abbrechen")) { dialog, which ->
+                when (which) {
+                    0 -> onEditClick(expense)
+                    1 -> onRequestDelete(expense, adapterPosition)
+                    else -> dialog.dismiss()
+                }
             }
             builder.show()
         }

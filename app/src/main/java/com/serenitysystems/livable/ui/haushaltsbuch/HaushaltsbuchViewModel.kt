@@ -1,109 +1,141 @@
-package com.serenitysystems.livable.ui.haushaltsbuch
+package com.serenitysystems.livable.ui.haushaltsbuch.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import androidx.lifecycle.viewModelScope
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HaushaltsbuchViewModel : ViewModel() {
 
-    private val _allExpenses = MutableLiveData<List<Expense>>().apply { value = mutableListOf() }
-    val allExpenses: LiveData<List<Expense>> get() = _allExpenses
+    // Alle Ausgaben und Einnahmen
+    private val _allExpenses = MutableLiveData<MutableList<Expense>>(mutableListOf())
+    val allExpenses: LiveData<MutableList<Expense>> get() = _allExpenses
 
-    private val _kontostand = MutableLiveData<Float>().apply { value = 0f }
-    val kontostand: LiveData<Float> get() = _kontostand
-
-    private val _totalAusgabe = MutableLiveData<Float>().apply { value = 0f }
-    val totalAusgabe: LiveData<Float> get() = _totalAusgabe
-
-    private val _totalEinnahmen = MutableLiveData<Float>().apply { value = 0f }
-    val totalEinnahmen: LiveData<Float> get() = _totalEinnahmen
-
+    // Ausgaben und Einnahmen für das ausgewählte Datum
     private val _selectedDateExpenses = MutableLiveData<List<Expense>>()
     val selectedDateExpenses: LiveData<List<Expense>> get() = _selectedDateExpenses
 
-    private val categories = listOf(
-        "Haushalt",
-        "Lebensmittel",
-        "Gesundheit",
-        "Kleidung",
-        "Freizeit",
-        "Transport",
-        "Versicherung",
-        "Bildung",
-        "Unterhaltung",
-        "Reisen",
-        "Sonstiges"
+    // Aktueller Kontostand
+    private val _kontostand = MutableLiveData<Float>(0f)
+    val kontostand: LiveData<Float> get() = _kontostand
+
+    // Aktuell ausgewähltes Datum
+    val selectedDate: Calendar = Calendar.getInstance()
+
+    // Verfügbare Kategorien
+    val categories = listOf(
+        "Haushalt", "Lebensmittel", "Gesundheit", "Kleidung", "Freizeit",
+        "Transport", "Versicherung", "Bildung", "Unterhaltung", "Reisen", "Sonstiges"
     )
 
+    // Hinzufügen einer neuen Ausgabe oder Einnahme
     fun addExpense(expense: Expense) {
-        val currentList = _allExpenses.value?.toMutableList() ?: mutableListOf()
-        currentList.add(expense)
-        _allExpenses.value = currentList
-        calculateTotals()
-        loadExpensesForDate(Calendar.getInstance())
-    }
-
-    fun editExpense(index: Int, updatedExpense: Expense) {
-        val currentList = _allExpenses.value?.toMutableList() ?: mutableListOf()
-        if (index in currentList.indices) {
-            currentList[index] = updatedExpense
-            _allExpenses.value = currentList
-            calculateTotals()
-            loadExpensesForDate(Calendar.getInstance())
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedExpenses = _allExpenses.value ?: mutableListOf()
+            updatedExpenses.add(expense)
+            _allExpenses.postValue(updatedExpenses)
+            // Nach Hinzufügen eines neuen Eintrags aktualisieren wir die Daten
+            loadExpensesForDateAsync(formatDate(selectedDate))
         }
     }
 
-    fun loadExpensesForDate(date: Calendar) {
-        val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
-        val expensesForDate = _allExpenses.value?.filter { it.datum == dateString && !it.isDeleted } ?: emptyList()
-        _selectedDateExpenses.value = expensesForDate
-        calculateTotals()
-    }
-
-    fun clearExpensesForDate(date: Calendar) {
-        val dateString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date.time)
-        _allExpenses.value = _allExpenses.value?.filter { it.datum != dateString }
-        calculateTotals()
-    }
-
-    private fun calculateTotals() {
-        val einnahmenTotal = _allExpenses.value?.filter { it.istEinnahme && !it.isDeleted }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
-        val ausgabenTotal = _allExpenses.value?.filter { !it.istEinnahme && !it.isDeleted }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
-        _totalEinnahmen.value = einnahmenTotal
-        _totalAusgabe.value = ausgabenTotal
-        _kontostand.value = einnahmenTotal - ausgabenTotal
-    }
-
-    fun getCategories(): List<String> = categories
-
-    fun getCategoryColor(category: String): String {
-        return when (category) {
-            "Haushalt" -> "#FF5722"
-            "Lebensmittel" -> "#4CAF50"
-            "Gesundheit" -> "#03A9F4"
-            "Kleidung" -> "#9C27B0"
-            "Freizeit" -> "#FFEB3B"
-            "Transport" -> "#009688"
-            "Versicherung" -> "#FFC107"
-            "Bildung" -> "#673AB7"
-            "Unterhaltung" -> "#E91E63"
-            "Reisen" -> "#8BC34A"
-            "Sonstiges" -> "#607D8B"
-            else -> "#000000"
+    // Aktualisieren einer bestehenden Ausgabe oder Einnahme
+    fun updateExpense(expense: Expense) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedExpenses = _allExpenses.value ?: mutableListOf()
+            val index = updatedExpenses.indexOfFirst { it == expense }
+            if (index >= 0) {
+                updatedExpenses[index] = expense
+                _allExpenses.postValue(updatedExpenses)
+                loadExpensesForDateAsync(formatDate(selectedDate))
+            }
         }
     }
 
-    fun getCategoryTotal(category: String): Float {
-        return _allExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }?.sumByDouble { it.betrag.toDouble() }?.toFloat() ?: 0f
+    // Löschen einer Ausgabe oder Einnahme
+    fun deleteExpense(expense: Expense) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedExpenses = _allExpenses.value ?: mutableListOf()
+            updatedExpenses.remove(expense)
+            _allExpenses.postValue(updatedExpenses)
+            loadExpensesForDateAsync(formatDate(selectedDate))
+        }
     }
 
+    // Berechnung des prozentualen Anteils einer Kategorie
     fun getCategoryPercentage(category: String): Float {
-        val totalForCategory = getCategoryTotal(category)
-        val totalAusgabe = _totalAusgabe.value ?: 1f
-        return if (totalAusgabe != 0f) (totalForCategory / totalAusgabe) * 100 else 0f
+        val totalAusgabe = _selectedDateExpenses.value?.filter { !it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 1f
+        val categoryTotal = _selectedDateExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+        return if (totalAusgabe != 0f) (categoryTotal / totalAusgabe) * 100 else 0f
+    }
+
+    // Berechnung des Betrags einer Kategorie
+    fun getCategoryAmount(category: String): Float {
+        return _selectedDateExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+    }
+
+    // Farbe für eine Kategorie erhalten
+    fun getCategoryColor(category: String): Int {
+        return when (category) {
+            "Haushalt" -> 0xFFFF5722.toInt() // Orange
+            "Lebensmittel" -> 0xFF4CAF50.toInt() // Grün
+            "Gesundheit" -> 0xFF03A9F4.toInt() // Blau
+            "Kleidung" -> 0xFF9C27B0.toInt() // Violett
+            "Freizeit" -> 0xFFFFEB3B.toInt() // Gelb
+            "Transport" -> 0xFF009688.toInt() // Türkis
+            "Versicherung" -> 0xFFFFC107.toInt() // Hellorange
+            "Bildung" -> 0xFF673AB7.toInt() // Dunkelviolett
+            "Unterhaltung" -> 0xFFE91E63.toInt() // Pink
+            "Reisen" -> 0xFF8BC34A.toInt() // Hellgrün
+            "Sonstiges" -> 0xFF607D8B.toInt() // Grau
+            else -> 0xFF000000.toInt() // Schwarz
+        }
+    }
+
+    // Aktualisierung des Kontostands
+    private suspend fun updateTotals() {
+        withContext(Dispatchers.Default) {
+            val totalIncome = _selectedDateExpenses.value?.filter { it.istEinnahme }
+                ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+            val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
+                ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+            _kontostand.postValue(totalIncome - totalExpense)
+        }
+    }
+
+    // Laden der Ausgaben und Einnahmen für das ausgewählte Datum
+    fun loadExpensesForDate(date: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadExpensesForDateAsync(date)
+        }
+    }
+
+    private suspend fun loadExpensesForDateAsync(date: String) {
+        val expensesForDate = _allExpenses.value?.filter { it.datum == date } ?: emptyList()
+        _selectedDateExpenses.postValue(expensesForDate)
+        updateTotals()
+    }
+
+    // Ändern des ausgewählten Datums um eine bestimmte Anzahl von Tagen
+    fun changeDateByDays(days: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            selectedDate.add(Calendar.DAY_OF_MONTH, days)
+            loadExpensesForDateAsync(formatDate(selectedDate))
+        }
+    }
+
+    // Hilfsfunktion zum Formatieren des Datums
+    private fun formatDate(calendar: Calendar): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 }
