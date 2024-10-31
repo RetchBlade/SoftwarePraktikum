@@ -1,14 +1,12 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.serenitysystems.livable.databinding.FragmentHaushaltsbuchBinding
+import com.serenitysystems.livable.ui.haushaltsbuch.view.ÜbersichtFragment
 
 class HaushaltsbuchFragment : Fragment() {
 
@@ -22,7 +20,7 @@ class HaushaltsbuchFragment : Fragment() {
         _binding = FragmentHaushaltsbuchBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val sectionsPagerAdapter = SectionsPagerAdapter(childFragmentManager) // Burada childFragmentManager kullanıyoruz
+        val sectionsPagerAdapter = SectionsPagerAdapter(childFragmentManager)
         val viewPager: ViewPager = binding.viewPager
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = binding.tabs
@@ -36,7 +34,7 @@ class HaushaltsbuchFragment : Fragment() {
         _binding = null
     }
 
-    inner class SectionsPagerAdapter(fm: androidx.fragment.app.FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    inner class SectionsPagerAdapter(fm: androidx.fragment.app.FragmentManager) : androidx.fragment.app.FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> EinnahmenFragment()
@@ -49,7 +47,7 @@ class HaushaltsbuchFragment : Fragment() {
         override fun getPageTitle(position: Int): CharSequence {
             return when (position) {
                 0 -> "Einnahmen"
-                1 -> "Buchungen"
+                1 -> "Ausgaben"
                 2 -> "Übersicht"
                 else -> ""
             }
