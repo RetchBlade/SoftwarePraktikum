@@ -78,8 +78,14 @@
         <item>Dose</item>
     </string-array>
 
+    <string-array name="priority_levels">
+        <item>Niedrig</item>
+        <item>Mittel</item>
+        <item>Hoch</item>
+    </string-array>
 
-        <!-- Bild vergrößern (Fullscreen) -->
+
+    <!-- Bild vergrößern (Fullscreen) -->
         <string name="fullscreen_image">Vollbildbild anzeigen</string>
 
         <!-- Schließen Symbol für das Vollbildbild -->

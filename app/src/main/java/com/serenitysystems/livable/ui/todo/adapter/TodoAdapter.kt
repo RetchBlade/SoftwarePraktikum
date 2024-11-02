@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.TodoItemBinding
 import com.serenitysystems.livable.ui.todo.data.TodoItem
 import java.text.SimpleDateFormat
@@ -32,18 +34,20 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
         fun bind(todo: TodoItem) {
             binding.todoDescription.text = todo.description
             binding.todoDate.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(todo.date)
-
-            // Initial versteckte detaillierte Beschreibung
             binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
             binding.todoDetailedDescription.setText(todo.detailedDescription)
 
-            // Umschalten der detaillierten Beschreibung beim Klick
+            when (todo.priority) {
+                "Mittel" -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item_medium)
+                "Hoch" -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item_high)
+                else -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item) // Standard für "Niedrig"
+            }
+
             binding.root.setOnClickListener {
                 isExpanded = !isExpanded
                 binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
             }
 
-            // Checkbox-Verhalten und Streichen des Textes bei Erledigung
             binding.todoCheckBox.isChecked = todo.isDone
             updateStrikeThrough(binding.todoDescription, todo.isDone)
 
@@ -53,6 +57,7 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
                 onTodoClick(updatedTodo)
             }
         }
+
 
 
         private fun updateStrikeThrough(textView: TextView, isChecked: Boolean) {

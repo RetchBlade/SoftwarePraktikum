@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -140,12 +141,11 @@ class ToDoFragment : Fragment() {
         val todoDetailedDescription: EditText = dialogView.findViewById(R.id.todoDetailedDescription)
         val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
         val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
+        val prioritySpinner: Spinner = dialogView.findViewById(R.id.prioritySpinner)
 
-        // Set initial date to today
         val calendar = Calendar.getInstance()
         dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
 
-        // DatePicker öffnen beim Klicken auf das LinearLayout
         datePickerIcon.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 context,
@@ -166,10 +166,12 @@ class ToDoFragment : Fragment() {
             .setPositiveButton("Hinzufügen") { _, _ ->
                 val description = todoDescription.text.toString()
                 val detailedDescription = todoDetailedDescription.text.toString()
+                val priority = prioritySpinner.selectedItem.toString()
                 val newTodo = TodoItem(
                     description = description,
                     detailedDescription = detailedDescription,
-                    date = calendar.time
+                    date = calendar.time,
+                    priority = priority
                 )
 
                 todoViewModel.addTodo(newTodo)

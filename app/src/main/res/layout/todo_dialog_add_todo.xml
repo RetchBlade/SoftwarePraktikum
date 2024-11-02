@@ -53,6 +53,13 @@
             android:textStyle="bold" />
         </LinearLayout>
 
+        <Spinner
+            android:id="@+id/prioritySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/priority_levels"
+            android:layout_marginBottom="16dp" />
+
     </LinearLayout>
 </ScrollView>
 

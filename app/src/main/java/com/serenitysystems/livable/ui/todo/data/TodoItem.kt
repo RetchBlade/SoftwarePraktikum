@@ -8,6 +8,7 @@ data class TodoItem(
     val description: String,
     val detailedDescription: String,
     val date: Date,
-    val isDone: Boolean = false
+    val isDone: Boolean = false,
+    val priority: String = "Niedrig"
 )
 

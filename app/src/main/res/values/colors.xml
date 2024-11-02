@@ -44,6 +44,10 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
 
+    <color name="priority_low2">#FFFFFF</color> <!-- Standard -->
+    <color name="priority_medium2">#FFECB3</color> <!-- Leicht gelblich -->
+    <color name="priority_high2">#FFCDD2</color> <!-- Leicht rötlich -->
+
 
     <!-- Ekstra Renkler -->
     <color name="material_grey_300">#E0E0E0</color>
