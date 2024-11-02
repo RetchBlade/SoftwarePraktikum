@@ -61,12 +61,11 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
 
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
-                        val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
                             .addOnSuccessListener {
                                 Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
                                 // Rufe den Token-Refresh hier auf
-                                tokenRefreshListener.refreshUserToken(updatedToken)
+                                tokenRefreshListener.refreshUserToken(userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied"))
                             }
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
@@ -97,6 +96,7 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
 
 
     fun fetchUserWGInfo(onSuccess: (String?, String?) -> Unit, onError: (String) -> Unit) {

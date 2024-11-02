@@ -24,7 +24,6 @@ import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.LoginActivity
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -107,6 +106,9 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
             .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
             .into(profileImageView)
 
+        // Update navigation menu based on wgId
+        updateNavigationMenu(userToken.wgId, navView)
+
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -130,6 +132,23 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
         }
     }
 
+    private fun updateNavigationMenu(wgId: String, navView: NavigationView) {
+        val menu = navView.menu
+
+        // Show or hide menu items based on wgId
+        if (wgId.isEmpty()) {
+            // Hide items if wgId is empty
+            menu.findItem(R.id.nav_wochenplan).isVisible = false
+            menu.findItem(R.id.nav_einkaufsliste).isVisible = false
+            menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
+        } else {
+            // Show items if wgId is present
+            menu.findItem(R.id.nav_wochenplan).isVisible = true
+            menu.findItem(R.id.nav_einkaufsliste).isVisible = true
+            menu.findItem(R.id.nav_haushaltsbuch).isVisible = true
+        }
+    }
+
     override fun refreshUserToken(currentToken: UserToken) {
         swipeRefreshLayout.isRefreshing = true // Starte die Refresh-Animation
 
@@ -145,6 +164,9 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
 
                     // Aktualisiere das UI mit dem neuen Benutzertoken
                     updateUIWithNewToken(newToken)
+
+                    // Update navigation menu based on new wgId
+                    updateNavigationMenu(newToken.wgId, binding.navView)
                 } else {
                     Log.d("MainActivity", "Benutzertoken hat sich nicht geändert.")
                 }
@@ -158,7 +180,6 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
             }
         }
     }
-
 
     private suspend fun retrieveUserDataFromFirestore(email: String): UserToken {
         return suspendCoroutine { continuation ->

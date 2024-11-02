@@ -104,6 +104,7 @@ class HomePageFragment : Fragment() {
             dialog?.dismiss()
         }
 
+
         val createWGButton: Button = dialogView.findViewById(R.id.createWGButton)
         val joinWGButton: Button = dialogView.findViewById(R.id.joinWGButton)
         val leaveWGButton: Button = dialogView.findViewById(R.id.leaveWGButton)
