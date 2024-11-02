@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
     val userPic: LiveData<String?> = _userPic // Hier auf _userPic korrigiert
 
     private val userPreferences: UserPreferences = UserPreferences(application)
+    private lateinit var tokenRefreshListener: TokenRefreshListener
 
     init {
         fetchUserNickname()
@@ -48,6 +50,10 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setTokenRefreshListener(listener: TokenRefreshListener) {
+        tokenRefreshListener = listener
+    }
+
     fun joinWG(wgId: String, onError: (String) -> Unit) {
         fetchUserToken { token ->
             token?.let { userToken ->
@@ -59,6 +65,8 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
                             .addOnSuccessListener {
                                 Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
+                                // Rufe den Token-Refresh hier auf
+                                tokenRefreshListener.refreshUserToken(updatedToken)
                             }
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
@@ -80,6 +88,8 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                 userRef.update("wgId", "", "wgRole", "")
                     .addOnSuccessListener {
                         Log.d("HomePageViewModel", "Erfolgreich aus der WG verlassen.")
+                        // Rufe den Token-Refresh hier auf
+                        tokenRefreshListener.refreshUserToken(userToken.copy(wgId = "", wgRole = ""))
                     }
                     .addOnFailureListener { exception ->
                         Log.e("HomePageViewModel", "Error leaving the WG: ${exception.message}")
@@ -87,6 +97,7 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
 
     fun fetchUserWGInfo(onSuccess: (String?, String?) -> Unit, onError: (String) -> Unit) {
         fetchUserToken { token ->
