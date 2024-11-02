@@ -87,4 +87,24 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    fun fetchUserWGInfo(onSuccess: (String?, String?) -> Unit, onError: (String) -> Unit) {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
+
+                userRef.get().addOnSuccessListener { wgDocument ->
+                    if (wgDocument.exists()) {
+                        val wgId = wgDocument.getString("wgId")
+                        val wgRole = wgDocument.getString("wgRole")
+                        onSuccess(wgId, wgRole)
+                    } else {
+                        onError("Benutzerdaten nicht gefunden.")
+                    }
+                }.addOnFailureListener { exception ->
+                    onError("Fehler beim Laden der Benutzerdaten: ${exception.message}")
+                }
+            } ?: onError("Benutzer-Token ist null.")
+        }
+    }
 }

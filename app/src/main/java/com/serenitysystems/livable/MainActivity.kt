@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.databinding.ActivityMainBinding
+import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.LoginActivity
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TokenRefreshListener {
 
     // Konfiguration der AppBar
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun refreshUserToken(currentToken: UserToken) {
+    override fun refreshUserToken(currentToken: UserToken) {
         swipeRefreshLayout.isRefreshing = true // Starte die Refresh-Animation
 
         lifecycleScope.launch {
