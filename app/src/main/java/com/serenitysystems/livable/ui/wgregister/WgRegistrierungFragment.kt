@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.wgregister
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +10,17 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
+import com.serenitysystems.livable.MainActivity
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.wgregister.data.Wg
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WgRegistrierungFragment : Fragment() {
 
@@ -52,44 +59,34 @@ class WgRegistrierungFragment : Fragment() {
         val bewohner = bewohnerInput.text.toString().trim()
 
         if (adresse.isEmpty() || groesse.isEmpty() || zimmer.isEmpty() || bewohner.isEmpty()) {
-            // Error handling for empty fields
             adresseInput.error = "Alle Felder müssen ausgefüllt sein"
             return
         }
 
         val wg = Wg(adresse, groesse, zimmer, bewohner)
 
-        viewModel.registerWg(wg, { wgId ->
-            lifecycleScope.launch {
-                userPreferences.userToken.collect { userToken ->
-                    userToken?.let {
-                        viewModel.updateUserInFirestore(it.email, wgId, "Wg-Leiter", {
-                            // UserToken und UI aktualisieren
-                            val updatedToken = it.copy(wgId = wgId, wgRole = "Wg-Leiter")
-                            lifecycleScope.launch {
-                                try {
-                                    Log.e("WgRegistrierungFragment", "Erfolgreich die WG erstellt und den User zugewiesen.")
-                                    userPreferences.saveUserToken(updatedToken)
-                                } catch (e: Exception) {
-                                   Log.e("WgRegistrierungFragment", "Fehler beim Aktualisieren des UserToken: ${e.message}")
-                                }
-                            }
+        lifecycleScope.launch {
+            val userToken = userPreferences.userToken.first()
+            val userEmail = userToken?.email ?: ""
 
-                            // Navigation zur Homepage
-                            requireActivity().supportFragmentManager.popBackStack()
-                        }, { exception ->
-                            Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
-                            adresseInput.error = "Fehler beim Aktualisieren des Benutzers"
-                        })
-                    } ?: run {
-                        Log.e("WgRegistrierungFragment", "User token is null")
-                    }
+            viewModel.registerWg(wg, userEmail, { wgId ->
+                userToken?.let {
+                    viewModel.updateUserInFirestore(it.email, wgId, "Wg-Leiter", {
+                        Log.e("WgRegistrierungFragment", "Erfolgreich die WG erstellt und den User zugewiesen.")
+                        findNavController().navigate(R.id.nav_homepage)
+
+                    }, { exception ->
+                        Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
+                        adresseInput.error = "Fehler beim Aktualisieren des Benutzers"
+                    })
+                } ?: run {
+                    Log.e("WgRegistrierungFragment", "User token is null")
                 }
-            }
-        }, { exception ->
-            Log.e("WgRegistrierungFragment", "Error registering WG: ${exception.message}")
-            adresseInput.error = "Fehler beim Erstellen der WG"
-        })
+            }, { exception ->
+                Log.e("WgRegistrierungFragment", "Error registering WG: ${exception.message}")
+                adresseInput.error = "Fehler beim Erstellen der WG"
+            })
+        }
     }
-
 }
+

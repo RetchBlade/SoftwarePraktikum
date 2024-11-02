@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,15 +58,7 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                         val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
                             .addOnSuccessListener {
-                                val updatedToken = userToken.copy(wgId = "", wgRole = "")
-                                viewModelScope.launch {
-                                    try {
-                                        Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
-                                        userPreferences.saveUserToken(updatedToken)
-                                    } catch (e: Exception) {
-                                        Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${e.message}")
-                                    }
-                                }
+                                Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
                             }
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
@@ -88,14 +80,6 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                 userRef.update("wgId", "", "wgRole", "")
                     .addOnSuccessListener {
                         Log.d("HomePageViewModel", "Erfolgreich aus der WG verlassen.")
-                        val updatedToken = userToken.copy(wgId = "", wgRole = "")
-                        viewModelScope.launch {
-                            try {
-                                userPreferences.saveUserToken(updatedToken)
-                            } catch (e: Exception) {
-                                Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${e.message}")
-                            }
-                        }
                     }
                     .addOnFailureListener { exception ->
                         Log.e("HomePageViewModel", "Error leaving the WG: ${exception.message}")

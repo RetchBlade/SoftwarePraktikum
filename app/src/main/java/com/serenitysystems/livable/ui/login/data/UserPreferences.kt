@@ -1,13 +1,13 @@
-package com.serenitysystems.livable.data
+package com.serenitysystems.livable.ui.login.data
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
-import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 // DataStore-Extension für den Context
@@ -21,10 +21,25 @@ class UserPreferences(private val context: Context) {
     // Speichert den UserToken als JSON
     suspend fun saveUserToken(userToken: UserToken) {
         val userTokenString = gson.toJson(userToken)
-        context.dataStore.edit { preferences ->
-            preferences[USER_TOKEN_KEY] = userTokenString
+        val currentToken = context.dataStore.data.map { preferences ->
+            preferences[USER_TOKEN_KEY]
+        }.firstOrNull() // hole den aktuellen Token
+
+        if (currentToken != userTokenString) {
+            try {
+                Log.d("UserPreferences", "Speichere UserToken als JSON: $userTokenString")
+                context.dataStore.edit { preferences ->
+                    preferences[USER_TOKEN_KEY] = userTokenString
+                }
+                Log.d("UserPreferences", "UserToken erfolgreich gespeichert.")
+            } catch (e: Exception) {
+                Log.e("UserPreferences", "Fehler beim Speichern des UserTokens: ${e.message}", e)
+            }
+        } else {
+            Log.d("UserPreferences", "UserToken hat sich nicht geändert, kein Speichern erforderlich.")
         }
     }
+
 
     // Holt den UserToken und konvertiert ihn zurück
     val userToken: Flow<UserToken?> = context.dataStore.data
