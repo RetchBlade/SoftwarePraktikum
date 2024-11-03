@@ -1,24 +1,32 @@
-<!-- dialog_fullscreen_image.xml -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Bildanzeige -->
-    <ImageView
-        android:id="@+id/fullscreenImageView"
+    <!-- Transparent black overlay for background -->
+    <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:contentDescription="Vollbild Bild" />
+        android:background="#80000000"/> <!-- 50% transparent black -->
 
-    <!-- Schließen-Button -->
-    <ImageView
-        android:id="@+id/closeButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Schließen"
-        android:background="?attr/selectableItemBackgroundBorderless" />
-</FrameLayout>
+
+    <FrameLayout
+        android:layout_width="319dp"
+        android:layout_height="536dp"
+        android:layout_gravity="center"
+        android:background="@drawable/dialog_background"> <!-- Margin für den inneren Rahmen -->
+
+        <ImageView
+            android:id="@+id/fullscreenImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:padding="12dp"
+            android:src="@drawable/ic_close" />
+    </FrameLayout>
+    </FrameLayout>
