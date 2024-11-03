@@ -23,9 +23,10 @@
     <style name="CustomDialogTheme" parent="Theme.MaterialComponents.Dialog">
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item> <!-- Verwende den einheitlichen Hintergrund -->
+        <item name="android:textColor">@color/own_text_Farbe</item> <!-- Einheitliche Textfarbe -->
     </style>
 
     <!-- Dialog animation -->

@@ -170,7 +170,7 @@ class ToDoFragment : Fragment() {
             datePickerDialog.show()
         }
 
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
             .setTitle("Todo hinzufügen")
             .setView(dialogView)
             .setPositiveButton("Hinzufügen") { _, _ ->
