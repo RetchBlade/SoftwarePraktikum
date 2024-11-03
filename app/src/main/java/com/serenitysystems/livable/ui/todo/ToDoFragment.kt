@@ -110,21 +110,31 @@ class ToDoFragment : Fragment() {
 
 
     private fun sortTodosByDate(todos: List<TodoItem>) {
+        val sortedTodos = todos.sortedWith(compareByDescending<TodoItem> { getPriorityValue(it.priority) }
+            .thenBy { it.date })
+
         val today = Calendar.getInstance()
         val tomorrow = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
         val weekEnd = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 7) }
 
-        // Filter Todos by date
-        val todayTodos = todos.filter { isSameDay(it.date, today.time) }
-        val tomorrowTodos = todos.filter { isSameDay(it.date, tomorrow.time) }
-        val weekTodos = todos.filter { it.date.after(tomorrow.time) && it.date.before(weekEnd.time) }
-        val laterTodos = todos.filter { it.date.after(weekEnd.time) }
+        val todayTodos = sortedTodos.filter { isSameDay(it.date, today.time) }
+        val tomorrowTodos = sortedTodos.filter { isSameDay(it.date, tomorrow.time) }
+        val weekTodos = sortedTodos.filter { it.date.after(tomorrow.time) && it.date.before(weekEnd.time) }
+        val laterTodos = sortedTodos.filter { it.date.after(weekEnd.time) }
 
-        // Set data in adapters
         todayAdapter.submitList(todayTodos)
         tomorrowAdapter.submitList(tomorrowTodos)
         weekAdapter.submitList(weekTodos)
         laterAdapter.submitList(laterTodos)
+    }
+
+    private fun getPriorityValue(priority: String): Int {
+        return when (priority) {
+            "Hoch" -> 3
+            "Mittel" -> 2
+            "Niedrig" -> 1
+            else -> 0
+        }
     }
 
     private fun isSameDay(date1: Date, date2: Date): Boolean {

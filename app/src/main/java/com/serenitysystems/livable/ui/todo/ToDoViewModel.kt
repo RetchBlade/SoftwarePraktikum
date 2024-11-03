@@ -26,8 +26,20 @@ class ToDoViewModel : ViewModel() {
     }
 
     fun addTodo(todo: TodoItem) {
-        val updatedTodos = _todos.value.orEmpty() + todo
+        val updatedTodos = (_todos.value.orEmpty() + todo).sortedWith(
+            compareByDescending<TodoItem> { getPriorityValue(it.priority) }
+                .thenBy { it.date }
+        )
         _todos.value = updatedTodos
+    }
+
+    private fun getPriorityValue(priority: String): Int {
+        return when (priority) {
+            "Hoch" -> 3
+            "Mittel" -> 2
+            "Niedrig" -> 1
+            else -> 0
+        }
     }
 
     fun updateTodo(updatedTodo: TodoItem) {
