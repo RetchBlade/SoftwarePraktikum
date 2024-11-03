@@ -48,6 +48,8 @@
     <color name="priority_medium2">#FFECB3</color> <!-- Leicht gelblich -->
     <color name="priority_high2">#FFCDD2</color> <!-- Leicht rötlich -->
 
+    <color name="primaryColor">#6200EE</color>
+
 
     <!-- Ekstra Renkler -->
     <color name="material_grey_300">#E0E0E0</color>
