@@ -91,7 +91,8 @@ dependencies {
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
-
+    implementation ("androidx.appcompat:appcompat:1.3.1")
+    implementation ("androidx.core:core-ktx:1.6.0")
 
     //icons dependecies
     implementation ("com.google.android.material:material:1.10.0")

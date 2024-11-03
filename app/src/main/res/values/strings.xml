@@ -48,6 +48,8 @@
     <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>
+    <string name="select_priority">Bitte Priorität auswählen...</string>
+
     <string name="task_points">Punkte</string>
     <string name="task_assignee">Zuständiger</string>
     <string name="select_date">Datum</string>

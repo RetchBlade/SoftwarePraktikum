@@ -17,7 +17,8 @@ class FullScreenImageDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         // Bild-URI vom Bundle erhalten und in Uri umwandeln
         imageUri = arguments?.getString("imageUri")?.let { Uri.parse(it) }
-        setStyle(STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar_Fullscreen) // Vollbildmodus ohne Titelzeile
+        setStyle(STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen)
+    // Vollbildmodus ohne Titelzeile
     }
 
     override fun onCreateView(
