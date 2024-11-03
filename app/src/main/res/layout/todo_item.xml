@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/todo_item_background"
-    android:padding="4dp"
+    android:padding="2dp"
     android:layout_marginTop="4dp">
 
     <!-- Erste Zeile mit Checkbox und Hauptbeschreibung -->
