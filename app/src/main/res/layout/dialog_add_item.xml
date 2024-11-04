@@ -1,3 +1,4 @@
+<!-- dialog_add_item.xml -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
@@ -20,7 +21,6 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/ic_add_image"
-
             android:contentDescription="Produktbild"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerCrop"
@@ -40,28 +40,28 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
 
-        <!-- Produktname Eingabe -->
+        <!-- Produktname Eingabe (erforderlich) -->
         <EditText
             android:id="@+id/editItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Produktname"
+            android:hint="Produktname *"
             android:padding="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background" />
 
-        <!-- Menge Eingabe -->
+        <!-- Menge Eingabe (erforderlich) -->
         <EditText
             android:id="@+id/editItemQuantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Menge"
+            android:hint="Menge *"
             android:inputType="numberDecimal"
             android:padding="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background" />
 
-        <!-- Einheit Spinner -->
+        <!-- Einheit Spinner mit angepasstem Hintergrund -->
         <Spinner
             android:id="@+id/spinnerUnit"
             android:layout_width="match_parent"
@@ -69,9 +69,12 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/spinner_background"
             android:spinnerMode="dropdown"
-            android:padding="10dp" />
+            android:paddingEnd="40dp"
+            android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
 
-        <!-- Kategorie Spinner -->
+        <!-- Kategorie Spinner mit angepasstem Hintergrund -->
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
@@ -79,14 +82,17 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/spinner_background"
             android:spinnerMode="dropdown"
-            android:padding="10dp" />
+            android:paddingEnd="40dp"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
 
-        <!-- Datum auswählen -->
+        <!-- Datum auswählen (erforderlich) -->
         <EditText
             android:id="@+id/etSelectedDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Datum auswählen"
+            android:hint="Datum auswählen *"
             android:padding="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_background"
@@ -100,6 +106,7 @@
             android:orientation="horizontal"
             android:gravity="end">
 
+            <!-- Abbrechen-Button -->
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="150dp"
@@ -113,17 +120,18 @@
                 android:textColor="@android:color/white"
                 android:textSize="14sp" />
 
+            <!-- Hinzufügen-Button -->
             <Button
                 android:id="@+id/btnAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-            android:text="Hinzufügen"
-            android:textSize="14sp"
-            android:textColor="@android:color/white"
-            android:padding="10dp"
-            android:drawablePadding="8dp"
-            android:drawableLeft="@drawable/ic_add"
-            android:backgroundTint="@color/own_navy_Dunkelblau"/>
+                android:text="Hinzufügen"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:padding="10dp"
+                android:drawablePadding="8dp"
+                android:drawableLeft="@drawable/ic_add"
+                android:backgroundTint="@color/own_navy_Dunkelblau"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

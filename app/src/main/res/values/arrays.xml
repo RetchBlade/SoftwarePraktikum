@@ -11,10 +11,12 @@
     </string-array>
 
     <string-array name="prio_liste">
+        <item>Bitte Priorität auswählen...</item>
         <item>Hoch</item>
         <item>Mittel</item>
         <item>Niedrig</item>
     </string-array>
+
 
     <string-array name="task_options">
         <item>Erledigt</item>
