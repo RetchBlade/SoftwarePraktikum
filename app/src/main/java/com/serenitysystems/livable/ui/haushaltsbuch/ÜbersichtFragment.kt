@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.haushaltsbuch.view
 
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class ÜbersichtFragment : Fragment() {
 
@@ -28,17 +29,17 @@ class ÜbersichtFragment : Fragment() {
     ): View {
         _binding = FragmentUebersichtBinding.inflate(inflater, container, false)
 
-        // Beobachten des Kontostands
+        // Kontostand'u gözlemle
         haushaltsbuchViewModel.kontostand.observe(viewLifecycleOwner) { kontostand ->
             binding.textViewKontostand.text = "Kontostand: ${"%.2f".format(kontostand)} EUR"
         }
 
-        // Beobachten der Ausgaben/Einnahmen für das ausgewählte Datum
+        // Seçilmiş tarih için harcamaları gözlemle
         haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) {
             updateDiagramAndPanel()
         }
 
-        // Pfeil-Buttons konfigurieren
+        // Tarih değişiklik butonlarını yapılandır
         binding.leftArrow.setOnClickListener {
             haushaltsbuchViewModel.changeDateByDays(-1)
             updateDateDisplay()
@@ -54,11 +55,11 @@ class ÜbersichtFragment : Fragment() {
     }
 
     private fun updateDiagramAndPanel() {
-        // Ausführung im Hintergrundthread
+        // Arka planda çalışan bir coroutine başlat
         CoroutineScope(Dispatchers.Default).launch {
             val categories = haushaltsbuchViewModel.categories
 
-            // Erstellen der Liste von CategoryData
+            // CategoryData listesi oluştur
             val categoryDataList = categories.mapNotNull { category ->
                 val amount = haushaltsbuchViewModel.getCategoryAmount(category)
                 if (amount > 0f) {
@@ -85,13 +86,13 @@ class ÜbersichtFragment : Fragment() {
             val colors = categoryDataList.map { it.color }
 
             withContext(Dispatchers.Main) {
-                // Aktualisierung des PieChartView im Hauptthread
+                // PieChartView'u güncelle
                 binding.pieChartView.setData(categoriesForChart, valuesForChart, colors)
 
-                // Entfernen aller bisherigen Views im Container
+                // categoriesListPanel içindeki mevcut öğeleri temizle
                 binding.categoriesListPanel.removeAllViews()
 
-                // Hinzufügen der neuen Items
+                // Yeni öğeleri ekle
                 val inflater = LayoutInflater.from(requireContext())
                 categoryDataList.forEach { data ->
                     val itemBinding = ItemCategoryDetailBinding.inflate(inflater, binding.categoriesListPanel, false)
@@ -101,12 +102,23 @@ class ÜbersichtFragment : Fragment() {
                     itemBinding.textViewCategoryAmount.text = "${"%.2f".format(data.amount)} EUR"
                     itemBinding.textViewCategoryPercentage.text = "${"%.0f".format(data.percentage)}%"
 
-                    // Hintergrundfarbe des Kreises anpassen
+                    // Arka plan rengini ayarla
                     val drawable = itemBinding.textViewCategoryLetter.background as? GradientDrawable
                     drawable?.setColor(data.color)
 
-                    // Hinzufügen des Items zum Container
+                    // Kutu arka planını ayarla (Transparan yapıldı)
+                    val categoryItemBackground = itemBinding.root.background as? GradientDrawable
+                    categoryItemBackground?.setColor(Color.TRANSPARENT) // Arka planı transparan yapın
+
+                    // Öğeyi panel'e ekle
                     binding.categoriesListPanel.addView(itemBinding.root)
+                }
+
+                // Panelin görünürlüğünü kontrol et
+                if (categoryDataList.isNotEmpty()) {
+                    binding.categoriesScrollView.visibility = View.VISIBLE
+                } else {
+                    binding.categoriesScrollView.visibility = View.GONE
                 }
             }
         }
@@ -124,7 +136,7 @@ class ÜbersichtFragment : Fragment() {
         _binding = null
     }
 
-    // Datenklasse für CategoryData
+    // CategoryData veri sınıfı
     data class CategoryData(
         val category: String,
         val amount: Double,
