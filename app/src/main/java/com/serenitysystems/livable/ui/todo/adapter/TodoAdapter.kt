@@ -2,13 +2,18 @@ package com.serenitysystems.livable.ui.todo.adapter
 
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.TodoItemBinding
 import com.serenitysystems.livable.ui.todo.data.TodoItem
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<TodoItem, TodoAdapter.TodoViewHolder>(TodoDiffCallback()) {
 
@@ -23,23 +28,37 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) : ListAdapter<Tod
     }
 
     inner class TodoViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private var isExpanded = false
+
         fun bind(todo: TodoItem) {
             binding.todoDescription.text = todo.description
-            binding.todoCheckBox.isChecked = todo.isDone
+            binding.todoDate.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(todo.date)
+            binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            binding.todoDetailedDescription.setText(todo.detailedDescription)
 
-            // Set the initial strike-through based on the todo's done status
+            when (todo.priority) {
+                "Mittel" -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item_medium)
+                "Hoch" -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item_high)
+                else -> binding.root.setBackgroundResource(R.drawable.rounded_todo_item) // Standard für "Niedrig"
+            }
+
+            binding.root.setOnClickListener {
+                isExpanded = !isExpanded
+                binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
+            }
+
+            binding.todoCheckBox.isChecked = todo.isDone
             updateStrikeThrough(binding.todoDescription, todo.isDone)
 
-            // Set a listener for the checkbox to update the UI and the item's state
             binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                // Update the UI to reflect the new state
                 updateStrikeThrough(binding.todoDescription, isChecked)
-
-                // Optionally, trigger any logic when a todo's done state changes
                 val updatedTodo = todo.copy(isDone = isChecked)
                 onTodoClick(updatedTodo)
             }
         }
+
+
 
         private fun updateStrikeThrough(textView: TextView, isChecked: Boolean) {
             if (isChecked) {

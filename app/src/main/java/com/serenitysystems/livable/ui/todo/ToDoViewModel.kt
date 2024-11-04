@@ -18,16 +18,28 @@ class ToDoViewModel : ViewModel() {
     private fun loadTodos() {
         // Beispielhafte Todos (du kannst diese aus einer Datenquelle laden)
         val todosList = listOf(
-            TodoItem(description = "Wäsche waschen", date = Calendar.getInstance().time),
-            TodoItem(description = "Einkaufen", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time),
-            TodoItem(description = "Projekt abschließen", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 5) }.time)
+            TodoItem(description = "Wäsche waschen", detailedDescription =  "", date = Calendar.getInstance().time),
+            TodoItem(description = "Einkaufen", detailedDescription =  "", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time),
+            TodoItem(description = "Projekt abschließen", detailedDescription =  "", date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 5) }.time)
         )
         _todos.value = todosList
     }
 
     fun addTodo(todo: TodoItem) {
-        val updatedTodos = _todos.value.orEmpty() + todo
+        val updatedTodos = (_todos.value.orEmpty() + todo).sortedWith(
+            compareByDescending<TodoItem> { getPriorityValue(it.priority) }
+                .thenBy { it.date }
+        )
         _todos.value = updatedTodos
+    }
+
+    private fun getPriorityValue(priority: String): Int {
+        return when (priority) {
+            "Hoch" -> 3
+            "Mittel" -> 2
+            "Niedrig" -> 1
+            else -> 0
+        }
     }
 
     fun updateTodo(updatedTodo: TodoItem) {
