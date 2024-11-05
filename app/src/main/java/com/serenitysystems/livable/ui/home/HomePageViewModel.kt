@@ -58,14 +58,14 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
-
+                val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
                             .addOnSuccessListener {
                                 Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
                                 // Rufe den Token-Refresh hier auf
-                                tokenRefreshListener.refreshUserToken(userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied"))
+                                tokenRefreshListener.refreshUserToken(updatedToken)
                             }
                             .addOnFailureListener { exception ->
                                 Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
@@ -84,11 +84,13 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
+                val updatedToken = userToken.copy(wgId = "", wgRole = "") // Speichere den aktualisierten Token in einer Variablen
+
                 userRef.update("wgId", "", "wgRole", "")
                     .addOnSuccessListener {
                         Log.d("HomePageViewModel", "Erfolgreich aus der WG verlassen.")
-                        // Rufe den Token-Refresh hier auf
-                        tokenRefreshListener.refreshUserToken(userToken.copy(wgId = "", wgRole = ""))
+                        // Rufe den Token-Refresh mit dem gespeicherten Token auf
+                        tokenRefreshListener.refreshUserToken(updatedToken)
                     }
                     .addOnFailureListener { exception ->
                         Log.e("HomePageViewModel", "Error leaving the WG: ${exception.message}")
@@ -96,6 +98,7 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
 
 
 
