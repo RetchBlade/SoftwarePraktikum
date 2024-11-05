@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
             .into(profileImageView)
 
         // Update navigation menu based on wgId
-        updateNavigationMenu(userToken.wgId, navView)
+        updateNavigationMenu(userToken, navView)
 
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
@@ -132,22 +132,46 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
         }
     }
 
-    private fun updateNavigationMenu(wgId: String, navView: NavigationView) {
+    private fun updateNavigationMenu(userToken: UserToken, navView: NavigationView) {
         val menu = navView.menu
 
-        // Show or hide menu items based on wgId
-        if (wgId.isEmpty()) {
-            // Hide items if wgId is empty
-            menu.findItem(R.id.nav_wochenplan).isVisible = false
-            menu.findItem(R.id.nav_einkaufsliste).isVisible = false
-            menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
-        } else {
-            // Show items if wgId is present
-            menu.findItem(R.id.nav_wochenplan).isVisible = true
-            menu.findItem(R.id.nav_einkaufsliste).isVisible = true
-            menu.findItem(R.id.nav_haushaltsbuch).isVisible = true
-        }
+        // Check Firestore for the user's wgId based on the email in the userToken
+        firestore.collection("users").document(userToken.email)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    // Retrieve wgId from Firestore
+                    val wgId = document.getString("wgId") ?: ""
+
+                    // Show or hide menu items based on wgId presence
+                    if (wgId.isEmpty()) {
+                        // Hide items if wgId is empty
+                        menu.findItem(R.id.nav_wochenplan).isVisible = false
+                        menu.findItem(R.id.nav_einkaufsliste).isVisible = false
+                        menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
+                    } else {
+                        // Show items if wgId is present
+                        menu.findItem(R.id.nav_wochenplan).isVisible = true
+                        menu.findItem(R.id.nav_einkaufsliste).isVisible = true
+                        menu.findItem(R.id.nav_haushaltsbuch).isVisible = true
+                    }
+                } else {
+                    // If no document exists, hide items by default
+                    menu.findItem(R.id.nav_wochenplan).isVisible = false
+                    menu.findItem(R.id.nav_einkaufsliste).isVisible = false
+                    menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
+                    Log.d("MainActivity", "No user document found for email: ${userToken.email}")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MainActivity", "Error fetching wgId from Firestore: ${e.message}", e)
+                // Hide items if there's an error fetching the document
+                menu.findItem(R.id.nav_wochenplan).isVisible = false
+                menu.findItem(R.id.nav_einkaufsliste).isVisible = false
+                menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
+            }
     }
+
 
     override fun refreshUserToken(currentToken: UserToken) {
         swipeRefreshLayout.isRefreshing = true // Starte die Refresh-Animation
@@ -166,7 +190,7 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
                     updateUIWithNewToken(newToken)
 
                     // Update navigation menu based on new wgId
-                    updateNavigationMenu(newToken.wgId, binding.navView)
+                    updateNavigationMenu(newToken, binding.navView)
                 } else {
                     Log.d("MainActivity", "Benutzertoken hat sich nicht geändert.")
                 }
