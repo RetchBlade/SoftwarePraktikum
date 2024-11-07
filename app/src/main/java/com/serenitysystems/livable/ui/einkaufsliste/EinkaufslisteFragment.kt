@@ -1,7 +1,6 @@
 // EinkaufslisteFragment.kt
 package com.serenitysystems.livable.ui.einkaufsliste
 
-// Notwendige Importe
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.graphics.BitmapFactory
@@ -16,9 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.FragmentEinkaufslisteBinding
 import com.serenitysystems.livable.ui.AddItemDialogFragment
@@ -104,28 +101,32 @@ class EinkaufslisteFragment : Fragment() {
             onItemClicked = { item -> showEditItemDialog(item) },   // Direktes Bearbeiten des Produkts
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },  // Datum ändern
             onImageClicked = { item -> handleImageClick(item) }, // Bildklick verarbeiten
-            onItemDeleted = { item -> deleteItem(item) }         // Produkt löschen
+            onItemDeleted = { item -> deleteItem(item) },         // Produkt löschen
+            onItemStatusChanged = { item -> updateItemStatus(item) } // Status zurücksetzen
         )
         getrankeAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
-            onItemDeleted = { item -> deleteItem(item) }
+            onItemDeleted = { item -> deleteItem(item) },
+            onItemStatusChanged = { item -> updateItemStatus(item) }
         )
         haushaltAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
-            onItemDeleted = { item -> deleteItem(item) }
+            onItemDeleted = { item -> deleteItem(item) },
+            onItemStatusChanged = { item -> updateItemStatus(item) }
         )
         sonstigesAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> showEditItemDialog(item) },
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
-            onItemDeleted = { item -> deleteItem(item) }
+            onItemDeleted = { item -> deleteItem(item) },
+            onItemStatusChanged = { item -> updateItemStatus(item) }
         )
 
         // RecyclerViews für die verschiedenen Kategorien verbinden
@@ -173,6 +174,12 @@ class EinkaufslisteFragment : Fragment() {
         dialog.show(childFragmentManager, "EditItemDialog")
     }
 
+    // Methode zum Aktualisieren des Item-Status
+    private fun updateItemStatus(item: Produkt) {
+        val dateKey = dateFormat.format(selectedDate.time)
+        viewModel.updateItem(dateKey, item, dateKey)
+        loadItemsForDate() // Liste neu laden
+    }
 
     // Funktion zum Verschieben des Produkts zu einem neuen Datum
     private fun moveItemToNewDate(item: Produkt, neuesDatum: String) {

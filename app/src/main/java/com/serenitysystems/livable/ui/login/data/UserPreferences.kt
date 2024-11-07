@@ -1,12 +1,10 @@
-package com.serenitysystems.livable.data
+package com.serenitysystems.livable.ui.login.data
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
-import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

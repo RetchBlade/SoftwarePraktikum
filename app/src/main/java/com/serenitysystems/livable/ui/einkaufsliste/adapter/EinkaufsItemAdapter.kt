@@ -1,7 +1,6 @@
 // EinkaufsItemAdapter.kt
 package com.serenitysystems.livable.ui.einkaufsliste.adapter
 
-// Notwendige Importe
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
@@ -28,7 +27,8 @@ class EinkaufsItemAdapter(
     private val onItemClicked: (Produkt) -> Unit,             // Callback für Klick auf ein Produkt
     private val onDateChanged: (Produkt, String) -> Unit,     // Callback für das Ändern des Datums
     private val onImageClicked: (Produkt) -> Unit,            // Callback für Klick auf das Produktbild
-    private val onItemDeleted: (Produkt) -> Unit              // Callback zum Löschen eines Produkts
+    private val onItemDeleted: (Produkt) -> Unit,             // Callback zum Löschen eines Produkts
+    private val onItemStatusChanged: (Produkt) -> Unit        // Callback zum Zurücksetzen des Status
 ) : RecyclerView.Adapter<EinkaufsItemAdapter.EinkaufsItemViewHolder>() {
 
     // Datumsformat definieren
@@ -241,15 +241,9 @@ class EinkaufsItemAdapter(
         }
     }
 
-    // Element wiederherstellen
-    fun restoreItem(item: Produkt, position: Int) {
-        items.add(position, item)
-        notifyItemInserted(position)
-    }
-
     // Swipe-to-Delete Funktionalität hinzufügen
     fun attachSwipeToDelete(recyclerView: RecyclerView) {
-        val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
             // Bewegt die Elemente nicht
             override fun onMove(
@@ -258,34 +252,51 @@ class EinkaufsItemAdapter(
                 target: RecyclerView.ViewHolder
             ): Boolean = false
 
-            // Verarbeitet den Swipe nach links
+            // Verarbeitet den Swipe
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 if (position >= 0 && position < items.size) {
                     val item = items[position]
 
-                    // Bestätigungsdialog anzeigen
-                    AlertDialog.Builder(context)
-                        .setTitle("Löschen bestätigen")
-                        .setMessage("Sind Sie sicher, dass Sie dieses Produkt löschen möchten?")
-                        .setPositiveButton("Ja") { _, _ ->
-                            // Produkt löschen
-                            onItemDeleted(item)
-                            removeItemFromCurrentDate(position)
-                        }
-                        .setNegativeButton("Nein") { dialog, _ ->
-                            // Swipe rückgängig machen
-                            notifyItemChanged(position)
-                            dialog.dismiss()
-                        }
-                        .show()
+                    if (direction == ItemTouchHelper.LEFT) {
+                        // Swipe nach links (Löschen)
+                        AlertDialog.Builder(context)
+                            .setTitle("Löschen bestätigen")
+                            .setMessage("Sind Sie sicher, dass Sie dieses Produkt löschen möchten?")
+                            .setPositiveButton("Ja") { _, _ ->
+                                onItemDeleted(item)
+                                removeItemFromCurrentDate(position)
+                            }
+                            .setNegativeButton("Nein") { dialog, _ ->
+                                notifyItemChanged(position)
+                                dialog.dismiss()
+                            }
+                            .show()
+                    } else if (direction == ItemTouchHelper.RIGHT) {
+                        // Swipe nach rechts (Status zurücksetzen)
+                        AlertDialog.Builder(context)
+                            .setTitle("Status zurücksetzen")
+                            .setMessage("Möchten Sie den Status dieses Produkts zurücksetzen?")
+                            .setPositiveButton("Ja") { _, _ ->
+                                item.isPurchasedToday = false
+                                item.isChecked = false
+                                item.statusIcon = null
+                                onItemStatusChanged(item)
+                                notifyItemChanged(position)
+                            }
+                            .setNegativeButton("Nein") { dialog, _ ->
+                                notifyItemChanged(position)
+                                dialog.dismiss()
+                            }
+                            .show()
+                    }
                 } else {
                     // Ungültiger Index, Swipe rückgängig machen
                     notifyItemChanged(position)
                 }
             }
 
-            // Zeichnet den Hintergrund und das Papierkorb-Icon beim Wischen
+            // Zeichnet den Hintergrund und das Icon beim Wischen
             override fun onChildDraw(
                 c: Canvas,
                 recyclerView: RecyclerView,
@@ -296,35 +307,81 @@ class EinkaufsItemAdapter(
                 isCurrentlyActive: Boolean
             ) {
                 val itemView = viewHolder.itemView
-                val paint = Paint().apply { color = Color.RED }
+                val paint = Paint()
 
-                // Hintergrund zeichnen
-                val background = RectF(
-                    itemView.right + dX, itemView.top.toFloat(),
-                    itemView.right.toFloat(), itemView.bottom.toFloat()
-                )
-                c.drawRect(background, paint)
+                if (dX > 0) {
+                    // Swipe nach rechts (Status zurücksetzen)
+                    paint.color = Color.YELLOW
 
-                // Papierkorb-Icon laden
-                val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_trash_bin)
+                    // Hintergrund zeichnen
+                    val background = RectF(
+                        itemView.left.toFloat(), itemView.top.toFloat(),
+                        itemView.left + dX, itemView.bottom.toFloat()
+                    )
+                    c.drawRect(background, paint)
 
-                // Größe des Icons anpassen
-                val iconWidth = icon.width.toFloat()
-                val iconHeight = icon.height.toFloat()
-                val scaleFactor = itemView.height / iconHeight * 0.5f  // Skalierungsfaktor (50% der Höhe des Listenelements)
-                val scaledWidth = iconWidth * scaleFactor
-                val scaledHeight = iconHeight * scaleFactor
+                    // Undo-Icon laden
+                    val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_undo)
 
-                // Position des Icons berechnen
-                val iconMargin = (itemView.height - scaledHeight) / 2
-                val iconTop = itemView.top + iconMargin
-                val iconLeft = itemView.right - iconMargin - scaledWidth
-                val iconRight = itemView.right - iconMargin
-                val iconBottom = iconTop + scaledHeight
+                    if (icon != null) {
+                        // Größe des Icons anpassen
+                        val iconWidth = icon.width.toFloat()
+                        val iconHeight = icon.height.toFloat()
+                        val scaleFactor = itemView.height / iconHeight * 0.5f
+                        val scaledWidth = iconWidth * scaleFactor
+                        val scaledHeight = iconHeight * scaleFactor
 
-                // Icon zeichnen
-                val iconDest = RectF(iconLeft, iconTop, iconRight, iconBottom)
-                c.drawBitmap(icon, null, iconDest, null)
+                        // Position des Icons berechnen
+                        val iconMargin = (itemView.height - scaledHeight) / 2
+                        val iconTop = itemView.top + iconMargin
+                        val iconLeft = itemView.left + iconMargin
+                        val iconRight = iconLeft + scaledWidth
+                        val iconBottom = iconTop + scaledHeight
+
+                        // Icon zeichnen
+                        val iconDest = RectF(iconLeft, iconTop, iconRight, iconBottom)
+                        c.drawBitmap(icon, null, iconDest, null)
+                    } else {
+                        // Loggen oder alternative Aktion, falls das Icon nicht geladen werden kann
+                        Log.e("EinkaufsItemAdapter", "Konnte ic_undo nicht laden")
+                    }
+                } else if (dX < 0) {
+                    // Swipe nach links (Löschen)
+                    paint.color = Color.RED
+
+                    // Hintergrund zeichnen
+                    val background = RectF(
+                        itemView.right + dX, itemView.top.toFloat(),
+                        itemView.right.toFloat(), itemView.bottom.toFloat()
+                    )
+                    c.drawRect(background, paint)
+
+                    // Papierkorb-Icon laden
+                    val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_trash_bin)
+
+                    if (icon != null) {
+                        // Größe des Icons anpassen
+                        val iconWidth = icon.width.toFloat()
+                        val iconHeight = icon.height.toFloat()
+                        val scaleFactor = itemView.height / iconHeight * 0.5f
+                        val scaledWidth = iconWidth * scaleFactor
+                        val scaledHeight = iconHeight * scaleFactor
+
+                        // Position des Icons berechnen
+                        val iconMargin = (itemView.height - scaledHeight) / 2
+                        val iconTop = itemView.top + iconMargin
+                        val iconLeft = itemView.right - iconMargin - scaledWidth
+                        val iconRight = itemView.right - iconMargin
+                        val iconBottom = iconTop + scaledHeight
+
+                        // Icon zeichnen
+                        val iconDest = RectF(iconLeft, iconTop, iconRight, iconBottom)
+                        c.drawBitmap(icon, null, iconDest, null)
+                    } else {
+                        // Loggen oder alternative Aktion, falls das Icon nicht geladen werden kann
+                        Log.e("EinkaufsItemAdapter", "Konnte ic_trash_bin nicht laden")
+                    }
+                }
 
                 super.onChildDraw(
                     c, recyclerView, viewHolder,

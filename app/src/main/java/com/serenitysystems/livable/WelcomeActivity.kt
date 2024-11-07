@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.serenitysystems.livable.ui.login.LoginActivity
-import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
