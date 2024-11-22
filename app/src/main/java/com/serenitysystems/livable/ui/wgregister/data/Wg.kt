@@ -4,5 +4,6 @@ data class Wg(
     val adresse: String = "",
     val groesse: String = "",
     val zimmerAnzahl: String = "",
-    val bewohnerAnzahl: String = ""
+    val bewohnerAnzahl: String = "",
+    val mitgliederEmails: List<String> = emptyList()
 )
