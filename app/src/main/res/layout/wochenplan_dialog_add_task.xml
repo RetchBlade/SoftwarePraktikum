@@ -1,14 +1,13 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorSurface">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@drawable/blurred_card_background">
+        android:elevation="8dp">
 
         <!-- Date Picker Icon with modern style -->
         <LinearLayout
@@ -16,7 +15,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/date_picker_background"
+            android:padding="12dp">
 
             <ImageView
                 android:id="@+id/datePickerIcon"
@@ -33,8 +34,17 @@
                 android:layout_marginStart="16dp"
                 android:text="@string/select_date"
                 android:textSize="18sp"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/own_text_Farbe"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/selectDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_date"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/button_background"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
 
         <EditText
@@ -44,7 +54,7 @@
             android:layout_marginBottom="20dp"
             android:hint="@string/task_description"
             android:textSize="16sp"
-            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:background="@drawable/edit_text_background"
             android:padding="12dp" />
 
         <TextView
@@ -52,7 +62,7 @@
             android:layout_height="wrap_content"
             android:text="Priorität:"
             android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/own_text_Farbe"
             android:layout_marginBottom="4dp" />
 
         <Spinner
@@ -69,19 +79,18 @@
             android:hint="@string/task_points"
             android:inputType="number"
             android:textSize="16sp"
-            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:background="@drawable/edit_text_background"
             android:padding="12dp"
             android:layout_marginBottom="20dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:text="Zuständiger:"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="4dp" />
+            android:textColor="@color/own_text_Farbe"
+            android:textSize="16sp" />
 
-        <!-- Toggle for Repeating Task -->
         <Spinner
             android:id="@+id/taskAssigneeSpinner"
             android:layout_width="match_parent"
@@ -101,8 +110,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/repeating_task"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginEnd="8dp" />
+                android:textColor="@color/own_text_Farbe"
+            android:layout_marginEnd="8dp" />
 
             <Switch
                 android:id="@+id/repeatingTaskToggle"
@@ -117,7 +126,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:background="@drawable/gradient_beige"
+            android:background="@drawable/dialog_background"
             android:padding="12dp"
             android:layout_marginTop="16dp">
 
@@ -126,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/repeat_on"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/own_text_Farbe"
                 android:layout_marginBottom="8dp" />
 
             <Spinner
@@ -141,8 +150,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/repeat_frequency"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/own_text_Farbe"
+            android:layout_marginBottom="8dp" />
 
             <Spinner
                 android:id="@+id/repeatFrequencySpinner"

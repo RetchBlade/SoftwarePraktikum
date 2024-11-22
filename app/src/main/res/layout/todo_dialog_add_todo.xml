@@ -10,19 +10,66 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Feld für die Hauptaufgabe -->
         <EditText
             android:id="@+id/todoDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Aufgabe beschreiben"
+            android:hint="Aufgabe"
             android:layout_marginBottom="16dp" />
 
-        <DatePicker
-            android:id="@+id/todoDatePicker"
+        <!-- Neues Feld für die detaillierte Beschreibung -->
+        <EditText
+            android:id="@+id/todoDetailedDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:calendarViewShown="false" />
+            android:hint="Beschreibung"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Modernes Datepicker-Symbol mit TextView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/datePickerIcon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_calendar"
+                android:contentDescription="@string/select_date"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/select_date"
+                android:textSize="18sp"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- TextView vor dem Spinner -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Priorität:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Spinner für Priorität -->
+        <Spinner
+            android:id="@+id/prioritySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/priority_levels"
+            android:layout_marginBottom="16dp" />
 
     </LinearLayout>
-
 </ScrollView>
+

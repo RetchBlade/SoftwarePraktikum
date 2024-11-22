@@ -3,24 +3,58 @@
     android:id="@+id/todo_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:background="@drawable/todo_item_background"
-    android:padding="16dp"
-    android:layout_marginTop="8dp">
+    android:padding="2dp"
+    android:layout_marginTop="4dp">
 
-    <CheckBox
-        android:id="@+id/todoCheckBox"
-        android:layout_width="wrap_content"
+    <!-- Erste Zeile mit Checkbox und Hauptbeschreibung -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/todoDescription"
-        android:layout_width="wrap_content"
+        <CheckBox
+            android:id="@+id/todoCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/todoDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textSize="18sp"
+            android:layout_gravity="center_vertical" />
+
+        <!-- Datumstext, immer sichtbar unten rechts -->
+        <TextView
+            android:id="@+id/todoDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="?attr/colorSecondary"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"/>
+    </LinearLayout>
+
+    <!-- Versteckte detaillierte Beschreibung -->
+    <EditText
+        android:id="@+id/todoDetailedDescription"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textSize="18sp"
-        android:layout_marginStart="16dp"
-        android:layout_gravity="center_vertical"/>
+        android:visibility="gone"
+        android:hint="Beschreibung"
+        android:layout_marginTop="8dp" />
 </LinearLayout>
+
+
+
+
 

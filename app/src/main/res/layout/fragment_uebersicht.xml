@@ -2,49 +2,46 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentUebersicht"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".ui.haushaltsbuch.ÜbersichtFragment">
+    android:padding="16dp">
 
-    <!-- Sol Ok -->
+
     <ImageView
         android:id="@+id/leftArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_left_arrow"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@id/dateTextView"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Tarih Gösterimi -->
-    <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="dd.MM.yyyy"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/leftArrow"
-        app:layout_constraintEnd_toStartOf="@id/rightArrow"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
 
-    <!-- Sağ Ok -->
     <ImageView
         android:id="@+id/rightArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_right_arrow"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/dateTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="8dp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Kontostand Gösterimi -->
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="dd.MM.yyyy"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/leftArrow"
+        app:layout_constraintEnd_toStartOf="@id/rightArrow"
+        app:layout_constraintBottom_toBottomOf="@id/leftArrow"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Kontostand -->
     <TextView
         android:id="@+id/textViewKontostand"
         android:layout_width="wrap_content"
@@ -53,49 +50,43 @@
         android:textSize="18sp"
         android:textColor="@android:color/black"
         android:textStyle="bold"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/dateTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- PieChart -->
+    <!-- PieChartView -->
     <com.serenitysystems.livable.ui.haushaltsbuch.PieChartView
         android:id="@+id/pieChartView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="300dp"
         app:layout_constraintTop_toBottomOf="@id/textViewKontostand"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:1"/>
+        android:layout_marginTop="16dp" />
 
-    <!-- Metalik Görünümlü Panel -->
-    <LinearLayout
-        android:id="@+id/overviewPanel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/metallic_background"
-        android:padding="16dp"
-        android:layout_marginTop="16dp"
+    <!-- Scrollable Container without White Background -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/categoriesScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/pieChartView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Übersicht"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_gravity="center"
-            android:paddingBottom="8dp"/>
+    <LinearLayout
+        android:id="@+id/categoriesListPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <!-- Kategori Yüzdeleri Listesi -->
-        <LinearLayout
-            android:id="@+id/categoriesListPanel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

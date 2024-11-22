@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer Shadow -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#1E000000"
+            android:endColor="@android:color/transparent"
+            android:angle="45" /> <!-- Diagonal shadow -->
+            <corners android:radius="20dp"/> <!-- Rounded corners for the shadow -->
+            <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="4dp"/> <!-- Padding for shadow effect -->
+        </shape>
+    </item>
+
+    <!-- Main Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#F0E1D2"
+            android:endColor="#D7D0BF"
+            android:angle="120" /> <!-- Soft gradient angle -->
+            <corners android:radius="20dp"/> <!-- More rounded corners -->
+        </shape>
+    </item>
+</layer-list>
