@@ -1,7 +1,5 @@
 package com.serenitysystems.livable.ui.home
 
-import HomePageViewModel
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +16,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.interfaces.TokenRefreshListener
 
 class HomePageFragment : Fragment() {
 
@@ -28,12 +25,6 @@ class HomePageFragment : Fragment() {
     private lateinit var userNicknameTextView: TextView
     private lateinit var userPic: ImageView
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is TokenRefreshListener) {
-            homePageViewModel.setTokenRefreshListener(context)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

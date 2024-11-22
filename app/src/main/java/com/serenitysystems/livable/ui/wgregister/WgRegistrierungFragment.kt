@@ -1,6 +1,5 @@
 package com.serenitysystems.livable.ui.wgregister
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.wgregister.data.Wg
 import kotlinx.coroutines.flow.first
@@ -27,17 +25,8 @@ class WgRegistrierungFragment : Fragment() {
     private lateinit var zimmerInput: EditText
     private lateinit var bewohnerInput: EditText
     private lateinit var userPreferences: UserPreferences
-    private lateinit var tokenRefreshListener: TokenRefreshListener
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        // Überprüfe, ob der Kontext das TokenRefreshListener implementiert
-        if (context is TokenRefreshListener) {
-            tokenRefreshListener = context
-        } else {
-            throw ClassCastException("$context muss TokenRefreshListener implementieren")
-        }
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,10 +72,6 @@ class WgRegistrierungFragment : Fragment() {
                         Log.e("WgRegistrierungFragment", "Erfolgreich die WG erstellt und den User zugewiesen.")
                         // Navigiere zur Homepage
                         findNavController().navigate(R.id.nav_homepage)
-
-                        // Rufe die refreshUserToken-Methode in MainActivity auf
-                        tokenRefreshListener.refreshUserToken(it)
-
                     }, { exception ->
                         Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
                         adresseInput.error = "Fehler beim Aktualisieren des Benutzers"

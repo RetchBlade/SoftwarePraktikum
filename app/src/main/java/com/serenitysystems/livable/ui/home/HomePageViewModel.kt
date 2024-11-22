@@ -1,3 +1,5 @@
+package com.serenitysystems.livable.ui.home
+
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -5,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,6 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
     val userPic: LiveData<String?> = _userPic // Hier auf _userPic korrigiert
 
     private val userPreferences: UserPreferences = UserPreferences(application)
-    private lateinit var tokenRefreshListener: TokenRefreshListener
 
     init {
         fetchUserNickname()
@@ -50,52 +50,58 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun setTokenRefreshListener(listener: TokenRefreshListener) {
-        tokenRefreshListener = listener
-    }
+    private var isSyncing: Boolean = false // Verhindert wiederholte Abrufe während der Synchronisation
 
     fun joinWG(wgId: String, onError: (String) -> Unit) {
+        if (isSyncing) return
+
+        isSyncing = true
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
-                val updatedToken = userToken.copy(wgId = wgId, wgRole = "Wg-Mitglied")
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
                         userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
                             .addOnSuccessListener {
-                                Log.d("HomePageViewModel", "Erfolgreich die Wg beigetreten.")
-                                // Rufe den Token-Refresh hier auf
-                                tokenRefreshListener.refreshUserToken(updatedToken)
+                                Log.d("com.serenitysystems.livable.ui.home.HomePageViewModel", "Erfolgreich die Wg beigetreten.")
                             }
                             .addOnFailureListener { exception ->
-                                Log.e("HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
+                                Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
+                            }
+                            .addOnCompleteListener {
+                                isSyncing = false // Synchronisation abgeschlossen
                             }
                     } else {
                         onError("Die WG-ID existiert nicht.")
+                        isSyncing = false
                     }
                 }.addOnFailureListener { exception ->
-                    Log.e("HomePageViewModel", "Fehler beim Laden der WG-DokumentationWG ID: ${exception.message}")
+                    Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Fehler beim Laden der WG-DokumentationWG ID: ${exception.message}")
+                    isSyncing = false
                 }
             }
         }
     }
 
     fun leaveWG() {
+        if (isSyncing) return
+
+        isSyncing = true
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
-                val updatedToken = userToken.copy(wgId = "", wgRole = "") // Speichere den aktualisierten Token in einer Variablen
-
                 userRef.update("wgId", "", "wgRole", "")
                     .addOnSuccessListener {
-                        Log.d("HomePageViewModel", "Erfolgreich aus der WG verlassen.")
-                        // Rufe den Token-Refresh mit dem gespeicherten Token auf
-                        tokenRefreshListener.refreshUserToken(updatedToken)
+                        Log.d("com.serenitysystems.livable.ui.home.HomePageViewModel", "Erfolgreich aus der WG verlassen.")
                     }
                     .addOnFailureListener { exception ->
-                        Log.e("HomePageViewModel", "Error leaving the WG: ${exception.message}")
+                        Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Error leaving the WG: ${exception.message}")
+                    }
+                    .addOnCompleteListener {
+                        isSyncing = false
                     }
             }
+
         }
     }
 
@@ -119,6 +125,8 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                     onError("Fehler beim Laden der Benutzerdaten: ${exception.message}")
                 }
             } ?: onError("Benutzer-Token ist null.")
+            return@fetchUserToken
         }
+
     }
 }

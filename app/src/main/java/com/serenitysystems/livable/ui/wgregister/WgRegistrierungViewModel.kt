@@ -43,15 +43,4 @@ class WgRegistrierungViewModel : ViewModel() {
             onFailure(exception)
         }
     }
-
-    // Methode, um Benutzer zur WG hinzuzufügen
-    fun addUserToWg(
-        wgId: String, email: String,
-        onSuccess: () -> Unit, onFailure: (Exception) -> Unit
-    ) {
-        val wgRef = db.collection("WGs").document(wgId)
-        wgRef.update("mitgliederEmails", FieldValue.arrayUnion(email))
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception -> onFailure(exception) }
-    }
 }

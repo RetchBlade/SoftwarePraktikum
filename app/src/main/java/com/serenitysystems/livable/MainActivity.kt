@@ -20,22 +20,18 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.databinding.ActivityMainBinding
-import com.serenitysystems.livable.interfaces.TokenRefreshListener
 import com.serenitysystems.livable.ui.login.LoginActivity
 import com.serenitysystems.livable.ui.login.data.UserToken
-import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
-class MainActivity : AppCompatActivity(), TokenRefreshListener {
+import kotlinx.coroutines.launch
+
+class MainActivity : AppCompatActivity() {
 
     // Konfiguration der AppBar
     private lateinit var appBarConfiguration: AppBarConfiguration
     // Binding für die Hauptaktivität
     private lateinit var binding: ActivityMainBinding
     private lateinit var userPreferences: UserPreferences
-    private lateinit var swipeRefreshLayout: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,21 +40,16 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
         // Initialisiere UserPreferences
         userPreferences = UserPreferences(this)
 
-        // Set up the binding and SwipeRefreshLayout
+        // Setze das Binding und SwipeRefreshLayout
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        swipeRefreshLayout = binding.swipeRefreshLayout
-
-        // Prüfe, ob UserToken vorhanden ist
+        // Überprüfe, ob ein UserToken vorhanden ist
         lifecycleScope.launch {
             userPreferences.userToken.collect { userToken ->
+                // Benutzer ist eingeloggt, fahre mit MainActivity fort
                 if (userToken != null) {
-                    // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken) // Übergebe usertoken für die Sidebar
-                } else {
-                    // Kein Benutzer eingeloggt, navigiere zur LoginActivity
-                    navigateToLoginActivity()
+                    setupMainActivity(userToken)
                 }
             }
         }
@@ -100,14 +91,27 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
         // Setze die E-Mail im Sidebar-Header
         userNicknameTextView.text = userToken.nickname
 
-        // Lade das Profilbild in die ImageView mit Glide
-        Glide.with(this)
-            .load(userToken.profileImageUrl)
-            .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
-            .into(profileImageView)
+        // Abrufen der wgId aus der Firestore-Sammlung "users" und setzen des SnapshotListeners
+        firestore.collection("users")
+            .document(userToken.email)  // Verwende die E-Mail als Document ID
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.w("MainActivity", "Fehler beim Abhören der Firestore-Updates", e)
+                    return@addSnapshotListener
+                }
 
-        // Update navigation menu based on wgId
-        updateNavigationMenu(userToken.wgId, navView)
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    val wgId = documentSnapshot.getString("wgId") ?: ""
+                    // Aktualisiere das Navigationsmenü basierend auf der wgId
+                    updateNavigationMenu(wgId, navView)
+                    val profileImageUrl = documentSnapshot.getString("profileImageUrl") ?: ""
+                    // Lade das Profilbild in die ImageView mit Glide
+                    Glide.with(this)
+                        .load(profileImageUrl)
+                        .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
+                        .into(profileImageView)
+                }
+            }
 
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
@@ -125,109 +129,27 @@ class MainActivity : AppCompatActivity(), TokenRefreshListener {
                 }
             }
         }
-
-        // Set up SwipeRefreshLayout
-        swipeRefreshLayout.setOnRefreshListener {
-            refreshUserToken(userToken) // Refresh the user token
-        }
     }
 
     private fun updateNavigationMenu(wgId: String, navView: NavigationView) {
-        val menu = navView.menu
 
-        // Show or hide menu items based on wgId
+        val menu = navView.menu
+        // Menüeinträge anzeigen oder verbergen, basierend auf der wgId
         if (wgId.isEmpty()) {
-            // Hide items if wgId is empty
+            // Verstecke die Einträge, wenn wgId leer ist
             menu.findItem(R.id.nav_wochenplan).isVisible = false
             menu.findItem(R.id.nav_einkaufsliste).isVisible = false
             menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
         } else {
-            // Show items if wgId is present
+            // Zeige die Einträge, wenn wgId vorhanden ist
             menu.findItem(R.id.nav_wochenplan).isVisible = true
             menu.findItem(R.id.nav_einkaufsliste).isVisible = true
             menu.findItem(R.id.nav_haushaltsbuch).isVisible = true
         }
     }
 
-
-
-        override fun refreshUserToken(currentToken: UserToken) {
-        swipeRefreshLayout.isRefreshing = true // Starte die Refresh-Animation
-
-        lifecycleScope.launch {
-            try {
-                // Holen der aktuellen Benutzerdaten aus Firestore
-                val newToken = retrieveUserDataFromFirestore(currentToken.email)
-
-                // Aktualisiere das UI und die Präferenzen nur, wenn der neue Token anders ist
-                if (newToken != currentToken) {
-                    // Speichere den neuen Token nur, wenn er sich geändert hat
-                    userPreferences.saveUserToken(newToken) // Speichere den neuen Token
-
-                    // Aktualisiere das UI mit dem neuen Benutzertoken
-                    updateUIWithNewToken(newToken)
-
-                    // Update navigation menu based on new wgId
-                    updateNavigationMenu(newToken.wgId, binding.navView)
-                } else {
-                    Log.d("MainActivity", "Benutzertoken hat sich nicht geändert.")
-                }
-
-            } catch (e: Exception) {
-                // Behandle Fehler, die während des Abrufs des Tokens auftreten
-                Log.e("MainActivity", "Fehler beim Aktualisieren des Benutzertokens: ${e.message}", e)
-            } finally {
-                // Stoppe die Refresh-Animation
-                swipeRefreshLayout.isRefreshing = false
-            }
-        }
-    }
-
-    private suspend fun retrieveUserDataFromFirestore(email: String): UserToken {
-        return suspendCoroutine { continuation ->
-            firestore.collection("users").document(email)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        // Benutzerdaten wurden gefunden, erstelle einen neuen UserToken
-                        val newToken = UserToken(
-                            email = document.getString("email") ?: email,
-                            nickname = document.getString("nickname") ?: "Unknown",
-                            password = document.getString("password") ?: "", // Beachte, dass du das Passwort nicht speichern solltest
-                            birthdate = document.getString("birthdate") ?: "",
-                            gender = document.getString("gender") ?: "",
-                            wgId = document.getString("wgId") ?: "",
-                            wgRole = document.getString("wgRole") ?: "",
-                            profileImageUrl = document.getString("profileImageUrl") ?: ""
-                        )
-                        continuation.resume(newToken)
-                    } else {
-                        continuation.resumeWithException(Exception("No such document"))
-                    }
-                }
-                .addOnFailureListener { e ->
-                    continuation.resumeWithException(e)
-                }
-        }
-    }
-
-    private fun updateUIWithNewToken(newToken: UserToken) {
-        // Update the UI elements as needed with the new user token data
-        val headerView: View = binding.navView.getHeaderView(0)
-        val userNicknameTextView = headerView.findViewById<TextView>(R.id.user_nickname_text_view)
-        val profileImageView = headerView.findViewById<ImageView>(R.id.imageView)
-
-        // Update the UI with the new data
-        userNicknameTextView.text = newToken.nickname
-
-        Glide.with(this)
-            .load(newToken.profileImageUrl)
-            .placeholder(R.drawable.pp) // Fallback image
-            .into(profileImageView)
-    }
-
     private fun performLogout() {
-        // Lösche den UserToken
+        // Lösche das UserToken
         lifecycleScope.launch {
             userPreferences.clearUserToken()
 
