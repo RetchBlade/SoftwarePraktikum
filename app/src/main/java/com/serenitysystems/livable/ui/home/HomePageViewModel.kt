@@ -50,7 +50,6 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-
     private fun fetchUserToken(action: (UserToken?) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
@@ -94,7 +93,6 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
 
     fun leaveWG() {
         if (isSyncing) return
-
         isSyncing = true
         fetchUserToken { token ->
             token?.let { userToken ->
@@ -110,32 +108,39 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                         isSyncing = false
                     }
             }
-
         }
     }
-
-
-
 
     fun fetchUserWGInfo(onSuccess: (String?, String?) -> Unit, onError: (String) -> Unit) {
         fetchUserToken { token ->
             token?.let { userToken ->
-                val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
+                if (userToken != null) {
+                    firestore.collection("users")
+                        .document(userToken.email)  // Verwende die E-Mail als Document ID
+                        .addSnapshotListener { documentSnapshot, e ->
+                            if (e != null) {
+                                Log.w(
+                                    "com.serenitysystems.livable.ui.home.HomePageViewModel",
+                                    "Fehler beim Abhören der Firestore-Updates",
+                                )
+                                return@addSnapshotListener
+                            }
+                            if (documentSnapshot != null && documentSnapshot.exists()) {
+                                val wgId = documentSnapshot.getString("wgId") ?: ""
 
-                userRef.get().addOnSuccessListener { wgDocument ->
-                    if (wgDocument.exists()) {
-                        val wgId = wgDocument.getString("wgId")
-                        val wgRole = wgDocument.getString("wgRole")
-                        onSuccess(wgId, wgRole)
-                    } else {
-                        onError("Benutzerdaten nicht gefunden.")
-                    }
-                }.addOnFailureListener { exception ->
-                    onError("Fehler beim Laden der Benutzerdaten: ${exception.message}")
+                                val wgRole = documentSnapshot.getString("wgRole") ?: ""
+                                onSuccess(wgId, wgRole)
+                            } else {
+                                onError("Benutzerdaten nicht gefunden.")
+                                Log.w(
+                                    "com.serenitysystems.livable.ui.home.HomePageViewModel",
+                                    "Benutzerdaten nicht gefunden.",
+                                )
+                            }
+                        }
                 }
-            } ?: onError("Benutzer-Token ist null.")
-            return@fetchUserToken
+                return@fetchUserToken
+            }
         }
-
     }
 }
