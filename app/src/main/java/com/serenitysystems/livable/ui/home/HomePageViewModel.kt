@@ -6,7 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
+import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
 import kotlinx.coroutines.Dispatchers
@@ -18,29 +20,36 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
     val userNickname: LiveData<String?> = _userNickname
     private val _userPic = MutableLiveData<String?>()
     val userPic: LiveData<String?> = _userPic // Hier auf _userPic korrigiert
-
+    private val firestore = FirebaseFirestore.getInstance()
     private val userPreferences: UserPreferences = UserPreferences(application)
 
     init {
-        fetchUserNickname()
-        fetchUserPicture() // Füge diesen Aufruf hinzu, um das Bild zu laden
+        fetchUserData()
     }
 
-    private fun fetchUserNickname() {
+    private fun fetchUserData() {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
-                _userNickname.postValue(userToken?.nickname)
+                if (userToken != null) {
+                    firestore.collection("users")
+                        .document(userToken.email)  // Verwende die E-Mail als Document ID
+                        .addSnapshotListener { documentSnapshot, e ->
+                            if (e != null) {
+                                Log.w("com.serenitysystems.livable.ui.home.HomePageViewModel", "Fehler beim Abhören der Firestore-Updates", e)
+                                return@addSnapshotListener
+                            }
+                            if (documentSnapshot != null && documentSnapshot.exists()) {
+                                val nickname = documentSnapshot.getString("nickname") ?: ""
+                                _userNickname.postValue(nickname)
+                                val profileImageUrl = documentSnapshot.getString("profileImageUrl") ?: ""
+                                _userPic.postValue(profileImageUrl)
+                            }
+                        }
+                }
             }
         }
     }
 
-    private fun fetchUserPicture() {
-        viewModelScope.launch(Dispatchers.IO) {
-            userPreferences.userToken.collect { userToken ->
-                _userPic.postValue(userToken?.profileImageUrl)
-            }
-        }
-    }
 
     private fun fetchUserToken(action: (UserToken?) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
