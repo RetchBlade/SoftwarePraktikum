@@ -49,11 +49,11 @@
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>
     <string name="task_points">Punkte</string>
-    <string name="task_assignee">Zuständiger</string>
+    <string name="task_assignee">Zuständiger:</string>
     <string name="select_date">Datum</string>
     <string name="repeating_task">Wiederholend</string>
-    <string name="repeat_on">Wiederholend an</string>
-    <string name="repeat_frequency">Häufigkeit</string>
+    <string name="repeat_on">Ab:</string>
+    <string name="repeat_frequency">Häufigkeit:</string>
 
 
 

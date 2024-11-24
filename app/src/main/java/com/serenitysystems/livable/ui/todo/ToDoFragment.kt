@@ -107,26 +107,57 @@ class ToDoFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-
-
     private fun sortTodosByDate(todos: List<TodoItem>) {
-        val sortedTodos = todos.sortedWith(compareByDescending<TodoItem> { getPriorityValue(it.priority) }
-            .thenBy { it.date })
+        val sortedTodos = todos.sortedWith(
+            compareByDescending<TodoItem> { getPriorityValue(it.priority) }
+                .thenBy { it.date }
+        )
 
-        val today = Calendar.getInstance()
-        val tomorrow = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
-        val weekEnd = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 7) }
+        val calendar = Calendar.getInstance()
 
-        val todayTodos = sortedTodos.filter { isSameDay(it.date, today.time) }
-        val tomorrowTodos = sortedTodos.filter { isSameDay(it.date, tomorrow.time) }
-        val weekTodos = sortedTodos.filter { it.date.after(tomorrow.time) && it.date.before(weekEnd.time) }
-        val laterTodos = sortedTodos.filter { it.date.after(weekEnd.time) }
+        // Heute
+        val today = calendar.clone() as Calendar
 
+        // Morgen
+        val tomorrow = calendar.clone() as Calendar
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1)
+
+        calendar.firstDayOfWeek = Calendar.MONDAY
+        // Ende der aktuellen Kalenderwoche
+        val weekEnd = calendar.clone() as Calendar
+        weekEnd.set(Calendar.DAY_OF_WEEK, weekEnd.firstDayOfWeek + 6)
+
+        // Listen initialisieren
+        val todayTodos = mutableListOf<TodoItem>()
+        val tomorrowTodos = mutableListOf<TodoItem>()
+        val weekTodos = mutableListOf<TodoItem>()
+        val laterTodos = mutableListOf<TodoItem>()
+
+        // Todos in Kategorien sortieren
+        for (todo in sortedTodos) {
+            when {
+                isSameDay(todo.date, today.time) -> todayTodos.add(todo)
+                isSameDay(todo.date, tomorrow.time) -> tomorrowTodos.add(todo)
+                todo.date.after(tomorrow.time) && todo.date.before(weekEnd.time) && isInSameWeek(todo.date, today.time) -> weekTodos.add(todo)
+                else -> laterTodos.add(todo)
+            }
+        }
+
+        // Listen an die Adapter übergeben
         todayAdapter.submitList(todayTodos)
         tomorrowAdapter.submitList(tomorrowTodos)
         weekAdapter.submitList(weekTodos)
         laterAdapter.submitList(laterTodos)
     }
+
+    private fun isInSameWeek(date1: Date, date2: Date): Boolean {
+        val calendar1 = Calendar.getInstance().apply { time = date1 }
+        val calendar2 = Calendar.getInstance().apply { time = date2 }
+        return calendar1.get(Calendar.WEEK_OF_YEAR) == calendar2.get(Calendar.WEEK_OF_YEAR) &&
+                calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
+    }
+
+
 
     private fun getPriorityValue(priority: String): Int {
         return when (priority) {
