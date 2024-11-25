@@ -108,6 +108,24 @@
         <item>Sonstiges</item>
     </string-array>
 
+    <string-array name="repeat_types">
+        <item>Keine</item>
+        <item>Täglich</item>
+        <item>Alle 2 Tage</item>
+        <item>Wöchentlich</item>
+    </string-array>
+
+    <string-array name="days_of_week2">
+        <item>Montag</item>
+        <item>Dienstag</item>
+        <item>Mittwoch</item>
+        <item>Donnerstag</item>
+        <item>Freitag</item>
+        <item>Samstag</item>
+        <item>Sonntag</item>
+    </string-array>
+
+
     <!-- Weitere Strings für das Haushaltsbuch -->
     <string name="name">Haushaltsbuch</string>
     <string name="ausgaben_nach_kategorie">Ausgaben nach Kategorie</string>

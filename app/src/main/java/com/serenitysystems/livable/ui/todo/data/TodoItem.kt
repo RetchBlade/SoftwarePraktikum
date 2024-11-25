@@ -9,6 +9,7 @@ data class TodoItem(
     val detailedDescription: String,
     val date: Date,
     val isDone: Boolean = false,
-    val priority: String = "Niedrig"
+    val priority: String = "Niedrig",
+    val repeatType: String? = null, // "daily", "every_2_days", "weekly", "specific_day"
 )
 

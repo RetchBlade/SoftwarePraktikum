@@ -48,7 +48,20 @@ class ToDoViewModel : ViewModel() {
     }
 
     fun deleteTodo(todo: TodoItem) {
-        val updatedTodos = _todos.value?.filter { it.id != todo.id }
+        val updatedTodos = _todos.value.orEmpty().filter { it.id != todo.id }.toMutableList()
+
+        if (todo.repeatType != null) {
+            val calendar = Calendar.getInstance().apply { time = todo.date }
+            when (todo.repeatType) {
+                "daily" -> calendar.add(Calendar.DAY_OF_YEAR, 1)
+                "every_2_days" -> calendar.add(Calendar.DAY_OF_YEAR, 2)
+                "weekly" -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
+            }
+            val repeatedTodo = todo.copy(date = calendar.time, isDone = false)
+            updatedTodos.add(repeatedTodo)
+        }
+
         _todos.value = updatedTodos
     }
+
 }

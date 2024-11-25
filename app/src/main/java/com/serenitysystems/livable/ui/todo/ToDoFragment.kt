@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
@@ -114,6 +115,7 @@ class ToDoFragment : Fragment() {
         )
 
         val calendar = Calendar.getInstance()
+        calendar.firstDayOfWeek = Calendar.MONDAY // Wochenbeginn auf Montag setzen
 
         // Heute
         val today = calendar.clone() as Calendar
@@ -122,10 +124,9 @@ class ToDoFragment : Fragment() {
         val tomorrow = calendar.clone() as Calendar
         tomorrow.add(Calendar.DAY_OF_YEAR, 1)
 
-        calendar.firstDayOfWeek = Calendar.MONDAY
         // Ende der aktuellen Kalenderwoche
         val weekEnd = calendar.clone() as Calendar
-        weekEnd.set(Calendar.DAY_OF_WEEK, weekEnd.firstDayOfWeek + 6)
+        weekEnd.set(Calendar.DAY_OF_WEEK, weekEnd.firstDayOfWeek + 6) // Letzter Tag der Woche (Sonntag)
 
         // Listen initialisieren
         val todayTodos = mutableListOf<TodoItem>()
@@ -138,7 +139,7 @@ class ToDoFragment : Fragment() {
             when {
                 isSameDay(todo.date, today.time) -> todayTodos.add(todo)
                 isSameDay(todo.date, tomorrow.time) -> tomorrowTodos.add(todo)
-                todo.date.after(tomorrow.time) && todo.date.before(weekEnd.time) && isInSameWeek(todo.date, today.time) -> weekTodos.add(todo)
+                todo.date.after(tomorrow.time) && todo.date.before(weekEnd.time) -> weekTodos.add(todo)
                 else -> laterTodos.add(todo)
             }
         }
@@ -150,9 +151,10 @@ class ToDoFragment : Fragment() {
         laterAdapter.submitList(laterTodos)
     }
 
+
     private fun isInSameWeek(date1: Date, date2: Date): Boolean {
-        val calendar1 = Calendar.getInstance().apply { time = date1 }
-        val calendar2 = Calendar.getInstance().apply { time = date2 }
+        val calendar1 = Calendar.getInstance().apply { firstDayOfWeek = Calendar.MONDAY; time = date1 }
+        val calendar2 = Calendar.getInstance().apply { firstDayOfWeek = Calendar.MONDAY; time = date2 }
         return calendar1.get(Calendar.WEEK_OF_YEAR) == calendar2.get(Calendar.WEEK_OF_YEAR) &&
                 calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
     }
@@ -183,6 +185,7 @@ class ToDoFragment : Fragment() {
         val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
         val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
         val prioritySpinner: Spinner = dialogView.findViewById(R.id.prioritySpinner)
+        val repeatTypeSpinner: Spinner = dialogView.findViewById(R.id.repeatTypeSpinner)
 
         val calendar = Calendar.getInstance()
         dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
@@ -201,27 +204,34 @@ class ToDoFragment : Fragment() {
             datePickerDialog.show()
         }
 
-        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
+        AlertDialog.Builder(context)
             .setTitle("Todo hinzufügen")
             .setView(dialogView)
             .setPositiveButton("Hinzufügen") { _, _ ->
                 val description = todoDescription.text.toString()
                 val detailedDescription = todoDetailedDescription.text.toString()
                 val priority = prioritySpinner.selectedItem.toString()
+                val repeatType = when (repeatTypeSpinner.selectedItemPosition) {
+                    1 -> "daily"
+                    2 -> "every_2_days"
+                    3 -> "weekly"
+                    4 -> "specific_day"
+                    else -> null
+                }
+
                 val newTodo = TodoItem(
                     description = description,
                     detailedDescription = detailedDescription,
                     date = calendar.time,
-                    priority = priority
+                    priority = priority,
+                    repeatType = repeatType
                 )
-
                 todoViewModel.addTodo(newTodo)
             }
             .setNegativeButton("Abbrechen", null)
-            .create()
-
-        dialog.show()
+            .show()
     }
+
 
 
     private fun showTodoOptions(todo: TodoItem) {
