@@ -45,6 +45,8 @@
     <string name="todo_edit">Bearbeiten</string>
     <string name="add_item">Artikel hinzufügen</string>
 
+    <string name="delete_todo">Todo löschen</string>
+
     <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>

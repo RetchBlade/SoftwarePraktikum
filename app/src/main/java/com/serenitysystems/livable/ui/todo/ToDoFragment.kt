@@ -1,13 +1,10 @@
 package com.serenitysystems.livable.ui.todo
 
 import android.app.DatePickerDialog
-import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
@@ -20,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.FragmentTodoBinding
-import com.serenitysystems.livable.ui.todo.data.TodoItem
 import com.serenitysystems.livable.ui.todo.adapter.TodoAdapter
+import com.serenitysystems.livable.ui.todo.data.TodoItem
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -43,10 +40,10 @@ class ToDoFragment : Fragment() {
         todoViewModel = ViewModelProvider(this).get(ToDoViewModel::class.java)
         _binding = FragmentTodoBinding.inflate(inflater, container, false)
 
-        todayAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
-        tomorrowAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
-        weekAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
-        laterAdapter = TodoAdapter { todo -> /* Leerer Lambda, keine Aktion mehr */ }
+        todayAdapter = TodoAdapter { todo -> handleTodoAction(todo) }
+        tomorrowAdapter = TodoAdapter { todo -> handleTodoAction(todo) }
+        weekAdapter = TodoAdapter { todo -> handleTodoAction(todo) }
+        laterAdapter = TodoAdapter { todo -> handleTodoAction(todo) }
 
         setupRecyclerViews()
 
@@ -59,6 +56,16 @@ class ToDoFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun handleTodoAction(todo: TodoItem) {
+        if (todo.detailedDescription == "deleted_by_button") {
+            // Permanentes Löschen durch den Müll-Knopf
+            todoViewModel.deleteTodoPermanently(todo)
+        } else {
+            // Abhaken oder Entabhaken
+            todoViewModel.updateTodo(todo)
+        }
     }
 
     private fun setupRecyclerViews() {
@@ -92,15 +99,12 @@ class ToDoFragment : Fragment() {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false // Keine Move-Aktion, nur Swipe
-            }
+            ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // To-Do beim Wischen entfernen
                 val position = viewHolder.adapterPosition
                 val todo = adapter.currentList[position]
-                todoViewModel.deleteTodo(todo)
+                todoViewModel.deleteTodo(todo) // Standard Swipe-Logik
             }
         }
 
@@ -115,26 +119,20 @@ class ToDoFragment : Fragment() {
         )
 
         val calendar = Calendar.getInstance()
-        calendar.firstDayOfWeek = Calendar.MONDAY // Wochenbeginn auf Montag setzen
+        calendar.firstDayOfWeek = Calendar.MONDAY
 
-        // Heute
         val today = calendar.clone() as Calendar
-
-        // Morgen
         val tomorrow = calendar.clone() as Calendar
         tomorrow.add(Calendar.DAY_OF_YEAR, 1)
 
-        // Ende der aktuellen Kalenderwoche
         val weekEnd = calendar.clone() as Calendar
-        weekEnd.set(Calendar.DAY_OF_WEEK, weekEnd.firstDayOfWeek + 6) // Letzter Tag der Woche (Sonntag)
+        weekEnd.set(Calendar.DAY_OF_WEEK, weekEnd.firstDayOfWeek + 6)
 
-        // Listen initialisieren
         val todayTodos = mutableListOf<TodoItem>()
         val tomorrowTodos = mutableListOf<TodoItem>()
         val weekTodos = mutableListOf<TodoItem>()
         val laterTodos = mutableListOf<TodoItem>()
 
-        // Todos in Kategorien sortieren
         for (todo in sortedTodos) {
             when {
                 isSameDay(todo.date, today.time) -> todayTodos.add(todo)
@@ -144,22 +142,11 @@ class ToDoFragment : Fragment() {
             }
         }
 
-        // Listen an die Adapter übergeben
         todayAdapter.submitList(todayTodos)
         tomorrowAdapter.submitList(tomorrowTodos)
         weekAdapter.submitList(weekTodos)
         laterAdapter.submitList(laterTodos)
     }
-
-
-    private fun isInSameWeek(date1: Date, date2: Date): Boolean {
-        val calendar1 = Calendar.getInstance().apply { firstDayOfWeek = Calendar.MONDAY; time = date1 }
-        val calendar2 = Calendar.getInstance().apply { firstDayOfWeek = Calendar.MONDAY; time = date2 }
-        return calendar1.get(Calendar.WEEK_OF_YEAR) == calendar2.get(Calendar.WEEK_OF_YEAR) &&
-                calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
-    }
-
-
 
     private fun getPriorityValue(priority: String): Int {
         return when (priority) {
@@ -232,71 +219,8 @@ class ToDoFragment : Fragment() {
             .show()
     }
 
-
-
-    private fun showTodoOptions(todo: TodoItem) {
-        // Optionen für das Todo anzeigen: "Erledigt", "Bearbeiten", "Löschen"
-        val options = arrayOf("Erledigt", "Bearbeiten", "Löschen")
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Todo Optionen")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> todoViewModel.updateTodo(todo.copy(isDone = true)) // Todo als erledigt markieren
-                    1 -> editTodo(todo) // Todo bearbeiten
-                    2 -> todoViewModel.deleteTodo(todo) // Todo löschen
-                }
-            }
-            .show()
-    }
-
-    private fun editTodo(todo: TodoItem) {
-        val context = requireContext()
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.todo_dialog_add_todo, null)
-        val todoDescription: EditText = dialogView.findViewById(R.id.todoDescription)
-        val todoDetailedDescription: EditText = dialogView.findViewById(R.id.todoDetailedDescription)
-        val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
-        val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
-
-        // Set initial data for editing
-        todoDescription.setText(todo.description)
-        todoDetailedDescription.setText(todo.detailedDescription)
-        val calendar = Calendar.getInstance().apply { time = todo.date }
-        dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(todo.date)
-
-        // DatePicker öffnet sich beim Klick auf den Icon
-        datePickerIcon.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    calendar.set(year, month, dayOfMonth)
-                    dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePickerDialog.show()
-        }
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("Todo bearbeiten")
-            .setView(dialogView)
-            .setPositiveButton("Speichern") { _, _ ->
-                val updatedDescription = todoDescription.text.toString()
-                val updatedDetailedDescription = todoDetailedDescription.text.toString()
-                val updatedTodo = todo.copy(
-                    description = updatedDescription,
-                    detailedDescription = updatedDetailedDescription,
-                    date = calendar.time
-                )
-
-                todoViewModel.updateTodo(updatedTodo)
-            }
-            .setNegativeButton("Abbrechen", null)
-            .create()
-
-        dialog.show()
+    private fun wasDeletedByButton(todo: TodoItem): Boolean {
+        return todo.detailedDescription == "deleted_by_button"
     }
 
     override fun onDestroyView() {
@@ -304,4 +228,3 @@ class ToDoFragment : Fragment() {
         _binding = null
     }
 }
-

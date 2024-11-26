@@ -64,4 +64,10 @@ class ToDoViewModel : ViewModel() {
         _todos.value = updatedTodos
     }
 
+    fun deleteTodoPermanently(todo: TodoItem) {
+        val updatedTodos = _todos.value.orEmpty().filter { it.id != todo.id }
+        _todos.value = updatedTodos
+    }
+
+
 }
