@@ -49,11 +49,11 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/delete_button"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/delete_todo"
             android:visibility="gone"
-            android:tint="@android:color/holo_red_dark" />
+            android:tint="@null" />
     </LinearLayout>
 
     <!-- Versteckte detaillierte Beschreibung -->
