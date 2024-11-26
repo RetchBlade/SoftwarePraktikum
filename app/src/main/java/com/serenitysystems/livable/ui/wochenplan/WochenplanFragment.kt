@@ -143,20 +143,43 @@ class WochenplanFragment : Fragment() {
         }
 
         val dialogTitle = if (existingTask == null) R.string.add_task else R.string.edit_task
-        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)  // Apply custom dialog theme here
+        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
             .setTitle(dialogTitle)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { _, _ ->
+            .setPositiveButton(R.string.save, null) // Initially set to null to handle click manually
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
                 val id = existingTask?.id ?: UUID.randomUUID().toString()
                 val date = dateFormat.format(selectedDate.time)
-                val description = taskDescription.text.toString()
-                val priority = taskPriority.selectedItem.toString()
+                val description = taskDescription.text.toString().trim()
+                val priorityPosition = taskPriority.selectedItemPosition
+                val priority = if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
+
+                // Validate obligatory fields
+                var isValid = true
+
+                if (description.isEmpty()) {
+                    taskDescription.error = "Bitte eine Aufgabenbeschreibung eingeben."
+                    isValid = false
+                }
+
+                if (priority.isEmpty()) {
+                    // Adding an error icon and color to the Spinner for feedback
+                    val priorityTextView = taskPriority.selectedView as? TextView
+                    priorityTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    priorityTextView?.text = "Bitte wählen Sie eine Priorität aus." // Update the spinner hint with error message
+                    isValid = false
+                }
+
+                if (!isValid) {
+                    return@setOnClickListener // Prevent adding empty tasks
+                }
+
                 val points = taskPoints.text.toString().toIntOrNull() ?: 0
-                val assignee = taskAssigneeSpinner.selectedItem.toString()
-                val avatar = R.drawable.logo
-                val isRepeating = repeatToggle.isChecked
-                val repeatFrequency = if (isRepeating) repeatFrequencySpinner.selectedItem.toString() else null
-                val repeatDay = if (isRepeating) repeatDaySpinner.selectedItem.toString() else null
 
                 val newTask = DynamicTask(
                     id = id,
@@ -164,11 +187,11 @@ class WochenplanFragment : Fragment() {
                     description = description,
                     priority = priority,
                     points = points,
-                    assignee = assignee,
-                    avatar = avatar,
-                    isRepeating = isRepeating,
-                    repeatFrequency = repeatFrequency,
-                    repeatDay = repeatDay
+                    assignee = taskAssigneeSpinner.selectedItem.toString(),
+                    avatar = R.drawable.logo,
+                    isRepeating = repeatToggle.isChecked,
+                    repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
+                    repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
                 )
 
                 if (existingTask == null) {
@@ -177,12 +200,13 @@ class WochenplanFragment : Fragment() {
                     wochenplanViewModel.updateTask(newTask)
                 }
                 displayTasksForDay(date)
+                dialog.dismiss() // Close the dialog after adding/updating the task
             }
-            .setNegativeButton(R.string.cancel, null)
-            .create()
+        }
 
         dialog.show()
     }
+
 
 
     private fun displayTasksForDay(day: String) {
