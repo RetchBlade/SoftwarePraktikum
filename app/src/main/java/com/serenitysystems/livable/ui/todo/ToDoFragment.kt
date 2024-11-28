@@ -172,21 +172,24 @@ class ToDoFragment : Fragment() {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.todo_dialog_add_todo, null)
         val todoDescription: EditText = dialogView.findViewById(R.id.todoDescription)
-        val todoDetailedDescription: EditText = dialogView.findViewById(R.id.todoDetailedDescription)
+        val todoDetailedDescription: EditText =
+            dialogView.findViewById(R.id.todoDetailedDescription)
         val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
         val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
         val prioritySpinner: Spinner = dialogView.findViewById(R.id.prioritySpinner)
         val repeatTypeSpinner: Spinner = dialogView.findViewById(R.id.repeatTypeSpinner)
 
         val calendar = Calendar.getInstance()
-        dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
+        dateTextView.text =
+            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
 
         datePickerIcon.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 context,
                 { _, year, month, dayOfMonth ->
                     calendar.set(year, month, dayOfMonth)
-                    dateTextView.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
+                    dateTextView.text =
+                        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(calendar.time)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
