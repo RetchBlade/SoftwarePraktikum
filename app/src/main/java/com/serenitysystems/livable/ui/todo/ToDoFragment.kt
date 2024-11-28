@@ -11,7 +11,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +28,7 @@ class ToDoFragment : Fragment() {
 
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
-    private lateinit var todoViewModel: ToDoViewModel
+    private val todoViewModel: ToDoViewModel by viewModels()
     private lateinit var todayAdapter: TodoAdapter
     private lateinit var tomorrowAdapter: TodoAdapter
     private lateinit var weekAdapter: TodoAdapter
@@ -37,7 +37,6 @@ class ToDoFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        todoViewModel = ViewModelProvider(this).get(ToDoViewModel::class.java)
         _binding = FragmentTodoBinding.inflate(inflater, container, false)
 
         todayAdapter = TodoAdapter { todo -> handleTodoAction(todo) }
@@ -60,13 +59,14 @@ class ToDoFragment : Fragment() {
 
     private fun handleTodoAction(todo: TodoItem) {
         if (todo.detailedDescription == "deleted_by_button") {
-            // Permanentes Löschen durch den Müll-Knopf
-            todoViewModel.deleteTodoPermanently(todo)
+            // Lösche das Todo vollständig, auch wenn es wiederkehrend ist
+            todoViewModel.deleteTodo(todo, forceDelete = true)
         } else {
-            // Abhaken oder Entabhaken
+            // Standardverhalten: Aktualisiere den Status des Todos
             todoViewModel.updateTodo(todo)
         }
     }
+
 
     private fun setupRecyclerViews() {
         binding.todoListRecyclerView.apply {
@@ -94,7 +94,8 @@ class ToDoFragment : Fragment() {
     }
 
     private fun setupSwipeGesture(recyclerView: RecyclerView, adapter: TodoAdapter) {
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val itemTouchHelperCallback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -104,7 +105,7 @@ class ToDoFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val todo = adapter.currentList[position]
-                todoViewModel.deleteTodo(todo) // Standard Swipe-Logik
+                todoViewModel.deleteTodo(todo) // Kein forceDelete, Standardverhalten
             }
         }
 
@@ -137,7 +138,10 @@ class ToDoFragment : Fragment() {
             when {
                 isSameDay(todo.date, today.time) -> todayTodos.add(todo)
                 isSameDay(todo.date, tomorrow.time) -> tomorrowTodos.add(todo)
-                todo.date.after(tomorrow.time) && todo.date.before(weekEnd.time) -> weekTodos.add(todo)
+                todo.date.after(tomorrow.time) && todo.date.before(weekEnd.time) -> weekTodos.add(
+                    todo
+                )
+
                 else -> laterTodos.add(todo)
             }
         }
@@ -191,10 +195,17 @@ class ToDoFragment : Fragment() {
             datePickerDialog.show()
         }
 
-        AlertDialog.Builder(context)
+        // Erstelle den Dialog und mache den positive Button deaktiviert, solange keine gültige Beschreibung eingegeben wird
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Todo hinzufügen")
             .setView(dialogView)
-            .setPositiveButton("Hinzufügen") { _, _ ->
+            .setPositiveButton("Hinzufügen", null) // Keine Funktion für den Button direkt
+            .setNegativeButton("Abbrechen", null)
+            .create()
+
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
                 val description = todoDescription.text.toString()
                 val detailedDescription = todoDetailedDescription.text.toString()
                 val priority = prioritySpinner.selectedItem.toString()
@@ -206,22 +217,28 @@ class ToDoFragment : Fragment() {
                     else -> null
                 }
 
-                val newTodo = TodoItem(
-                    description = description,
-                    detailedDescription = detailedDescription,
-                    date = calendar.time,
-                    priority = priority,
-                    repeatType = repeatType
-                )
-                todoViewModel.addTodo(newTodo)
+                // Überprüfe, ob die Beschreibung leer ist
+                if (description.isEmpty()) {
+                    // Zeige Fehlermeldung und verhindere das Schließen des Dialogs
+                    todoDescription.error = "Beschreibung darf nicht leer sein"
+                } else {
+                    // Füge das neue Todo hinzu und schließe den Dialog
+                    val newTodo = TodoItem(
+                        description = description,
+                        detailedDescription = detailedDescription,
+                        date = calendar.time,
+                        priority = priority,
+                        repeatType = repeatType
+                    )
+                    todoViewModel.addTodo(newTodo)
+                    dialog.dismiss() // Dialog schließen, wenn alles korrekt ist
+                }
             }
-            .setNegativeButton("Abbrechen", null)
-            .show()
+        }
+
+        dialog.show()
     }
 
-    private fun wasDeletedByButton(todo: TodoItem): Boolean {
-        return todo.detailedDescription == "deleted_by_button"
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

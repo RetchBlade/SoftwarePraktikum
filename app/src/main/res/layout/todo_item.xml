@@ -53,7 +53,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/delete_todo"
             android:visibility="gone"
-            android:tint="@null" />
+            />
     </LinearLayout>
 
     <!-- Versteckte detaillierte Beschreibung -->
