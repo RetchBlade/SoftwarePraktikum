@@ -8,16 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.serenitysystems.livable.R
-import com.serenitysystems.livable.databinding.FragmentBuchungenBinding
+import com.serenitysystems.livable.databinding.FragmentAusgabenBinding
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
-import com.serenitysystems.livable.ui.haushaltsbuch.viewmodel.HaushaltsbuchViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BuchungenFragment : Fragment() {
+class AusgabenFragment : Fragment() {
 
-    private var _binding: FragmentBuchungenBinding? = null
+    private var _binding: FragmentAusgabenBinding? = null
     private val binding get() = _binding!!
     private val haushaltsbuchViewModel: HaushaltsbuchViewModel by activityViewModels()
     private lateinit var adapter: ExpenseAdapter
@@ -28,7 +26,7 @@ class BuchungenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentBuchungenBinding.inflate(inflater, container, false)
+        _binding = FragmentAusgabenBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         // RecyclerView setup
@@ -58,8 +56,8 @@ class BuchungenFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { expenses ->
-            val buchungen = expenses.filter { !it.istEinnahme }
-            adapter.updateExpenses(buchungen)
+            val ausgaben = expenses.filter { !it.istEinnahme }
+            adapter.updateExpenses(ausgaben)
             updateKontostand()
         }
 

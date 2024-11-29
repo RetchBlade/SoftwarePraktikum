@@ -2,7 +2,9 @@ package com.serenitysystems.livable.ui.haushaltsbuch
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -10,17 +12,15 @@ import androidx.fragment.app.activityViewModels
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.DialogAddTransactionBinding
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
-import com.serenitysystems.livable.ui.haushaltsbuch.viewmodel.HaushaltsbuchViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class AddTransactionDialogFragment : DialogFragment() {
 
     private var _binding: DialogAddTransactionBinding? = null
     private val binding get() = _binding!!
-
     private val haushaltsbuchViewModel: HaushaltsbuchViewModel by activityViewModels()
-
 
     companion object {
         private const val ARG_IS_EINNAHME = "is_einnahme"
@@ -47,7 +47,6 @@ class AddTransactionDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Dialog-Größe anpassen
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -57,7 +56,7 @@ class AddTransactionDialogFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DialogAddTransactionBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -77,13 +76,11 @@ class AddTransactionDialogFragment : DialogFragment() {
             getString(R.string.ausgabe_button_text)
         }
 
-        // Kategorien Spinner laden
         val categories = haushaltsbuchViewModel.categories
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = adapter
 
-        // Wenn eine Ausgabe bearbeitet wird, Felder vorbefüllen
         expense?.let {
             binding.editAmount.setText(it.betrag.toString())
             binding.editNote.setText(it.notiz)
@@ -94,17 +91,14 @@ class AddTransactionDialogFragment : DialogFragment() {
             }
         }
 
-        // Datumsauswahl
         binding.editDate.setOnClickListener {
             showDatePickerDialog()
         }
 
-        // Speichern-Button
         binding.saveButton.setOnClickListener {
             saveTransaction(isEinnahme ?: expense?.istEinnahme ?: false)
         }
 
-        // Abbrechen-Button
         binding.cancelButton.setOnClickListener {
             dismiss()
         }

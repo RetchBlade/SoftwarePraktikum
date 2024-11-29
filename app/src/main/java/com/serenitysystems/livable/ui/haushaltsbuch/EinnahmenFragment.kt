@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.serenitysystems.livable.databinding.FragmentEinnahmenBinding
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
-import com.serenitysystems.livable.ui.haushaltsbuch.viewmodel.HaushaltsbuchViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,7 +25,7 @@ class EinnahmenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentEinnahmenBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -70,7 +69,6 @@ class EinnahmenFragment : Fragment() {
         }
 
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
 
         binding.leftArrow.setOnClickListener {
             changeDate(-1)

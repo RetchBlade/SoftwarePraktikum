@@ -1,61 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/itemCategoryDetail"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="@color/white"
-    android:layout_marginBottom="8dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <!-- Kreis mit Buchstaben -->
-    <TextView
-        android:id="@+id/textViewCategoryLetter"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/rounded_circle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Kategoriename -->
-    <TextView
-        android:id="@+id/textViewCategoryName"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/itemCategoryDetail"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Kategorie"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@id/textViewCategoryLetter"
-        app:layout_constraintTop_toTopOf="@id/textViewCategoryLetter"
-        app:layout_constraintEnd_toStartOf="@id/textViewCategoryAmount"
-        android:layout_marginStart="8dp" />
+        android:padding="12dp"
+        android:background="@color/white"
+        android:layout_marginBottom="8dp">
 
-    <!-- Betrag -->
-    <TextView
-        android:id="@+id/textViewCategoryAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0.00 EUR"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewCategoryLetter" />
+        <!-- Kreis mit Buchstaben -->
+        <TextView
+            android:id="@+id/textViewCategoryLetter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/rounded_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Prozentangabe -->
-    <TextView
-        android:id="@+id/textViewCategoryPercentage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0%"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewCategoryAmount"
-        android:layout_marginTop="4dp"/>
+        <!-- Kategoriename -->
+        <TextView
+            android:id="@+id/textViewCategoryName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Kategorie"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toEndOf="@id/textViewCategoryLetter"
+            app:layout_constraintTop_toTopOf="@id/textViewCategoryLetter"
+            app:layout_constraintEnd_toStartOf="@id/textViewCategoryAmount"
+            android:layout_marginStart="8dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Betrag -->
+        <TextView
+            android:id="@+id/textViewCategoryAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.00 EUR"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textViewCategoryLetter" />
+
+        <!-- Prozentangabe -->
+        <TextView
+            android:id="@+id/textViewCategoryPercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewCategoryAmount"
+            android:layout_marginTop="4dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

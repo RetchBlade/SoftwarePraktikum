@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.serenitysystems.livable.databinding.FragmentHaushaltsbuchBinding
-import com.serenitysystems.livable.ui.haushaltsbuch.view.ÜbersichtFragment
 
 class HaushaltsbuchFragment : Fragment() {
 
@@ -34,12 +33,14 @@ class HaushaltsbuchFragment : Fragment() {
         _binding = null
     }
 
-    inner class SectionsPagerAdapter(fm: androidx.fragment.app.FragmentManager) : androidx.fragment.app.FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    inner class SectionsPagerAdapter(fm: androidx.fragment.app.FragmentManager) :
+        androidx.fragment.app.FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> EinnahmenFragment()
-                1 -> BuchungenFragment()
-                2 -> ÜbersichtFragment()
+                1 -> EinnahmenÜbersichtFragment()
+                2 -> AusgabenFragment()
+                3 -> AusgabenÜbersichtFragment()
                 else -> Fragment()
             }
         }
@@ -47,14 +48,15 @@ class HaushaltsbuchFragment : Fragment() {
         override fun getPageTitle(position: Int): CharSequence {
             return when (position) {
                 0 -> "Einnahmen"
-                1 -> "Ausgaben"
-                2 -> "Übersicht"
+                1 -> "Übersicht Einnahmen"
+                2 -> "Ausgaben"
+                3 -> "Übersicht Ausgaben"
                 else -> ""
             }
         }
 
         override fun getCount(): Int {
-            return 3
+            return 4
         }
     }
 }

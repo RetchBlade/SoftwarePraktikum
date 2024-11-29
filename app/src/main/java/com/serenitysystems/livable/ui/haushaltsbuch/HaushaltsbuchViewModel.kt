@@ -1,21 +1,19 @@
-package com.serenitysystems.livable.ui.haushaltsbuch.viewmodel
+package com.serenitysystems.livable.ui.haushaltsbuch
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HaushaltsbuchViewModel : ViewModel() {
 
     // Alle Ausgaben und Einnahmen
-    private val _allExpenses = MutableLiveData<MutableList<Expense>>(mutableListOf())
-    val allExpenses: LiveData<MutableList<Expense>> get() = _allExpenses
+    private val _allExpenses = MutableLiveData<List<Expense>>(listOf())
+    val allExpenses: LiveData<List<Expense>> get() = _allExpenses
 
     // Ausgaben und Einnahmen für das ausgewählte Datum
     private val _selectedDateExpenses = MutableLiveData<List<Expense>>()
@@ -36,10 +34,10 @@ class HaushaltsbuchViewModel : ViewModel() {
 
     // Hinzufügen einer neuen Ausgabe oder Einnahme
     fun addExpense(expense: Expense) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedExpenses = _allExpenses.value ?: mutableListOf()
-            updatedExpenses.add(expense)
-            _allExpenses.postValue(updatedExpenses)
+        viewModelScope.launch {
+            val currentExpenses = _allExpenses.value ?: listOf()
+            val updatedExpenses = currentExpenses + expense
+            _allExpenses.value = updatedExpenses
             // Nach Hinzufügen eines neuen Eintrags aktualisieren wir die Daten
             loadExpensesForDateAsync(formatDate(selectedDate))
         }
@@ -47,12 +45,13 @@ class HaushaltsbuchViewModel : ViewModel() {
 
     // Aktualisieren einer bestehenden Ausgabe oder Einnahme
     fun updateExpense(expense: Expense) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedExpenses = _allExpenses.value ?: mutableListOf()
-            val index = updatedExpenses.indexOfFirst { it == expense }
+        viewModelScope.launch {
+            val currentExpenses = _allExpenses.value ?: listOf()
+            val index = currentExpenses.indexOfFirst { it == expense }
             if (index >= 0) {
+                val updatedExpenses = currentExpenses.toMutableList()
                 updatedExpenses[index] = expense
-                _allExpenses.postValue(updatedExpenses)
+                _allExpenses.value = updatedExpenses
                 loadExpensesForDateAsync(formatDate(selectedDate))
             }
         }
@@ -60,10 +59,10 @@ class HaushaltsbuchViewModel : ViewModel() {
 
     // Löschen einer Ausgabe oder Einnahme
     fun deleteExpense(expense: Expense) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedExpenses = _allExpenses.value ?: mutableListOf()
-            updatedExpenses.remove(expense)
-            _allExpenses.postValue(updatedExpenses)
+        viewModelScope.launch {
+            val currentExpenses = _allExpenses.value ?: listOf()
+            val updatedExpenses = currentExpenses - expense
+            _allExpenses.value = updatedExpenses
             loadExpensesForDateAsync(formatDate(selectedDate))
         }
     }
@@ -102,35 +101,31 @@ class HaushaltsbuchViewModel : ViewModel() {
     }
 
     // Aktualisierung des Kontostands
-    private suspend fun updateTotals() {
-        withContext(Dispatchers.Default) {
-            val totalIncome = _selectedDateExpenses.value?.filter { it.istEinnahme }
-                ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
-            val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
-                ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
-            _kontostand.postValue(totalIncome - totalExpense)
-        }
+    private fun updateTotals() {
+        val totalIncome = _selectedDateExpenses.value?.filter { it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+        val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+        _kontostand.value = totalIncome - totalExpense
     }
 
     // Laden der Ausgaben und Einnahmen für das ausgewählte Datum
     fun loadExpensesForDate(date: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             loadExpensesForDateAsync(date)
         }
     }
 
     private suspend fun loadExpensesForDateAsync(date: String) {
         val expensesForDate = _allExpenses.value?.filter { it.datum == date } ?: emptyList()
-        _selectedDateExpenses.postValue(expensesForDate)
+        _selectedDateExpenses.value = expensesForDate
         updateTotals()
     }
 
     // Ändern des ausgewählten Datums um eine bestimmte Anzahl von Tagen
     fun changeDateByDays(days: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            selectedDate.add(Calendar.DAY_OF_MONTH, days)
-            loadExpensesForDateAsync(formatDate(selectedDate))
-        }
+        selectedDate.add(Calendar.DAY_OF_MONTH, days)
+        loadExpensesForDate(formatDate(selectedDate))
     }
 
     // Hilfsfunktion zum Formatieren des Datums
