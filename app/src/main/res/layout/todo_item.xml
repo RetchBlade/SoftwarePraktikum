@@ -8,11 +8,12 @@
     android:padding="2dp"
     android:layout_marginTop="4dp">
 
-    <!-- Erste Zeile mit Checkbox und Hauptbeschreibung -->
+    <!-- Erste Zeile mit Checkbox, Hauptbeschreibung, Datum und Löschen-Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <CheckBox
             android:id="@+id/todoCheckBox"
@@ -21,7 +22,7 @@
             android:layout_gravity="center_vertical"
             android:scaleX="1.5"
             android:scaleY="1.5"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:id="@+id/todoDescription"
@@ -32,16 +33,27 @@
             android:textSize="18sp"
             android:layout_gravity="center_vertical" />
 
-        <!-- Datumstext, immer sichtbar unten rechts -->
+        <!-- Datumstext -->
         <TextView
             android:id="@+id/todoDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="?attr/colorSecondary"
-            android:layout_gravity="center_vertical|end"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="4dp"/>
+            android:layout_marginEnd="8dp" />
+
+        <!-- Neuer roter Button mit X -->
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/delete_button"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/delete_todo"
+            android:visibility="gone"
+            />
     </LinearLayout>
 
     <!-- Versteckte detaillierte Beschreibung -->
@@ -53,6 +65,7 @@
         android:hint="Beschreibung"
         android:layout_marginTop="8dp" />
 </LinearLayout>
+
 
 
 

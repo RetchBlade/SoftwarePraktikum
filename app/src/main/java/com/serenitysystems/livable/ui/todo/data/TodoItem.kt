@@ -1,14 +1,15 @@
 package com.serenitysystems.livable.ui.todo.data
 
 import java.util.Date
-import java.util.UUID
 
 data class TodoItem(
-    val id: String = UUID.randomUUID().toString(),
-    val description: String,
-    val detailedDescription: String,
-    val date: Date,
+    val id: String = "",
+    val description: String = "",
+    val detailedDescription: String = "",
+    val date: Date = Date(),  // Oder String, falls du das so bevorzugst
+    val priority: String = "",
     val isDone: Boolean = false,
-    val priority: String = "Niedrig"
+    val repeatType: String? = null // Optional, je nach Bedarf
 )
+
 

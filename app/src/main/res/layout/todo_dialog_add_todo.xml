@@ -70,6 +70,24 @@
             android:entries="@array/priority_levels"
             android:layout_marginBottom="16dp" />
 
+        <!-- TextView vor dem Spinner für Wiederholung -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wiederholung:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Spinner für Wiederholungstyp -->
+        <Spinner
+            android:id="@+id/repeatTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/repeat_types"
+            android:layout_marginBottom="16dp" />
+
+
     </LinearLayout>
 </ScrollView>
 

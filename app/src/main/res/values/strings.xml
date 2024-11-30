@@ -45,17 +45,19 @@
     <string name="todo_edit">Bearbeiten</string>
     <string name="add_item">Artikel hinzufügen</string>
 
+    <string name="delete_todo">Todo löschen</string>
+
     <!-- Strings für den Dialog zur Aufgabenhinzufügung -->
     <string name="task_description">Aufgabenbeschreibung</string>
     <string name="task_priority">Priorität</string>
     <string name="select_priority">Bitte Priorität auswählen...</string>
 
     <string name="task_points">Punkte</string>
-    <string name="task_assignee">Zuständiger</string>
+    <string name="task_assignee">Zuständiger:</string>
     <string name="select_date">Datum</string>
     <string name="repeating_task">Wiederholend</string>
-    <string name="repeat_on">Wiederholend an</string>
-    <string name="repeat_frequency">Häufigkeit</string>
+    <string name="repeat_on">Ab:</string>
+    <string name="repeat_frequency">Häufigkeit:</string>
 
 
 
@@ -109,6 +111,24 @@
         <item>Reisen</item>
         <item>Sonstiges</item>
     </string-array>
+
+    <string-array name="repeat_types">
+        <item>Keine</item>
+        <item>Täglich</item>
+        <item>Alle 2 Tage</item>
+        <item>Wöchentlich</item>
+    </string-array>
+
+    <string-array name="days_of_week2">
+        <item>Montag</item>
+        <item>Dienstag</item>
+        <item>Mittwoch</item>
+        <item>Donnerstag</item>
+        <item>Freitag</item>
+        <item>Samstag</item>
+        <item>Sonntag</item>
+    </string-array>
+
 
     <!-- Weitere Strings für das Haushaltsbuch -->
     <string name="name">Haushaltsbuch</string>
