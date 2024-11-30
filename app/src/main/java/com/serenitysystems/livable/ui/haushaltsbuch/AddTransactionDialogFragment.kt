@@ -77,7 +77,8 @@ class AddTransactionDialogFragment : DialogFragment() {
         }
 
         val categories = haushaltsbuchViewModel.categories
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = adapter
 
@@ -132,12 +133,20 @@ class AddTransactionDialogFragment : DialogFragment() {
         val category = binding.spinnerCategory.selectedItem?.toString()
 
         if (amount == null) {
-            Toast.makeText(requireContext(), "Bitte geben Sie einen gültigen Betrag ein", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Bitte geben Sie einen gültigen Betrag ein",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
         if (category.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "Bitte wählen Sie eine Kategorie aus", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Bitte wählen Sie eine Kategorie aus",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
