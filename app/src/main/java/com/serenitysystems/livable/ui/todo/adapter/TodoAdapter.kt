@@ -40,6 +40,7 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
             binding.todoDescription.text = todo.description
             binding.todoDate.text =
                 SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(todo.date)
+            isExpanded = false
             binding.todoDetailedDescription.visibility = if (isExpanded) View.VISIBLE else View.GONE
             binding.deleteButton.visibility = if (isExpanded) View.VISIBLE else View.GONE
             binding.todoDetailedDescription.setText(todo.detailedDescription)

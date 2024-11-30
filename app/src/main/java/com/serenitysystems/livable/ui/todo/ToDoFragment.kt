@@ -231,7 +231,8 @@ class ToDoFragment : Fragment() {
                         detailedDescription = detailedDescription,
                         date = calendar.time,
                         priority = priority,
-                        repeatType = repeatType
+                        repeatType = repeatType,
+                        isDone = false
                     )
                     todoViewModel.addTodo(newTodo)
                     dialog.dismiss() // Dialog schließen, wenn alles korrekt ist
