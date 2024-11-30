@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragmentEinnahmen"
+        android:id="@+id/fragmentAusgaben"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -44,12 +44,12 @@
 
         <!-- Titel -->
         <TextView
-            android:id="@+id/textViewEinnahmenTitle"
+            android:id="@+id/textViewAusgabenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/green_filled_background"
+            android:background="@drawable/red_filled_background"
             android:padding="12dp"
-            android:text="Einnahmen"
+            android:text="Ausgaben"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             app:layout_constraintTop_toBottomOf="@id/dateTextView"
@@ -66,7 +66,7 @@
             android:textColor="@android:color/holo_blue_dark"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/textViewEinnahmenTitle"
+            app:layout_constraintTop_toBottomOf="@id/textViewAusgabenTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:tint="@android:color/white"
             android:src="@drawable/ic_add"
-            app:backgroundTint="@android:color/holo_green_dark"
+            app:backgroundTint="@android:color/holo_red_dark"
             android:elevation="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

@@ -1,3 +1,4 @@
+// AddItemDialogFragment.kt
 package com.serenitysystems.livable.ui
 
 import android.app.DatePickerDialog
@@ -167,7 +168,11 @@ class AddItemDialogFragment : DialogFragment() {
         // URI des ausgewählten Bildes als String speichern
         val imageUriString = selectedImageUri?.toString() ?: currentItem?.imageUri
 
+        // Hier die ID vom aktuellen Item übernehmen oder neue ID generieren
+        val newItemId = currentItem?.id ?: UUID.randomUUID().toString()
+
         val newItem = Produkt(
+            id = newItemId, // Setzen der ID
             name = name,
             quantity = quantity,
             unit = unit,
