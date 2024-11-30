@@ -9,10 +9,12 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.wgregister.data.Wg
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class WgRegistrierungFragment : Fragment() {
@@ -23,6 +25,8 @@ class WgRegistrierungFragment : Fragment() {
     private lateinit var zimmerInput: EditText
     private lateinit var bewohnerInput: EditText
     private lateinit var userPreferences: UserPreferences
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,38 +56,33 @@ class WgRegistrierungFragment : Fragment() {
         val bewohner = bewohnerInput.text.toString().trim()
 
         if (adresse.isEmpty() || groesse.isEmpty() || zimmer.isEmpty() || bewohner.isEmpty()) {
-            // Error handling for empty fields
             adresseInput.error = "Alle Felder müssen ausgefüllt sein"
             return
         }
 
         val wg = Wg(adresse, groesse, zimmer, bewohner)
 
-        viewModel.registerWg(wg, { wgId ->
-            lifecycleScope.launch {
-                userPreferences.userToken.collect { userToken ->
-                    userToken?.let {
-                        viewModel.updateUserInFirestore(it.email, wgId, "Wg-Leiter", {
-                            // UserToken und UI aktualisieren
-                            val updatedToken = it.copy(wgId = wgId, wgRole = "Wg-Leiter")
-                            lifecycleScope.launch {
-                                userPreferences.saveUserToken(updatedToken)
-                            }
-                            // Navigation zur Homepage
-                            requireActivity().supportFragmentManager.popBackStack()
-                        }, { exception ->
-                            Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
-                            adresseInput.error = "Fehler beim Aktualisieren des Benutzers"
-                        })
-                    } ?: run {
-                        Log.e("WgRegistrierungFragment", "User token is null")
-                    }
-                }
-            }
-        }, { exception ->
-            Log.e("WgRegistrierungFragment", "Error registering WG: ${exception.message}")
-            adresseInput.error = "Fehler beim Erstellen der WG"
-        })
-    }
+        lifecycleScope.launch {
+            val userToken = userPreferences.userToken.first()
+            val userEmail = userToken?.email ?: ""
 
+            viewModel.registerWg(wg, userEmail, { wgId ->
+                userToken?.let {
+                    viewModel.updateUserInFirestore(it.email, wgId, "Wg-Leiter", {
+                        Log.e("WgRegistrierungFragment", "Erfolgreich die WG erstellt und den User zugewiesen.")
+                        // Navigiere zur Homepage
+                        findNavController().navigate(R.id.nav_homepage)
+                    }, { exception ->
+                        Log.e("WgRegistrierungFragment", "Error updating user: ${exception.message}")
+                        adresseInput.error = "Fehler beim Aktualisieren des Benutzers"
+                    })
+                } ?: run {
+                    Log.e("WgRegistrierungFragment", "User token is null")
+                }
+            }, { exception ->
+                Log.e("WgRegistrierungFragment", "Error registering WG: ${exception.message}")
+                adresseInput.error = "Fehler beim Erstellen der WG"
+            })
+        }
+    }
 }

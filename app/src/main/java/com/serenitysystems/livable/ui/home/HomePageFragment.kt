@@ -1,6 +1,5 @@
 package com.serenitysystems.livable.ui.home
 
-import HomePageViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,11 +25,13 @@ class HomePageFragment : Fragment() {
     private lateinit var userNicknameTextView: TextView
     private lateinit var userPic: ImageView
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
+
 
         // Referenzen zu den TextViews abrufen
         welcomeMessageTextView = view.findViewById(R.id.greetingText)
@@ -93,6 +94,37 @@ class HomePageFragment : Fragment() {
             homePageViewModel.leaveWG()
             dialog?.dismiss()
         }
+
+
+        val createWGButton: Button = dialogView.findViewById(R.id.createWGButton)
+        val joinWGButton: Button = dialogView.findViewById(R.id.joinWGButton)
+        val leaveWGButton: Button = dialogView.findViewById(R.id.leaveWGButton)
+        val deleteWGButton: Button = dialogView.findViewById(R.id.deleteWGButton)
+        val showWGInfoButton: Button = dialogView.findViewById(R.id.showWGInfo)
+
+        homePageViewModel.fetchUserWGInfo({ wgId, wgRole ->
+            if (wgId.isNullOrEmpty()) {
+                // Benutzer hat keine WG-ID
+                deleteWGButton.visibility = View.GONE
+                leaveWGButton.visibility = View.GONE
+                showWGInfoButton.visibility = View.GONE
+            } else {
+                // Benutzer hat eine WG-ID
+                createWGButton.visibility = View.GONE // Nicht anzeigen, wenn in einer WG
+                joinWGButton.visibility = View.GONE // Nicht anzeigen, wenn in einer WG
+
+                if (wgRole == "Wg-Leiter") {
+                    deleteWGButton.visibility = View.VISIBLE // Zeige löschen, wenn Wg-Leiter
+                } else {
+                    deleteWGButton.visibility = View.GONE // Nicht anzeigen, wenn kein Wg-Leiter
+                }
+
+                leaveWGButton.visibility = View.VISIBLE // Zeige verlassen an
+                showWGInfoButton.visibility = View.VISIBLE // Zeige Info an
+            }
+        }, { errorMessage ->
+            showErrorDialog(errorMessage) // Fehlerbehandlung
+        })
 
         dialog?.show()
         positionDialogUnderView(anchorView)

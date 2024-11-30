@@ -2,6 +2,7 @@ package com.serenitysystems.livable
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.bumptech.glide.Glide
 import android.view.View
 import android.widget.ImageView
@@ -16,10 +17,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.serenitysystems.livable.data.UserPreferences
+import com.google.firebase.firestore.FirebaseFirestore
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.databinding.ActivityMainBinding
 import com.serenitysystems.livable.ui.login.LoginActivity
 import com.serenitysystems.livable.ui.login.data.UserToken
+
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     // Binding für die Hauptaktivität
     private lateinit var binding: ActivityMainBinding
     private lateinit var userPreferences: UserPreferences
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +40,16 @@ class MainActivity : AppCompatActivity() {
         // Initialisiere UserPreferences
         userPreferences = UserPreferences(this)
 
-        // Prüfe, ob UserToken vorhanden ist
+        // Setze das Binding und SwipeRefreshLayout
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Überprüfe, ob ein UserToken vorhanden ist
         lifecycleScope.launch {
             userPreferences.userToken.collect { userToken ->
+                // Benutzer ist eingeloggt, fahre mit MainActivity fort
                 if (userToken != null) {
-                    // Benutzer ist eingeloggt, fahre mit MainActivity fort
-                    setupMainActivity(userToken) // Übergebe usertoken für die Sidebar
-                } else {
-                    // Kein Benutzer eingeloggt, navigiere zur LoginActivity
-                    navigateToLoginActivity()
+                    setupMainActivity(userToken)
                 }
             }
         }
@@ -53,10 +58,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupMainActivity(userToken: UserToken) {
         // Aktivieren des randlosen Designs
         enableEdgeToEdge()
-
-        // Initialisieren des Bindings mit dem Hauptlayout
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // Setzen der Toolbar als Support-ActionBar
         setSupportActionBar(binding.appBarMain.toolbar)
@@ -90,11 +91,27 @@ class MainActivity : AppCompatActivity() {
         // Setze die E-Mail im Sidebar-Header
         userNicknameTextView.text = userToken.nickname
 
-        // Lade das Profilbild in die ImageView mit Glide
-        Glide.with(this)
-            .load(userToken.profileImageUrl)
-            .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
-            .into(profileImageView)
+        // Abrufen der wgId aus der Firestore-Sammlung "users" und setzen des SnapshotListeners
+        firestore.collection("users")
+            .document(userToken.email)  // Verwende die E-Mail als Document ID
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.w("MainActivity", "Fehler beim Abhören der Firestore-Updates", e)
+                    return@addSnapshotListener
+                }
+
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    val wgId = documentSnapshot.getString("wgId") ?: ""
+                    // Aktualisiere das Navigationsmenü basierend auf der wgId
+                    updateNavigationMenu(wgId, navView)
+                    val profileImageUrl = documentSnapshot.getString("profileImageUrl") ?: ""
+                    // Lade das Profilbild in die ImageView mit Glide
+                    Glide.with(this)
+                        .load(profileImageUrl)
+                        .placeholder(R.drawable.pp) // Fallback-Bild, wenn das Bild nicht geladen werden kann
+                        .into(profileImageView)
+                }
+            }
 
         // Setze einen Listener für die Navigation
         navView.setNavigationItemSelectedListener { item ->
@@ -114,9 +131,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateNavigationMenu(wgId: String, navView: NavigationView) {
+
+        val menu = navView.menu
+        // Menüeinträge anzeigen oder verbergen, basierend auf der wgId
+        if (wgId.isEmpty()) {
+            // Verstecke die Einträge, wenn wgId leer ist
+            menu.findItem(R.id.nav_wochenplan).isVisible = false
+            menu.findItem(R.id.nav_einkaufsliste).isVisible = false
+            menu.findItem(R.id.nav_haushaltsbuch).isVisible = false
+        } else {
+            // Zeige die Einträge, wenn wgId vorhanden ist
+            menu.findItem(R.id.nav_wochenplan).isVisible = true
+            menu.findItem(R.id.nav_einkaufsliste).isVisible = true
+            menu.findItem(R.id.nav_haushaltsbuch).isVisible = true
+        }
+    }
 
     private fun performLogout() {
-        // Lösche den UserToken
+        // Lösche das UserToken
         lifecycleScope.launch {
             userPreferences.clearUserToken()
 
