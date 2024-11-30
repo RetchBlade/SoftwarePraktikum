@@ -4,186 +4,202 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/wavesblur"
     tools:context=".ui.userprofil.ProfilansichtFragment">
 
-    <!-- Main container for the profile content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center"
         android:padding="16dp">
 
-        <!-- Profile Header with Gradient Background -->
+        <!-- Profile Header -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/container_gradient_blue"
+            android:gravity="center"
             android:padding="16dp">
 
             <!-- Profile Picture -->
-            <ImageView
-                android:id="@+id/profilePicture"
+            <androidx.cardview.widget.CardView
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/pp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/own_helle_Beige"
-                android:contentDescription="Profilbild"
-                android:padding="8dp" />
+                app:cardBackgroundColor="@color/own_helle_Beige"
+                app:cardCornerRadius="60dp"
+                app:cardElevation="8dp">
+
+                <ImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Profile Picture"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/pp" />
+            </androidx.cardview.widget.CardView>
 
             <!-- Username -->
             <TextView
                 android:id="@+id/usernameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Username"
-                android:textColor="@color/own_navy_Dunkelblau"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_below="@id/profilePicture"
+                android:layout_below="@id/profileImage"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="130dp"
+                android:elevation="4dp"
+                android:text="Benutzername"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:ignore="NotSibling" />
 
+            <!-- Points Section -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/usernameText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <!-- Points Icon -->
+                <ImageView
+                    android:id="@+id/pointsIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="1dp"
+                    android:contentDescription="Points Icon"
+                    android:src="@drawable/ic_points" />
+
+                <!-- Points Display -->
+                <TextView
+                    android:id="@+id/pointsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="120 Punkte"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
         </RelativeLayout>
 
-        <!-- Profile Information Cards with Spacing -->
+        <!-- Information Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:padding="16dp">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="40dp"
+            android:padding="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp">
 
-            <!-- Email -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+        >
 
-            <!-- Divider -->
+                <!-- Role -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
-            <!-- Birthdate -->
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_role"
+                        android:contentDescription="Role Icon" />
 
-            <!-- Divider -->
+                    <TextView
+                        android:id="@+id/roleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Mitbewohner"
+                        android:textSize="14sp"
+                        android:textColor="@color/own_text_Farbe"
+                        android:fontFamily="@font/poppinsregular" />
+                </LinearLayout>
 
-            <!-- WG-Rolle -->
+                <!-- Email -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
 
-            <!-- Divider -->
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_email"
+                        android:contentDescription="Email Icon" />
 
-            <!-- Geschlecht -->
+                    <TextView
+                        android:id="@+id/emailText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="muster@email.com"
+                        android:textSize="14sp"
+                        android:textColor="@color/own_text_Farbe"
+                        android:fontFamily="@font/poppinsregular" />
+                </LinearLayout>
+
+                <!-- Birthdate -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="Birthdate Icon" />
+
+                    <TextView
+                        android:id="@+id/birthdateText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="01. Januar 1990"
+                        android:textSize="14sp"
+                        android:textColor="@color/own_text_Farbe"
+                        android:fontFamily="@font/poppinsregular" />
+                </LinearLayout>
+
+                <!-- Gender -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:contentDescription="Gender Icon"
+                        android:src="@drawable/ic_gender" />
+
+                    <TextView
+                        android:id="@+id/genderText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="Weiblich"
+                        android:textColor="@color/own_text_Farbe"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Geschlecht Icon"
-                android:src="@drawable/ic_gender"
-             />
-
-            <TextView
-                android:id="@+id/genderText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Weiblich"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="@color/own_navy_Blau" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Email Icon"
-                android:src="@drawable/ic_email"
-        />
-
-            <TextView
-                android:id="@+id/emailText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="example@email.com"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="@color/own_navy_Blau" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Geburtsdatum Icon"
-                android:src="@drawable/ic_calendar"
- />
-
-            <TextView
-                android:id="@+id/birthdateText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="01. Januar 1990"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="@color/own_navy_Blau" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="WG-Rolle Icon"
-                android:src="@drawable/ic_role"
-               />
-
-            <TextView
-                android:id="@+id/roleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Mitbewohner"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-        </LinearLayout>
-
     </LinearLayout>
-
 </ScrollView>

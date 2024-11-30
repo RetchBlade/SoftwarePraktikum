@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#F68E92"
+        android:endColor="#E9E2D2"
+        android:angle="120" /> <!-- Soft gradient angle -->
+    <corners android:radius="8dp" /> <!-- Abgerundete Ecken -->
+</shape>

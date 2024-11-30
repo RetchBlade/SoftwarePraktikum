@@ -5,11 +5,7 @@
     android:layout_height="match_parent">
 
 
-    <!-- Profile Section -->
 
-    <!-- GridLayout for Action Buttons -->
-
-    <!-- Container for News Section -->
     <LinearLayout
         android:id="@+id/headerSection"
         android:layout_width="match_parent"
@@ -22,7 +18,6 @@
         android:padding="16dp"
         tools:ignore="NotSibling">
 
-        <!-- Profile Image (in einer CardView) -->
         <androidx.cardview.widget.CardView
             android:layout_width="203dp"
             android:layout_height="195dp"
@@ -31,7 +26,6 @@
             app:cardCornerRadius="600dp"
             app:cardElevation="10dp">
 
-            <!-- Avatar-Bild -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
@@ -40,7 +34,6 @@
                 android:src="@drawable/pp" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Greeting Text -->
         <TextView
             android:id="@+id/greetingText"
             android:layout_width="wrap_content"
@@ -59,7 +52,6 @@
             android:textSize="25sp"
             android:textStyle="bold" />
 
-        <!-- User Nickname Text -->
         <TextView
             android:id="@+id/userNickname"
             android:layout_width="wrap_content"
@@ -76,7 +68,7 @@
             android:textAlignment="center"
             android:textColor="@color/own_helle_Beige"
             android:textSize="20sp"
-            android:textStyle="bold" /> <!-- Weniger Abstand für dynamische Nähe zum Greeting-Text -->
+            android:textStyle="bold" />
     </LinearLayout>
 
     <androidx.gridlayout.widget.GridLayout
@@ -179,7 +171,7 @@
         android:shadowDy="2"
         android:shadowRadius="10">
 
-        <!-- Title for News Section -->
+
         <TextView
             android:id="@+id/notificationsTitle"
             android:layout_width="wrap_content"
@@ -190,7 +182,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Example News Item -->
+
         <TextView
             android:id="@+id/newsItem"
             android:layout_width="wrap_content"

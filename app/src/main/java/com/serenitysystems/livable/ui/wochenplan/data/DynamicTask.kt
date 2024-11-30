@@ -6,7 +6,7 @@ data class DynamicTask(
     val id: String,
     val date: String, // Date format for tasks (e.g., "20 October 2024")
     val description: String,
-    val priority: String,
+    var priority: String,
     val points: Int,
     val assignee: String,
     val avatar: Int = R.drawable.logo,
