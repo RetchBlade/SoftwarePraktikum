@@ -33,7 +33,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
             fetchUserToken { token ->
                 token?.let { userToken ->
                     val userId = userToken.email
-                    val userTodosRef = db.collection("usersammlung")
+                    val userTodosRef = db.collection("users")
                         .document(userId)
                         .collection("user_todos")
 
@@ -82,7 +82,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     // Funktion zum Hinzufügen eines Todos zu Firestore
     private fun addTodoToFirestore(todo: TodoItem, userId: String) {
 
-        val userTodosRef = db.collection("usersammlung").document(userId).collection("user_todos")
+        val userTodosRef = db.collection("users").document(userId).collection("user_todos")
         val todoData = hashMapOf(
             "description" to todo.description,
             "detailedDescription" to todo.detailedDescription,
@@ -114,7 +114,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
     // Funktion zum Bearbeiten eines Todos in Firestore
     private fun updateTodoInFirestore(todo: TodoItem, userId: String) {
-        val userTodosRef = db.collection("usersammlung").document(userId).collection("user_todos")
+        val userTodosRef = db.collection("users").document(userId).collection("user_todos")
 
         userTodosRef.document(todo.id).get()
             .addOnSuccessListener { document ->
@@ -166,7 +166,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
     // Funktion zum Löschen eines Todos in Firestore
     private fun deleteTodoFromFirestore(todoId: String, userId: String) {
-        val userTodosRef = db.collection("usersammlung").document(userId).collection("user_todos")
+        val userTodosRef = db.collection("users").document(userId).collection("user_todos")
         userTodosRef.document(todoId).delete()
             .addOnSuccessListener {
                 Log.d("Firestore", "Todo successfully deleted!")
