@@ -160,26 +160,37 @@ class WochenplanFragment : Fragment() {
 
     private fun categorizeTasks() {
         val today = Calendar.getInstance()
-        val weekStart = today.clone() as Calendar
-        weekStart.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
 
-        val lastWeekStart = weekStart.clone() as Calendar
-        lastWeekStart.add(Calendar.DAY_OF_YEAR, -7)
-        val lastWeekEnd = weekStart.clone() as Calendar
-        lastWeekEnd.add(Calendar.DAY_OF_YEAR, -1)
+        // Set today to the beginning of the day (removing hours, minutes, seconds)
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
 
-        val nextWeekStart = weekStart.clone() as Calendar
-        nextWeekStart.add(Calendar.DAY_OF_YEAR, 7)
+        // Define boundaries for last week, this week, and next week
+        val thisWeekStart = today.clone() as Calendar
+        thisWeekStart.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // Sunday is the start of this week
+
+        val thisWeekEnd = thisWeekStart.clone() as Calendar
+        thisWeekEnd.add(Calendar.DAY_OF_YEAR, 6) // Saturday is the end of this week
+
+        val lastWeekStart = thisWeekStart.clone() as Calendar
+        lastWeekStart.add(Calendar.DAY_OF_YEAR, -7) // Last Sunday is the start of last week
+
+        val lastWeekEnd = thisWeekStart.clone() as Calendar
+        lastWeekEnd.add(Calendar.DAY_OF_YEAR, -1) // Last Saturday is the end of last week
+
+        val nextWeekStart = thisWeekEnd.clone() as Calendar
+        nextWeekStart.add(Calendar.DAY_OF_YEAR, 1) // Next Sunday is the start of next week
+
         val nextWeekEnd = nextWeekStart.clone() as Calendar
-        nextWeekEnd.add(Calendar.DAY_OF_YEAR, 6)
-
-        val thisWeekEnd = weekStart.clone() as Calendar
-        thisWeekEnd.add(Calendar.DAY_OF_YEAR, 6)
+        nextWeekEnd.add(Calendar.DAY_OF_YEAR, 6) // Next Saturday is the end of next week
 
         val lastWeekTasks = mutableListOf<DynamicTask>()
         val thisWeekTasks = mutableListOf<DynamicTask>()
         val nextWeekTasks = mutableListOf<DynamicTask>()
 
+        // Categorize tasks based on week boundaries
         wochenplanViewModel.tasks.value?.forEach { task ->
             val taskDate = Calendar.getInstance()
             try {
@@ -190,22 +201,35 @@ class WochenplanFragment : Fragment() {
             }
 
             when {
-                taskDate.after(lastWeekStart) && taskDate.before(weekStart) -> lastWeekTasks.add(task)
-                !taskDate.before(weekStart) && !taskDate.after(thisWeekEnd) -> thisWeekTasks.add(task)
-                taskDate.after(thisWeekEnd) && !taskDate.after(nextWeekEnd) -> nextWeekTasks.add(task)
+                // Task is in last week (inclusive of last week's Sunday and Saturday)
+                !taskDate.before(lastWeekStart) && taskDate.before(thisWeekStart) -> {
+                    lastWeekTasks.add(task)
+                }
+                // Task is in this week (inclusive of this week's Sunday and Saturday)
+                !taskDate.before(thisWeekStart) && !taskDate.after(thisWeekEnd) -> {
+                    thisWeekTasks.add(task)
+                }
+                // Task is in next week (inclusive of next week's Sunday and Saturday)
+                !taskDate.before(nextWeekStart) && !taskDate.after(nextWeekEnd) -> {
+                    nextWeekTasks.add(task)
+                }
             }
         }
 
-        // Sort tasks by day of the week
+        // Sort tasks by their day of the week
         lastWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
         thisWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
         nextWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
 
-        // Update the ViewModel's LiveData
+        // Update the ViewModel LiveData
         wochenplanViewModel.lastWeekTasks.value = lastWeekTasks
         wochenplanViewModel.thisWeekTasks.value = thisWeekTasks
         wochenplanViewModel.nextWeekTasks.value = nextWeekTasks
     }
+
+
+
+
 
     private fun isRecurringTask(task: DynamicTask, currentDay: Calendar): Boolean {
         val taskDate = try {
