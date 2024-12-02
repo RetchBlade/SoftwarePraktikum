@@ -91,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:background="@drawable/gradient_blau"
-            android:elevation="8dp"
+            android:elevation="3dp"
             android:padding="16dp"
             app:layout_column="0"
             app:layout_columnWeight="1"
@@ -103,7 +103,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_wg" />
+                android:src="@drawable/ic_do" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -123,7 +123,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:background="@drawable/gradient_blau"
-            android:elevation="8dp"
+            android:elevation="3dp"
             android:padding="16dp"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1">
@@ -133,7 +133,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_wg" />
+                android:src="@drawable/ic_house" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -155,11 +155,9 @@
         android:layout_width="395dp"
         android:layout_height="353dp"
         android:layout_below="@id/actionGrid"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/gradient_beige"
         android:backgroundTint="@color/own_helle_Beige"

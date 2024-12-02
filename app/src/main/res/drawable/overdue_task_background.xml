@@ -1,7 +1,15 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape android:shape="rectangle">
+        <gradient
+            android:startColor="#1E000000"
+            android:endColor="@android:color/transparent"
+            android:angle="45" /> <!-- Diagonal shadow -->
+        <corners android:radius="20dp"/> <!-- Rounded corners for the shadow -->
+        <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="4dp"/> <!-- Padding for shadow effect -->
+    </shape>
     <gradient
         android:startColor="#F68E92"
         android:endColor="#E9E2D2"
         android:angle="120" /> <!-- Soft gradient angle -->
-    <corners android:radius="8dp" /> <!-- Abgerundete Ecken -->
+    <corners android:radius="20dp"/> <!-- More rounded corners -->
 </shape>

@@ -6,6 +6,7 @@
     android:background="@drawable/container_gradient_beige"
     android:padding="16dp"
     android:layout_marginTop="16dp"
+    android:layout_gravity="center_horizontal"
     android:layout_marginHorizontal="16dp"
     android:elevation="10dp">
 
@@ -97,7 +98,7 @@
         android:layout_height="29dp"
         android:layout_below="@id/taskAssigneeAvatar"
         android:layout_alignEnd="@id/taskAssigneeAvatar"
-        android:layout_marginTop="-7dp"
+        android:layout_marginTop="-4dp"
         android:layout_marginEnd="0dp"
         android:gravity="right"
         android:text="Assignee"
