@@ -3,6 +3,7 @@ package com.serenitysystems.livable.ui.wochenplan
 import android.app.DatePickerDialog
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.R
+import com.serenitysystems.livable.data.UserPreferences
 import com.serenitysystems.livable.databinding.FragmentWochenplanBinding
 import com.serenitysystems.livable.ui.wochenplan.adapter.DayPagerAdapter
 import com.serenitysystems.livable.ui.wochenplan.data.DynamicTask
@@ -25,18 +29,18 @@ class WochenplanFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var wochenplanViewModel: WochenplanViewModel
     private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("de", "DE"))
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        wochenplanViewModel = ViewModelProvider(this).get(WochenplanViewModel::class.java)
+        wochenplanViewModel = ViewModelProvider(this)[WochenplanViewModel::class.java]
         _binding = FragmentWochenplanBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         setupTabs()
 
         wochenplanViewModel.tasks.observe(viewLifecycleOwner) {
-            categorizeTasks()
             updateTabs()
             updateTabIcons()
         }
@@ -71,15 +75,18 @@ class WochenplanFragment : Fragment() {
     private fun setupTabs() {
         binding.tabLayout.apply {
             // Tab for "Letzte Woche" with an icon
-            val lastWeekTab = newTab().setCustomView(createTabWithIcon(R.drawable.ic_lastweek, false))
+            val lastWeekTab =
+                newTab().setCustomView(createTabWithIcon(R.drawable.ic_lastweek, false))
             addTab(lastWeekTab)
 
             // Tab for "Diese Woche" with an icon
-            val thisWeekTab = newTab().setCustomView(createTabWithIcon(R.drawable.ic_wochencalender, false))
+            val thisWeekTab =
+                newTab().setCustomView(createTabWithIcon(R.drawable.ic_wochencalender, false))
             addTab(thisWeekTab)
 
             // Tab for "Nächste Woche" with an icon
-            val nextWeekTab = newTab().setCustomView(createTabWithIcon(R.drawable.ic_nextweek, false))
+            val nextWeekTab =
+                newTab().setCustomView(createTabWithIcon(R.drawable.ic_nextweek, false))
             addTab(nextWeekTab)
 
             // Set the second tab ("Diese Woche") as selected by default
@@ -101,18 +108,17 @@ class WochenplanFragment : Fragment() {
             })
         }
     }
+
     private fun createTabWithIcon(iconResId: Int, showWarningIcon: Boolean): View {
-        return LayoutInflater.from(requireContext()).inflate(R.layout.tab_with_warning_icon, null).apply {
-            val tabIcon = findViewById<ImageView>(R.id.tabIcon)
-            val warningIcon = findViewById<ImageView>(R.id.warningIcon)
+        return LayoutInflater.from(requireContext()).inflate(R.layout.tab_with_warning_icon, null)
+            .apply {
+                val tabIcon = findViewById<ImageView>(R.id.tabIcon)
+                val warningIcon = findViewById<ImageView>(R.id.warningIcon)
 
-            tabIcon.setImageResource(iconResId)
-            warningIcon.visibility = if (showWarningIcon) View.VISIBLE else View.GONE
-        }
+                tabIcon.setImageResource(iconResId)
+                warningIcon.visibility = if (showWarningIcon) View.VISIBLE else View.GONE
+            }
     }
-
-
-
 
 
     private fun setupDayViewPager() {
@@ -122,7 +128,8 @@ class WochenplanFragment : Fragment() {
         binding.dayViewPager.adapter = dayAdapter
         binding.dayViewPager.setCurrentItem(0, false)
 
-        binding.dayViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.dayViewPager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 displayTasksForDay(wochenplanViewModel.daysOfWeek[position])
@@ -158,78 +165,6 @@ class WochenplanFragment : Fragment() {
         return wochenplanViewModel.daysOfWeek[binding.dayViewPager.currentItem]
     }
 
-    private fun categorizeTasks() {
-        val today = Calendar.getInstance()
-
-        // Set today to the beginning of the day (removing hours, minutes, seconds)
-        today.set(Calendar.HOUR_OF_DAY, 0)
-        today.set(Calendar.MINUTE, 0)
-        today.set(Calendar.SECOND, 0)
-        today.set(Calendar.MILLISECOND, 0)
-
-        // Define boundaries for last week, this week, and next week
-        val thisWeekStart = today.clone() as Calendar
-        thisWeekStart.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) // Sunday is the start of this week
-
-        val thisWeekEnd = thisWeekStart.clone() as Calendar
-        thisWeekEnd.add(Calendar.DAY_OF_YEAR, 6) // Saturday is the end of this week
-
-        val lastWeekStart = thisWeekStart.clone() as Calendar
-        lastWeekStart.add(Calendar.DAY_OF_YEAR, -7) // Last Sunday is the start of last week
-
-        val lastWeekEnd = thisWeekStart.clone() as Calendar
-        lastWeekEnd.add(Calendar.DAY_OF_YEAR, -1) // Last Saturday is the end of last week
-
-        val nextWeekStart = thisWeekEnd.clone() as Calendar
-        nextWeekStart.add(Calendar.DAY_OF_YEAR, 1) // Next Sunday is the start of next week
-
-        val nextWeekEnd = nextWeekStart.clone() as Calendar
-        nextWeekEnd.add(Calendar.DAY_OF_YEAR, 6) // Next Saturday is the end of next week
-
-        val lastWeekTasks = mutableListOf<DynamicTask>()
-        val thisWeekTasks = mutableListOf<DynamicTask>()
-        val nextWeekTasks = mutableListOf<DynamicTask>()
-
-        // Categorize tasks based on week boundaries
-        wochenplanViewModel.tasks.value?.forEach { task ->
-            val taskDate = Calendar.getInstance()
-            try {
-                taskDate.time = dateFormat.parse(task.date)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@forEach
-            }
-
-            when {
-                // Task is in last week (inclusive of last week's Sunday and Saturday)
-                !taskDate.before(lastWeekStart) && taskDate.before(thisWeekStart) -> {
-                    lastWeekTasks.add(task)
-                }
-                // Task is in this week (inclusive of this week's Sunday and Saturday)
-                !taskDate.before(thisWeekStart) && !taskDate.after(thisWeekEnd) -> {
-                    thisWeekTasks.add(task)
-                }
-                // Task is in next week (inclusive of next week's Sunday and Saturday)
-                !taskDate.before(nextWeekStart) && !taskDate.after(nextWeekEnd) -> {
-                    nextWeekTasks.add(task)
-                }
-            }
-        }
-
-        // Sort tasks by their day of the week
-        lastWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
-        thisWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
-        nextWeekTasks.sortWith(compareBy { getDayOfWeekIndex(it.date) })
-
-        // Update the ViewModel LiveData
-        wochenplanViewModel.lastWeekTasks.value = lastWeekTasks
-        wochenplanViewModel.thisWeekTasks.value = thisWeekTasks
-        wochenplanViewModel.nextWeekTasks.value = nextWeekTasks
-    }
-
-
-
-
 
     private fun isRecurringTask(task: DynamicTask, currentDay: Calendar): Boolean {
         val taskDate = try {
@@ -260,13 +195,13 @@ class WochenplanFragment : Fragment() {
             val taskDate = Calendar.getInstance()
             taskDate.time = dateFormat.parse(date)
             when (taskDate.get(Calendar.DAY_OF_WEEK)) {
-                Calendar.SUNDAY -> 1
-                Calendar.MONDAY -> 2
-                Calendar.TUESDAY -> 3
-                Calendar.WEDNESDAY -> 4
-                Calendar.THURSDAY -> 5
-                Calendar.FRIDAY -> 6
-                Calendar.SATURDAY -> 7
+                Calendar.MONDAY -> 1
+                Calendar.TUESDAY -> 2
+                Calendar.WEDNESDAY -> 3
+                Calendar.THURSDAY -> 4
+                Calendar.FRIDAY -> 5
+                Calendar.SATURDAY -> 6
+                Calendar.SUNDAY -> 7
                 else -> 8 // Default to end of the week if invalid
             }
         } catch (e: Exception) {
@@ -287,6 +222,7 @@ class WochenplanFragment : Fragment() {
             2 -> loadNextWeek()
         }
     }
+
     private fun updateTabIcons() {
         val tabLayout = binding.tabLayout
 
@@ -301,9 +237,11 @@ class WochenplanFragment : Fragment() {
                 0 -> wochenplanViewModel.lastWeekTasks.value?.any { task ->
                     !task.isDone && task.priority.startsWith("Überfällig")
                 } ?: false
+
                 1 -> wochenplanViewModel.thisWeekTasks.value?.any { task ->
                     !task.isDone && task.priority.startsWith("Überfällig")
                 } ?: false
+
                 else -> false
             }
 
@@ -317,8 +255,6 @@ class WochenplanFragment : Fragment() {
             warningIcon?.visibility = if (showWarningIcon) View.VISIBLE else View.GONE
         }
     }
-
-
 
 
     private fun displayTasksForDay(day: String) {
@@ -347,7 +283,12 @@ class WochenplanFragment : Fragment() {
             // Überschrift mit dem Datum hinzufügen
             val dateHeaderView = TextView(requireContext())
             dateHeaderView.text = formatDateHeader(date)
-            dateHeaderView.setTextColor(ContextCompat.getColor(requireContext(), R.color.own_text_Farbe))
+            dateHeaderView.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.own_text_Farbe
+                )
+            )
             dateHeaderView.setPadding(16, 16, 16, 8)
             layout.addView(dateHeaderView)
 
@@ -360,7 +301,8 @@ class WochenplanFragment : Fragment() {
                 val priorityTextView = taskView.findViewById<TextView>(R.id.taskPriority)
                 val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
                 val assigneeTextView = taskView.findViewById<TextView>(R.id.taskAsignee)
-                val assigneeAvatarImageView = taskView.findViewById<ImageView>(R.id.taskAssigneeAvatar)
+                val assigneeAvatarImageView =
+                    taskView.findViewById<ImageView>(R.id.taskAssigneeAvatar)
                 val taskOptionsImageView = taskView.findViewById<ImageView>(R.id.taskOptions)
 
                 // Originale Priorität speichern
@@ -371,7 +313,24 @@ class WochenplanFragment : Fragment() {
                 priorityTextView.text = task.priority
                 pointsTextView.text = "${task.points} Punkte"
                 assigneeTextView.text = task.assignee
-                assigneeAvatarImageView.setImageResource(task.avatar)
+
+                // Avatar mit Glide laden
+                task.assigneeEmail?.let { assigneeEmail ->
+                    db.collection("users").document(assigneeEmail)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            val profileImageUrl = document.getString("profileImageUrl")
+                            if (!profileImageUrl.isNullOrEmpty()) {
+                                Glide.with(requireContext())
+                                    .load(profileImageUrl)
+                                    .circleCrop()
+                                    .into(assigneeAvatarImageView)
+                            } else {
+                                // Wenn kein Bild vorhanden ist, Standard-Avatar setzen
+                                assigneeAvatarImageView.setImageResource(R.drawable.logo)
+                            }
+                        }
+                }
 
                 // Dynamische Anpassung der Höhe der Beschreibung
                 descriptionTextView.post {
@@ -387,7 +346,8 @@ class WochenplanFragment : Fragment() {
                     if (!task.isDone) {
                         if (taskDate.before(midnight)) {
                             // Aufgabe ist überfällig
-                            val overdueDays = ((today.timeInMillis - taskDate.timeInMillis) / (24 * 60 * 60 * 1000)).toInt()
+                            val overdueDays =
+                                ((today.timeInMillis - taskDate.timeInMillis) / (24 * 60 * 60 * 1000)).toInt()
                             val overdueText = if (overdueDays == 1) {
                                 "Überfällig: 1 Tag"
                             } else {
@@ -432,9 +392,11 @@ class WochenplanFragment : Fragment() {
                             "Hoch" -> priorityTextView.setTextColor(
                                 ContextCompat.getColor(requireContext(), R.color.priority_high)
                             )
+
                             "Mittel" -> priorityTextView.setTextColor(
                                 ContextCompat.getColor(requireContext(), R.color.priority_medium)
                             )
+
                             "Niedrig" -> priorityTextView.setTextColor(
                                 ContextCompat.getColor(requireContext(), R.color.priority_low)
                             )
@@ -446,9 +408,11 @@ class WochenplanFragment : Fragment() {
                         "Hoch" -> priorityTextView.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.priority_high)
                         )
+
                         "Mittel" -> priorityTextView.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.priority_medium)
                         )
+
                         "Niedrig" -> priorityTextView.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.priority_low)
                         )
@@ -467,13 +431,15 @@ class WochenplanFragment : Fragment() {
     }
 
 
-
-
     private fun formatDateHeader(date: String): String {
         return try {
             val parsedDate = dateFormat.parse(date)
-            val dayOfWeekFormat = SimpleDateFormat("E", Locale("de", "DE")) // Short day format with one dot
-            val dateFormat = SimpleDateFormat("dd.MMM", Locale("de", "DE")) // Date format with abbreviated month, no year
+            val dayOfWeekFormat =
+                SimpleDateFormat("E", Locale("de", "DE")) // Short day format with one dot
+            val dateFormat = SimpleDateFormat(
+                "dd.MMM",
+                Locale("de", "DE")
+            ) // Date format with abbreviated month, no year
             parsedDate?.let { "${dayOfWeekFormat.format(it)}, ${dateFormat.format(it)}" } ?: date
         } catch (e: Exception) {
             e.printStackTrace()
@@ -481,8 +447,7 @@ class WochenplanFragment : Fragment() {
         }
     }
 
-
-private fun showTaskOptions(task: DynamicTask) {
+    private fun showTaskOptions(task: DynamicTask) {
         val options = if (task.isDone) {
             arrayOf("Nicht erledigt", "Bearbeiten", "Löschen")
         } else {
@@ -500,6 +465,7 @@ private fun showTaskOptions(task: DynamicTask) {
                             markTaskAsDone(task)
                         }
                     }
+
                     1 -> showTaskDialog(task)
                     2 -> deleteTask(task)
                 }
@@ -510,20 +476,19 @@ private fun showTaskOptions(task: DynamicTask) {
     }
 
 
-
     private fun markTaskAsDone(task: DynamicTask) {
         val updatedTask = task.copy(isDone = true)
-
         // Update the task in the ViewModel
         wochenplanViewModel.updateTask(updatedTask)
-
-        // Refresh only the tasks for the currently displayed tab
         updateTabs()
     }
 
     private fun markTaskAsNotDone(task: DynamicTask) {
-        val updatedTask = task.copy(isDone = false)
-        wochenplanViewModel.updateTask(updatedTask)
+        task.copy().apply {
+            isDone = false
+            wochenplanViewModel.updateTask(this)
+        }
+        updateTabs()
     }
 
     private fun deleteTask(task: DynamicTask) {
@@ -561,17 +526,20 @@ private fun showTaskOptions(task: DynamicTask) {
             "Wöchentlich" -> {
                 taskDate.get(Calendar.DAY_OF_WEEK) == selectedDate.get(Calendar.DAY_OF_WEEK)
             }
+
             "Täglich" -> true
             "Monatlich" -> {
                 taskDate.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH)
             }
+
             else -> false
         }
     }
 
     private fun showTaskDialog(existingTask: DynamicTask? = null) {
         val context = requireContext()
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
+        val dialogView =
+            LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
 
         val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
         val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
@@ -589,15 +557,51 @@ private fun showTaskOptions(task: DynamicTask) {
             val parsedDate = dateFormat.parse(it.date)
             parsedDate?.let { date -> selectedDate.time = date }
             taskDescription.setText(it.description)
-            taskPriority.setSelection(resources.getStringArray(R.array.prio_liste).indexOf(it.priority))
+            taskPriority.setSelection(
+                resources.getStringArray(R.array.prio_liste).indexOf(it.priority)
+            )
             taskPoints.setText(it.points.toString())
-            taskAssigneeSpinner.setSelection(resources.getStringArray(R.array.assignee_list).indexOf(it.assignee))
             repeatToggle.isChecked = it.isRepeating
             repeatFrequencyLayout.visibility = if (it.isRepeating) View.VISIBLE else View.GONE
-            repeatFrequencySpinner.setSelection(resources.getStringArray(R.array.repeat_frequency_options).indexOf(it.repeatFrequency ?: ""))
-            repeatDaySpinner.setSelection(resources.getStringArray(R.array.days_of_week).indexOf(it.repeatDay ?: ""))
+            repeatFrequencySpinner.setSelection(
+                resources.getStringArray(R.array.repeat_frequency_options)
+                    .indexOf(it.repeatFrequency ?: "")
+            )
+            repeatDaySpinner.setSelection(
+                resources.getStringArray(R.array.days_of_week).indexOf(it.repeatDay ?: "")
+            )
+
+            // Setze den Assignee Spinner auf den aktuellen Wert des Tasks
+            val assignee = it.assignee
+            wochenplanViewModel.assignees.observe(viewLifecycleOwner) { assignees ->
+                val assigneeAdapter = ArrayAdapter(
+                    context,
+                    android.R.layout.simple_spinner_item,
+                    assignees.map { it.first })
+                assigneeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                taskAssigneeSpinner.adapter = assigneeAdapter
+
+                // Wenn der Assignee in der Liste vorhanden ist, setze ihn als ausgewählt
+                val assigneePosition = assignees.indexOfFirst { it.first == assignee }
+                if (assigneePosition != -1) {
+                    taskAssigneeSpinner.setSelection(assigneePosition)
+                }
+            }
         }
+
         dateTextView.text = dateFormat.format(selectedDate.time)
+
+        // Lade die Mitglieder der WG und deren Nicknames auch beim Erstellen eines neuen Tasks
+        if (existingTask == null) {
+            wochenplanViewModel.loadAssignees { assignees ->
+                val assigneeAdapter = ArrayAdapter(
+                    context,
+                    android.R.layout.simple_spinner_item,
+                    assignees.map { it.first })
+                assigneeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                taskAssigneeSpinner.adapter = assigneeAdapter
+            }
+        }
 
         datePickerIcon.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
@@ -632,7 +636,8 @@ private fun showTaskOptions(task: DynamicTask) {
                 val date = dateFormat.format(selectedDate.time)
                 val description = taskDescription.text.toString().trim()
                 val priorityPosition = taskPriority.selectedItemPosition
-                val priority = if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
+                val priority =
+                    if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
 
                 var isValid = true
 
@@ -654,32 +659,41 @@ private fun showTaskOptions(task: DynamicTask) {
 
                 val points = taskPoints.text.toString().toIntOrNull() ?: 0
 
-                val newTask = DynamicTask(
-                    id = id,
-                    date = date,
-                    description = description,
-                    priority = priority,
-                    points = points,
-                    assignee = taskAssigneeSpinner.selectedItem.toString(),
-                    avatar = R.drawable.logo,
-                    isRepeating = repeatToggle.isChecked,
-                    repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
-                    repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
-                )
+                // Hole die E-Mail-Adresse des zugewiesenen Benutzers
+                val selectedAssignee = taskAssigneeSpinner.selectedItem.toString()
+                val assigneeEmail =
+                    wochenplanViewModel.assignees.value?.find { it.first == selectedAssignee }?.second
+
+                val newTask = assigneeEmail?.let { it1 ->
+                    DynamicTask(
+                        id = id,
+                        date = date,
+                        description = description,
+                        priority = priority,
+                        points = points,
+                        assignee = selectedAssignee,
+                        assigneeEmail = it1,  // E-Mail-Adresse speichern
+                        avatar = R.drawable.logo,
+                        isRepeating = repeatToggle.isChecked,
+                        repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
+                        repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
+                    )
+                }
 
                 if (existingTask == null) {
-                    wochenplanViewModel.addTask(newTask)
+                    if (newTask != null) {
+                        wochenplanViewModel.addTask(newTask)
+                    }
                 } else {
-                    wochenplanViewModel.updateTask(newTask)
+                    if (newTask != null) {
+                        wochenplanViewModel.updateTask(newTask)
+                    }
                 }
                 dialog.dismiss()
             }
         }
-
-
         dialog.show()
     }
-
 
 
     override fun onDestroyView() {

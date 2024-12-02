@@ -24,12 +24,6 @@
         <item>Löschen</item>
     </string-array>
 
-    <string-array name="assignee_list">
-        <item>Haneen</item>
-        <item>Lorenz</item>
-        <item>Yanik</item>
-
-    </string-array>
 
     <string-array name="kategorien_array">
         <item>Zuhause</item>
