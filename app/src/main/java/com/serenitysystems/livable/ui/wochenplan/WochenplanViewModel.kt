@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.serenitysystems.livable.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
 import com.serenitysystems.livable.ui.wochenplan.data.DynamicTask
 import kotlinx.coroutines.Dispatchers

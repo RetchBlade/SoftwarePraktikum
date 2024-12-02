@@ -17,7 +17,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.R
-import com.serenitysystems.livable.data.UserPreferences
 import com.serenitysystems.livable.databinding.FragmentWochenplanBinding
 import com.serenitysystems.livable.ui.wochenplan.adapter.DayPagerAdapter
 import com.serenitysystems.livable.ui.wochenplan.data.DynamicTask
