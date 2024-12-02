@@ -1,11 +1,7 @@
 // EinkaufslisteFragment.kt
 package com.serenitysystems.livable.ui.einkaufsliste
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -102,7 +98,8 @@ class EinkaufslisteFragment : Fragment() {
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },  // Datum ändern
             onImageClicked = { item -> handleImageClick(item) }, // Bildklick verarbeiten
             onItemDeleted = { item -> deleteItem(item) },         // Produkt löschen
-            onItemStatusChanged = { item -> updateItemStatus(item) } // Status zurücksetzen
+            onItemStatusChanged = { item -> updateItemStatus(item) }, // Status zurücksetzen
+            viewModel = viewModel
         )
         getrankeAdapter = EinkaufsItemAdapter(
             mutableListOf(),
@@ -110,7 +107,8 @@ class EinkaufslisteFragment : Fragment() {
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) },
-            onItemStatusChanged = { item -> updateItemStatus(item) }
+            onItemStatusChanged = { item -> updateItemStatus(item) },
+            viewModel = viewModel
         )
         haushaltAdapter = EinkaufsItemAdapter(
             mutableListOf(),
@@ -118,7 +116,8 @@ class EinkaufslisteFragment : Fragment() {
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) },
-            onItemStatusChanged = { item -> updateItemStatus(item) }
+            onItemStatusChanged = { item -> updateItemStatus(item) },
+            viewModel = viewModel
         )
         sonstigesAdapter = EinkaufsItemAdapter(
             mutableListOf(),
@@ -126,7 +125,8 @@ class EinkaufslisteFragment : Fragment() {
             onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },
             onImageClicked = { item -> handleImageClick(item) },
             onItemDeleted = { item -> deleteItem(item) },
-            onItemStatusChanged = { item -> updateItemStatus(item) }
+            onItemStatusChanged = { item -> updateItemStatus(item) },
+            viewModel = viewModel
         )
 
         // RecyclerViews für die verschiedenen Kategorien verbinden
@@ -164,7 +164,7 @@ class EinkaufslisteFragment : Fragment() {
                 }
             } else {
                 // Falls nur andere Werte geändert wurden
-                viewModel.updateItem(currentDateKey, updatedItem, currentDateKey)
+                viewModel.updateItem(currentDateKey, updatedItem)
             }
 
             // Liste neu laden
@@ -177,7 +177,7 @@ class EinkaufslisteFragment : Fragment() {
     // Methode zum Aktualisieren des Item-Status
     private fun updateItemStatus(item: Produkt) {
         val dateKey = dateFormat.format(selectedDate.time)
-        viewModel.updateItem(dateKey, item, dateKey)
+        viewModel.updateItem(dateKey, item)
         loadItemsForDate() // Liste neu laden
     }
 

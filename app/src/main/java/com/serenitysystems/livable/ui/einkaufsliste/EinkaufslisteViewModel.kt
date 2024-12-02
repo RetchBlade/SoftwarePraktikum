@@ -1,27 +1,71 @@
 package com.serenitysystems.livable.ui.einkaufsliste
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
+import com.serenitysystems.livable.ui.login.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class EinkaufslisteViewModel : ViewModel() {
+class EinkaufslisteViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Map zum Speichern der Produkte nach Datum und Kategorie
+    private val db = FirebaseFirestore.getInstance()
+    private val userPreferences: UserPreferences = UserPreferences(application)
     private val _itemsByDate = MutableLiveData<MutableMap<String, MutableList<Produkt>>>()
     val itemsByDate: LiveData<MutableMap<String, MutableList<Produkt>>> = _itemsByDate
 
     init {
-        _itemsByDate.value = mutableMapOf()
+        loadItems()
     }
 
-    // Produkt hinzufügen
+    // Lädt alle Items für das aktuelle Benutzer-WG
+    private fun loadItems() {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste")
+                                .addSnapshotListener { snapshot, e ->
+                                    if (e != null) return@addSnapshotListener
+                                    val currentMap = mutableMapOf<String, MutableList<Produkt>>()
+                                    snapshot?.documents?.forEach { doc ->
+                                        val item = doc.toObject(Produkt::class.java)
+                                        item?.let {
+                                            val dateKey = it.date.toString()
+                                            currentMap.getOrPut(dateKey) { mutableListOf() }.add(it)
+                                        }
+                                    }
+                                    _itemsByDate.postValue(currentMap)
+                                }
+                        }
+                    }
+            }
+        }
+    }
+
+    // Fügt ein Item hinzu
     fun addItem(date: String, item: Produkt) {
-        val currentMap = _itemsByDate.value ?: mutableMapOf()
-        val itemsForDate = currentMap[date]?.toMutableList() ?: mutableListOf()
-        itemsForDate.add(0, item)
-        currentMap[date] = itemsForDate
-        _itemsByDate.value = currentMap.toMutableMap() // Trigger LiveData update
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                                .set(item)
+                        }
+                    }
+            }
+        }
     }
 
     // Produkt zu einem neuen Datum verschieben
@@ -43,59 +87,68 @@ class EinkaufslisteViewModel : ViewModel() {
         currentMap[newDate] = newItems
 
         _itemsByDate.value = currentMap.toMutableMap() // Trigger LiveData update
+        updateItem(newDate,item)
     }
 
-    // Produkt aktualisieren (mit Kategorie/Container)
-    fun updateItem(oldDate: String, newItem: Produkt, newDate: String) {
-        val currentMap = _itemsByDate.value ?: mutableMapOf()
 
-        // Entferne altes Item vom alten Datum
-        val itemsForOldDate = currentMap[oldDate]?.toMutableList() ?: mutableListOf()
-        itemsForOldDate.removeIf { it.id == newItem.id }
-        if (itemsForOldDate.isEmpty()) {
-            currentMap.remove(oldDate)
-        } else {
-            currentMap[oldDate] = itemsForOldDate
+    // Aktualisiert ein Item
+    fun updateItem(date: String, item: Produkt) {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                                .set(item)
+                        }
+                    }
+            }
         }
-
-        // Füge das neue Item dem neuen Datum hinzu
-        val itemsForNewDate = currentMap[newDate]?.toMutableList() ?: mutableListOf()
-        itemsForNewDate.add(newItem)
-        currentMap[newDate] = itemsForNewDate
-
-        // Trigger LiveData update
-        _itemsByDate.value = currentMap.toMutableMap()
     }
 
     // Aktualisiere das Bild eines Produkts
     fun updateItemImage(date: String, item: Produkt) {
         val currentMap = _itemsByDate.value ?: mutableMapOf()
-        val itemsForDate = currentMap[date]?.toMutableList() ?: mutableListOf()
+        val itemsForDate = currentMap[date.toString()]?.toMutableList() ?: mutableListOf()
         val index = itemsForDate.indexOfFirst { it.id == item.id }
         if (index != -1) {
             itemsForDate[index] = item
-            currentMap[date] = itemsForDate
+            currentMap[date.toString()] = itemsForDate
 
             // LiveData aktualisieren
             _itemsByDate.postValue(currentMap.toMutableMap())
         }
     }
 
-    // Produkt löschen
+    // Löscht ein Item
     fun deleteItem(date: String, item: Produkt) {
-        val currentMap = _itemsByDate.value ?: mutableMapOf()
-        val itemsForDate = currentMap[date]?.toMutableList() ?: mutableListOf()
-        itemsForDate.removeIf { it.id == item.id }
-        if (itemsForDate.isEmpty()) {
-            currentMap.remove(date)
-        } else {
-            currentMap[date] = itemsForDate
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                                .delete()
+                        }
+                    }
+            }
         }
-        _itemsByDate.value = currentMap.toMutableMap() // Neue Map zuweisen
     }
 
-    // Produkte für ein Datum abrufen
-    fun getItemsForDate(date: String): List<Produkt> {
-        return _itemsByDate.value?.get(date) ?: emptyList()
+    // Gibt alle Items für ein bestimmtes Datum zurück
+    fun getItemsForDate(dateKey: String): List<Produkt> {
+        return _itemsByDate.value?.get(dateKey) ?: emptyList()
+    }
+
+    private fun fetchUserToken(action: (UserToken?) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userPreferences.userToken.collect { userToken ->
+                action(userToken)
+            }
+        }
     }
 }

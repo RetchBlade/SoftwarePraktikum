@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.ItemEinkaufsBinding
 import com.serenitysystems.livable.ui.FullScreenImageDialogFragment
+import com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteViewModel
 import com.serenitysystems.livable.ui.einkaufsliste.ItemOptionsDialogFragment
 import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 import java.text.SimpleDateFormat
@@ -28,18 +29,19 @@ class EinkaufsItemAdapter(
     private val onDateChanged: (Produkt, String) -> Unit,     // Callback für das Ändern des Datums
     private val onImageClicked: (Produkt) -> Unit,            // Callback für Klick auf das Produktbild
     private val onItemDeleted: (Produkt) -> Unit,             // Callback zum Löschen eines Produkts
-    private val onItemStatusChanged: (Produkt) -> Unit        // Callback zum Zurücksetzen des Status
+    private val onItemStatusChanged: (Produkt) -> Unit,       // Callback zum Zurücksetzen des Status
+    private val viewModel: EinkaufslisteViewModel             // Hier ViewModel als Parameter
 ) : RecyclerView.Adapter<EinkaufsItemAdapter.EinkaufsItemViewHolder>() {
-
     // Datumsformat definieren
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     // Kontext speichern
     private lateinit var context: Context
 
-    // ViewHolder-Klasse für die Listenelemente
-    inner class EinkaufsItemViewHolder(val binding: ItemEinkaufsBinding) : RecyclerView.ViewHolder(binding.root) {
 
+    // ViewHolder-Klasse für die Listenelemente
+    inner class EinkaufsItemViewHolder(val binding: ItemEinkaufsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         // Daten an die Views binden
         fun bind(item: Produkt) {
             binding.apply {
@@ -95,7 +97,8 @@ class EinkaufsItemAdapter(
                     itemQuantity.alpha = 1.0f
                     itemUnit.alpha = 1.0f
                     itemName.paintFlags = itemName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                    itemQuantity.paintFlags = itemQuantity.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    itemQuantity.paintFlags =
+                        itemQuantity.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                     itemUnit.paintFlags = itemUnit.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
 
@@ -109,7 +112,8 @@ class EinkaufsItemAdapter(
 
         // Methode zum Anzeigen des Vollbild-Bilddialogs
         private fun showFullScreenImageDialog(imageUri: String) {
-            val fragmentManager = (binding.root.context as androidx.fragment.app.FragmentActivity).supportFragmentManager
+            val fragmentManager =
+                (binding.root.context as androidx.fragment.app.FragmentActivity).supportFragmentManager
             val dialogFragment = FullScreenImageDialogFragment.newInstance(imageUri)
             dialogFragment.show(fragmentManager, "fullscreen_image")
         }
@@ -152,7 +156,9 @@ class EinkaufsItemAdapter(
                         item.date = newDate
                         item.statusIcon = R.drawable.ic_warning  // Warnungsicon setzen
                         item.isChecked = false
+                        item.isPurchasedToday = false
                         onDateChanged(item, newDate)  // Callback aufrufen
+                        viewModel.updateItem(item.date.toString(), item)
                         notifyItemChanged(adapterPosition)
                     }
                 },
@@ -188,7 +194,8 @@ class EinkaufsItemAdapter(
 
         // Klick-Listener für das gesamte Item
         holder.itemView.setOnClickListener {
-            val fragmentManager = (context as androidx.fragment.app.FragmentActivity).supportFragmentManager
+            val fragmentManager =
+                (context as androidx.fragment.app.FragmentActivity).supportFragmentManager
 
             val dialogFragment = ItemOptionsDialogFragment(
                 produkt = item,
@@ -199,7 +206,10 @@ class EinkaufsItemAdapter(
                     // Status aktualisieren
                     produkt.isChecked = true
                     produkt.statusIcon = R.drawable.ic_check // Häkchen setzen
+                    produkt.isPurchasedToday = true
+                    viewModel.updateItem(produkt.date.toString(), produkt)
                     notifyItemChanged(position)
+
                 },
                 onMoveToAnotherDay = { produkt ->
                     // DatePicker zum Verschieben auf einen anderen Tag anzeigen
@@ -214,8 +224,6 @@ class EinkaufsItemAdapter(
     // Anzahl der Elemente zurückgeben
     override fun getItemCount(): Int = items.size
 
-    // Element an einer bestimmten Position zurückgeben
-    fun getItem(position: Int): Produkt = items[position]
 
     // Neues Element hinzufügen
     fun addItem(item: Produkt) {
@@ -243,7 +251,8 @@ class EinkaufsItemAdapter(
 
     // Swipe-to-Delete Funktionalität hinzufügen
     fun attachSwipeToDelete(recyclerView: RecyclerView) {
-        val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val swipeHandler = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
             // Bewegt die Elemente nicht
             override fun onMove(
@@ -357,7 +366,8 @@ class EinkaufsItemAdapter(
                     c.drawRect(background, paint)
 
                     // Papierkorb-Icon laden
-                    val icon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_trash_bin)
+                    val icon =
+                        BitmapFactory.decodeResource(context.resources, R.drawable.ic_trash_bin)
 
                     if (icon != null) {
                         // Größe des Icons anpassen
