@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Main Tab Icon -->
+    <ImageView
+        android:id="@+id/tabIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/pp_placeholder"
+        android:layout_gravity="center" />
+
+    <!-- Warning Icon -->
+    <ImageView
+        android:id="@+id/warningIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="2dp"
+        android:visibility="visible"
+        android:src="@drawable/ic_warning"
+        app:tint="@color/red" />
+</FrameLayout>

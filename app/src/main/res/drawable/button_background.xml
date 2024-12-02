@@ -1,5 +1,15 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#333333"/>
-    <corners android:radius="8dp"/>
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Main Background with Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/own_navy_Dunkelblau" />
+            <gradient
+                android:startColor="@color/own_navy_Dunkelblau"
+            android:endColor="#7CB8C8"
+            android:angle="45"/>
+            <corners android:radius="16dp"/>
+        </shape>
+    </item>
+
+</layer-list>

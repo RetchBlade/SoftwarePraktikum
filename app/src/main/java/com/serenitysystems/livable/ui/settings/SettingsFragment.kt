@@ -25,6 +25,13 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up the listener for the "WG-Info" card click
+        binding.wgInfoCard.setOnClickListener {
+            // Navigate to the WG Ansicht fragment
+            findNavController().navigate(R.id.action_settingsFragment_to_wgAnsichtFragment)
+        }
+
+        // You can also add other click listeners or functionality here for the other buttons
         binding.editProfileButton.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_profilverwaltenFragment)
         }

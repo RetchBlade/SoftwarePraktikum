@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/editOption"
+        android:title="Bearbeiten" />
+    <item
+        android:id="@+id/deleteOption"
+        android:title="WG Löschen" />
+</menu>

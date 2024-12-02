@@ -5,11 +5,13 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/nav_homepage">
 
+    <!-- Existing Fragments -->
     <fragment
         android:id="@+id/nav_homepage"
         android:name="com.serenitysystems.livable.ui.home.HomePageFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home_page" />
+
     <fragment
         android:id="@+id/nav_wochenplan"
         android:name="com.serenitysystems.livable.ui.wochenplan.WochenplanFragment"
@@ -45,10 +47,15 @@
         android:id="@+id/nav_settings"
         android:name="com.serenitysystems.livable.ui.settings.SettingsFragment"
         android:label="Einstellungen"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+
+        <!-- Action for WG-Info Card -->
+        <action
+            android:id="@+id/action_settingsFragment_to_wgAnsichtFragment"
+            app:destination="@id/nav_wgansichtFragment" />
+    </fragment>
 
     <!-- Profilverwalten Fragment -->
-
     <fragment
         android:id="@+id/nav_profilverwaltenFragment"
         android:name="com.serenitysystems.livable.ui.userprofil.ProfilverwaltenFragment"
@@ -56,7 +63,14 @@
         tools:layout="@layout/fragment_profilverwalten" />
 
 
-    <!-- Adding navigation action from HomePageFragment to SettingsActivity -->
+
+    <fragment
+        android:id="@+id/nav_wgansichtFragment"
+        android:name="com.serenitysystems.livable.ui.userprofil.WgAnsichtFragment"
+        android:label="WG Ansicht"
+        tools:layout="@layout/fragment_wg_ansicht" />
+
+    <!-- Existing Actions -->
     <action
         android:id="@+id/action_homePageFragment_to_settingsActivity"
         app:destination="@id/nav_settings" />

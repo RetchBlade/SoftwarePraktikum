@@ -56,6 +56,7 @@ class WgRegistrierungFragment : Fragment() {
         val bewohner = bewohnerInput.text.toString().trim()
 
         if (adresse.isEmpty() || groesse.isEmpty() || zimmer.isEmpty() || bewohner.isEmpty()) {
+            // Error handling for empty fields
             adresseInput.error = "Alle Felder müssen ausgefüllt sein"
             return
         }
@@ -85,4 +86,5 @@ class WgRegistrierungFragment : Fragment() {
             })
         }
     }
+
 }

@@ -5,27 +5,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="8dp"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:elevation="8dp">
+        android:padding="20dp">
 
         <!-- Date Picker Icon with modern style -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:layout_marginBottom="16dp"
             android:background="@drawable/date_picker_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="12dp">
 
             <ImageView
                 android:id="@+id/datePickerIcon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_calendar"
                 android:contentDescription="@string/select_date"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:src="@drawable/ic_calendar" />
 
             <TextView
                 android:id="@+id/dateTextView"
@@ -33,18 +33,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/select_date"
-                android:textSize="18sp"
                 android:textColor="@color/own_text_Farbe"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/selectDateButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_date"
-                android:textColor="@color/colorPrimary"
-                android:background="@drawable/button_background"
-                android:layout_marginStart="8dp" />
+
         </LinearLayout>
 
         <EditText
@@ -52,18 +45,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:hint="@string/task_description"
-            android:textSize="16sp"
             android:background="@drawable/edit_text_background"
-            android:padding="12dp" />
+            android:hint="@string/task_description"
+            android:padding="12dp"
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:text="Priorität:"
-            android:textSize="16sp"
             android:textColor="@color/own_text_Farbe"
-            android:layout_marginBottom="4dp" />
+            android:textSize="16sp" />
 
         <Spinner
             android:id="@+id/taskPriority"
@@ -76,12 +69,12 @@
             android:id="@+id/taskPoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/edit_text_background"
             android:hint="@string/task_points"
             android:inputType="number"
-            android:textSize="16sp"
-            android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:layout_marginBottom="20dp" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,23 +88,22 @@
             android:id="@+id/taskAssigneeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:entries="@array/assignee_list" />
+            android:layout_marginBottom="20dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
             android:gravity="left"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="@string/repeating_task"
-                android:textSize="16sp"
                 android:textColor="@color/own_text_Farbe"
-            android:layout_marginEnd="8dp" />
+                android:textSize="16sp" />
 
             <Switch
                 android:id="@+id/repeatingTaskToggle"
@@ -124,41 +116,41 @@
             android:id="@+id/repeatingTaskDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
+            android:layout_marginTop="16dp"
             android:background="@drawable/dialog_background"
+            android:orientation="vertical"
             android:padding="12dp"
-            android:layout_marginTop="16dp">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="@string/repeat_on"
-                android:textSize="16sp"
                 android:textColor="@color/own_text_Farbe"
-                android:layout_marginBottom="8dp" />
+                android:textSize="16sp" />
 
             <Spinner
                 android:id="@+id/repeatDaySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/days_of_week"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:entries="@array/days_of_week" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="@string/repeat_frequency"
-                android:textSize="16sp"
                 android:textColor="@color/own_text_Farbe"
-            android:layout_marginBottom="8dp" />
+                android:textSize="16sp" />
 
             <Spinner
                 android:id="@+id/repeatFrequencySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/repeat_frequency_options"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:entries="@array/repeat_frequency_options" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
