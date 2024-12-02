@@ -59,11 +59,16 @@ class ToDoFragment : Fragment() {
 
     private fun handleTodoAction(todo: TodoItem) {
         if (todo.detailedDescription == "deleted_by_button") {
-            // Lösche das Todo vollständig, auch wenn es wiederkehrend ist
+            // Lösche das Todo vollständig
             todoViewModel.deleteTodo(todo, forceDelete = true)
         } else {
-            // Standardverhalten: Aktualisiere den Status des Todos
+            // Aktualisiere den Status des Todos
             todoViewModel.updateTodo(todo)
+        }
+
+        // **Wichtig**: Aktualisiere die Liste nach jeder Aktion
+        todoViewModel.todos.observe(viewLifecycleOwner) { todos ->
+            sortTodosByDate(todos)
         }
     }
 
@@ -105,8 +110,15 @@ class ToDoFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val todo = adapter.currentList[position]
-                todoViewModel.deleteTodo(todo) // Kein forceDelete, Standardverhalten
+
+                // Löschen des Todos aus dem ViewModel
+                todoViewModel.deleteTodo(todo)
+
+                // **Wichtig**: Liste aktualisieren
+                val updatedList = adapter.currentList.toMutableList().apply { removeAt(position) }
+                adapter.submitList(updatedList)
             }
+
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)

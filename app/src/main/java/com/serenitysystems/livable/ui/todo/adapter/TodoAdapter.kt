@@ -21,6 +21,11 @@ import android.view.inputmethod.InputMethodManager
 class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
     ListAdapter<TodoItem, TodoAdapter.TodoViewHolder>(TodoDiffCallback()) {
 
+    fun updateList(newList: List<TodoItem>) {
+        submitList(newList)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val binding = TodoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TodoViewHolder(binding)

@@ -140,27 +140,23 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     private var isProcessing = false
 
     fun deleteTodo(todo: TodoItem, forceDelete: Boolean = false) {
-        if (isProcessing) return // Blockiere parallel laufende Operationen
-        isProcessing = true
-
-        fetchUserToken { token ->
-            token?.let { userToken ->
-                val userId = userToken.email
-
-                if (forceDelete || todo.repeatType == null) {
-                    deleteTodoFromFirestore(todo.id, userId)
-                } else {
-                    val calendar = Calendar.getInstance().apply { time = todo.date }
-                    when (todo.repeatType) {
-                        "daily" -> calendar.add(Calendar.DAY_OF_YEAR, 1)
-                        "every_2_days" -> calendar.add(Calendar.DAY_OF_YEAR, 2)
-                        "weekly" -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchUserToken { token ->
+                token?.let { userToken ->
+                    if (forceDelete || todo.repeatType == null) {
+                        deleteTodoFromFirestore(todo.id, userToken.email)
+                    } else {
+                        val calendar = Calendar.getInstance().apply { time = todo.date }
+                        when (todo.repeatType) {
+                            "daily" -> calendar.add(Calendar.DAY_OF_YEAR, 1)
+                            "every_2_days" -> calendar.add(Calendar.DAY_OF_YEAR, 2)
+                            "weekly" -> calendar.add(Calendar.WEEK_OF_YEAR, 1)
+                        }
+                        val updatedTodo = todo.copy(date = calendar.time, isDone = false)
+                        updateTodoInFirestore(updatedTodo, userToken.email)
                     }
-                    val updatedTodo = todo.copy(date = calendar.time, isDone = false)
-                    updateTodoInFirestore(updatedTodo, userId)
                 }
             }
-            isProcessing = false
         }
     }
 
