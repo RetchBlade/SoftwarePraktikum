@@ -345,6 +345,8 @@ class WochenplanFragment : Fragment() {
                     if (!task.isDone) {
                         if (taskDate.before(midnight)) {
                             // Aufgabe ist überfällig
+                            val temp = task.priority
+
                             val overdueDays =
                                 ((today.timeInMillis - taskDate.timeInMillis) / (24 * 60 * 60 * 1000)).toInt()
                             val overdueText = if (overdueDays == 1) {
@@ -352,8 +354,10 @@ class WochenplanFragment : Fragment() {
                             } else {
                                 "Überfällig: $overdueDays Tage"
                             }
-
                             task.priority = overdueText
+                            if(task.priority != temp){
+                                wochenplanViewModel.updateTask(task)
+                            }
                             priorityTextView.text = overdueText
                             taskView.background = ContextCompat.getDrawable(
                                 requireContext(),
