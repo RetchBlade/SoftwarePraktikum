@@ -132,21 +132,8 @@ class AddTransactionDialogFragment : DialogFragment() {
         val date = binding.editDate.text.toString()
         val category = binding.spinnerCategory.selectedItem?.toString()
 
-        if (amount == null) {
-            Toast.makeText(
-                requireContext(),
-                "Bitte geben Sie einen gültigen Betrag ein",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        if (category.isNullOrEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "Bitte wählen Sie eine Kategorie aus",
-                Toast.LENGTH_SHORT
-            ).show()
+        if (amount == null || date.isEmpty() || category.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Bitte alle Felder ausfüllen", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -157,12 +144,10 @@ class AddTransactionDialogFragment : DialogFragment() {
             datum = date,
             istEinnahme = isEinnahme
         )
-
         haushaltsbuchViewModel.addExpense(newExpense)
-
-        Toast.makeText(requireContext(), "Transaktion gespeichert", Toast.LENGTH_SHORT).show()
         dismiss()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

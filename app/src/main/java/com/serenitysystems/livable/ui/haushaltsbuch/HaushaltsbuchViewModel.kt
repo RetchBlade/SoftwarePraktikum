@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,14 +35,16 @@ class HaushaltsbuchViewModel : ViewModel() {
 
     // Hinzufügen einer neuen Ausgabe oder Einnahme
     fun addExpense(expense: Expense) {
+        if (expense.kategorie.isEmpty() || expense.datum.isEmpty() || expense.betrag <= 0) {
+            Log.e("ViewModel", "Invalid expense data")
+            return
+        }
         viewModelScope.launch {
-            val currentExpenses = _allExpenses.value ?: listOf()
-            val updatedExpenses = currentExpenses + expense
-            _allExpenses.value = updatedExpenses
-            // Nach Hinzufügen eines neuen Eintrags aktualisieren wir die Daten
+            _allExpenses.value = (_allExpenses.value ?: emptyList()) + expense
             loadExpensesForDateAsync(formatDate(selectedDate))
         }
     }
+
 
     // Aktualisieren einer bestehenden Ausgabe oder Einnahme
     fun updateExpense(expense: Expense) {
