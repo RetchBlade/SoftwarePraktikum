@@ -3,13 +3,23 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Background for the Active Tab -->
+    <ImageView
+        android:id="@+id/tabBackground"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+    android:src="@drawable/tab_background" />
+
     <!-- Main Tab Icon -->
     <ImageView
         android:id="@+id/tabIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_gravity="center"
         android:src="@drawable/pp_placeholder"
-        android:layout_gravity="center" />
+         />
 
     <!-- Warning Icon -->
     <ImageView
@@ -20,6 +30,6 @@
         android:layout_marginEnd="6dp"
         android:layout_marginBottom="2dp"
         android:visibility="visible"
-        android:src="@drawable/ic_warning"
-        app:tint="@color/red" />
+    android:src="@drawable/ic_warning"
+    app:tint="@color/red" />
 </FrameLayout>

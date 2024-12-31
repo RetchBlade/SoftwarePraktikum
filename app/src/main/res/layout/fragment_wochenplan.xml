@@ -5,37 +5,59 @@
     android:layout_height="match_parent"
     tools:context=".ui.wochenplan.WochenplanFragment">
 
-    <!-- Redesigned Tab Layout -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="370dp"
-        android:layout_height="54dp"
+    <!-- Shadow Background for TabLayout -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="330dp"
+        android:layout_height="50dp"
         android:layout_marginTop="17dp"
-        android:padding="4dp"
-        android:background="@drawable/tab_background"
-        app:tabGravity="fill"
         android:layout_gravity="center_horizontal"
-        app:tabMode="fixed"
-        app:tabIndicator="@drawable/tab_indicator"
-        app:tabIndicatorHeight="3dp"
-        app:tabTextColor="@color/hell_blau"
-        app:tabSelectedTextColor="@color/hell_blau"
-        app:tabRippleColor="@android:color/transparent" />
+        app:cardCornerRadius="80dp"
+        app:cardElevation="10dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent">
 
+        <!-- Default Tab Layout with Indicator -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="4dp"
+            android:background="@drawable/tab_background"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorColor="@color/hell_blau"
+            app:tabIndicatorHeight="3dp"
+            app:tabIndicatorFullWidth="false"
+            app:tabTextColor="@color/hell_blau"
+            app:tabSelectedTextColor="@color/hell_blau"
+            app:tabRippleColor="@android:color/transparent" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Title for the Selected Week -->
+    <TextView
+        android:id="@+id/weekTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:gravity="center"
+        android:text="Aktueller Plan: Diese Woche"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/own_text_Farbe" />
 
     <!-- ViewPager for Content -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/dayViewPager"
         android:layout_width="match_parent"
         android:layout_height="23dp"
-        android:layout_marginTop="60dp" />
+        android:layout_marginTop="100dp" />
 
     <!-- ScrollView for Task List -->
     <ScrollView
         android:id="@+id/taskScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="130dp"
         android:layout_marginBottom="80dp"
         android:fillViewport="true">
 
@@ -44,9 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginTop="-10dp"
-            />
+            android:padding="16dp" />
     </ScrollView>
 
     <!-- Floating Action Button for Adding Task -->

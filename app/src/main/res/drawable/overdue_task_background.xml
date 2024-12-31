@@ -8,8 +8,8 @@
         <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="4dp"/> <!-- Padding for shadow effect -->
     </shape>
     <gradient
-        android:startColor="#F68E92"
-        android:endColor="#E9E2D2"
+        android:startColor="#AAFBF6EB"
+        android:endColor="#B8F68E92"
         android:angle="120" /> <!-- Soft gradient angle -->
     <corners android:radius="20dp"/> <!-- More rounded corners -->
 </shape>

@@ -320,7 +320,12 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun loadAssignees(onAssigneesLoaded: (List<Pair<String, String>>) -> Unit) {
+    fun loadAssignees(onAssigneesLoaded: (List<Pair<String, String>>) -> Unit = {}) {
+        if (!_assignees.value.isNullOrEmpty()) {
+            onAssigneesLoaded(_assignees.value!!)
+            return
+        }
+
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userEmail = userToken.email
@@ -337,10 +342,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                     val memberEmails =
                                         wgDocument.get("mitgliederEmails") as? List<String>
                                             ?: emptyList()
+                                    val userNames = mutableListOf<Pair<String, String>>()
 
-                                    // Hole die Benutzernamen basierend auf den Mitglieds-E-Mails
-                                    val userNames =
-                                        mutableListOf<Pair<String, String>>() // Nickname, Email
                                     memberEmails.forEach { email ->
                                         db.collection("users")
                                             .document(email)
@@ -348,17 +351,10 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                             .addOnSuccessListener { userDocument ->
                                                 val nickname = userDocument.getString("nickname")
                                                 if (nickname != null) {
-                                                    userNames.add(
-                                                        Pair(
-                                                            nickname,
-                                                            email
-                                                        )
-                                                    ) // Nickname und E-Mail speichern
+                                                    userNames.add(Pair(nickname, email))
                                                 }
-
-                                                // Wenn alle Benutzernamen abgerufen sind, rufe den Callback auf
                                                 if (userNames.size == memberEmails.size) {
-                                                    _assignees.postValue(userNames) // Assignees setzen
+                                                    _assignees.postValue(userNames)
                                                     onAssigneesLoaded(userNames)
                                                 }
                                             }
@@ -370,6 +366,7 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 }
+
 
 
 

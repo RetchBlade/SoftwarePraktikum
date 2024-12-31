@@ -1,8 +1,23 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:startColor="#4D93CEE6"
-    android:endColor="#429FAB"
-    android:angle="90" />
 
-    <corners android:radius="50dp" /> <!-- Rounded corners -->
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow layer -->
+    <item>
+        <shape>
+            <corners android:radius="80dp" />
+            <solid android:color="#CDE8EB" /> <!-- Shadow color -->
+        </shape>
+    </item>
+
+    <!-- Gradient background layer -->
+    <item android:left="4dp"
+        android:top="4dp"
+        android:right="4dp" android:bottom="4dp">
+        <shape>
+            <gradient
+                android:startColor="#FBFDFD"
+                android:endColor="#F0F8FB"
+                android:angle="90" />
+            <corners android:radius="80dp" />
+        </shape>
+    </item>
+</layer-list>

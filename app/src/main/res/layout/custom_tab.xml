@@ -1,0 +1,46 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center">
+
+    <!-- Background -->
+    <ImageView
+        android:id="@+id/tabBackground"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:src="@drawable/tab_background" />
+
+    <!-- Main Tab Icon -->
+    <ImageView
+        android:id="@+id/tabIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_launcher_foreground" /> <!-- Replace with your actual drawable -->
+
+    <!-- Optional Warning Icon -->
+    <ImageView
+        android:id="@+id/warningIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="2dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_warning"
+        app:tint="@color/red" />
+
+    <!-- Tab Title -->
+    <TextView
+        android:id="@+id/tabTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="Title"
+        android:textSize="12sp"
+        android:textColor="@color/hell_blau"
+        android:visibility="gone" />
+</FrameLayout>

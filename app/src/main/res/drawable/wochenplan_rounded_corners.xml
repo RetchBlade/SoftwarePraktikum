@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/own_helle_Beige" /> <!-- Hintergrundfarbe -->
+    <gradient
+        android:startColor="#AFE8FDFD"
+        android:endColor="#B694C1CE"
+        android:angle="30" />
     <corners android:radius="20dp" /> <!-- Hier definierst du den Abrundungsradius -->
 </shape>

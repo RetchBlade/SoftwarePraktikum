@@ -10,8 +10,8 @@
         </shape>
     </item>
     <gradient
-        android:startColor="#F0E1D2"
-        android:endColor="#D7D0BF"
+        android:startColor="#FAF7EA"
+        android:endColor="#E7CDB2"
         android:angle="120" /> <!-- Soft gradient angle -->
     <corners android:radius="20dp"/> <!-- More rounded corners -->
 </shape>
