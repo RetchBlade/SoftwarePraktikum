@@ -5,37 +5,42 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/nav_homepage">
 
-    <!-- Existing Fragments -->
+    <!-- Home Fragment -->
     <fragment
         android:id="@+id/nav_homepage"
         android:name="com.serenitysystems.livable.ui.home.HomePageFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home_page" />
 
+    <!-- Weekly Plan Fragment -->
     <fragment
         android:id="@+id/nav_wochenplan"
         android:name="com.serenitysystems.livable.ui.wochenplan.WochenplanFragment"
         android:label="@string/menu_Wochenplan"
         tools:layout="@layout/fragment_wochenplan" />
 
+    <!-- To-Do Fragment -->
     <fragment
         android:id="@+id/nav_todo"
         android:name="com.serenitysystems.livable.ui.todo.ToDoFragment"
         android:label="@string/menu_todo"
         tools:layout="@layout/fragment_todo" />
 
+    <!-- Shopping List Fragment -->
     <fragment
         android:id="@+id/nav_einkaufsliste"
         android:name="com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteFragment"
         android:label="@string/menu_einkaufsliste"
         tools:layout="@layout/fragment_einkaufsliste" />
 
+    <!-- Household Book Fragment -->
     <fragment
         android:id="@+id/nav_haushaltsbuch"
         android:name="com.serenitysystems.livable.ui.haushaltsbuch.HaushaltsbuchFragment"
         android:label="@string/menu_haushaltsbuch"
         tools:layout="@layout/fragment_haushaltsbuch" />
 
+    <!-- WG Registration Fragment -->
     <fragment
         android:id="@+id/nav_wg_registrierung"
         android:name="com.serenitysystems.livable.ui.wgregister.WgRegistrierungFragment"
@@ -49,33 +54,70 @@
         android:label="Einstellungen"
         tools:layout="@layout/fragment_settings">
 
-        <!-- Action for WG-Info Card -->
+        <!-- Navigation to WG Ansicht -->
         <action
             android:id="@+id/action_settingsFragment_to_wgAnsichtFragment"
             app:destination="@id/nav_wgansichtFragment" />
+
+        <action
+            android:id="@+id/action_settingsFragment_to_profilverwaltenFragment"
+            app:destination="@id/nav_profilverwaltenFragment" />
+
     </fragment>
 
-    <!-- Profilverwalten Fragment -->
+    <!-- Profile Management Fragment -->
     <fragment
         android:id="@+id/nav_profilverwaltenFragment"
         android:name="com.serenitysystems.livable.ui.userprofil.ProfilverwaltenFragment"
         android:label="Profil Verwalten"
         tools:layout="@layout/fragment_profilverwalten" />
 
-
-
+    <!-- WG Ansicht Fragment -->
     <fragment
         android:id="@+id/nav_wgansichtFragment"
         android:name="com.serenitysystems.livable.ui.userprofil.WgAnsichtFragment"
         android:label="WG Ansicht"
-        tools:layout="@layout/fragment_wg_ansicht" />
+        tools:layout="@layout/fragment_wg_ansicht">
 
-    <!-- Existing Actions -->
-    <action
-        android:id="@+id/action_homePageFragment_to_settingsActivity"
-        app:destination="@id/nav_settings" />
-    <action
-        android:id="@+id/action_settingsFragment_to_profilverwaltenFragment"
-        app:destination="@id/nav_profilverwaltenFragment" />
+        <!-- Navigation to WG Edit Fragment -->
+        <action
+            android:id="@+id/action_wgAnsichtFragment_to_wgEditFragment"
+            app:destination="@id/nav_wgEditFragment">
+            <argument
+                android:name="wgAddress"
+                app:argType="string" />
+            <argument
+                android:name="roomCount"
+                app:argType="string" />
+            <argument
+                android:name="wgSize"
+                app:argType="string" />
+        </action>
+
+    </fragment>
+
+    <!-- WG Edit Fragment -->
+
+    <fragment
+        android:id="@+id/nav_wgEditFragment"
+        android:name="com.serenitysystems.livable.ui.userprofil.WgEditFragment"
+        android:label="WG Bearbeiten"
+        tools:layout="@layout/fragment_wg_edit">
+
+        <argument
+            android:name="wgAddress"
+            app:argType="string"
+            android:defaultValue="" />
+
+        <argument
+            android:name="roomCount"
+            app:argType="string"
+            android:defaultValue="" />
+
+        <argument
+            android:name="wgSize"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 
 </navigation>

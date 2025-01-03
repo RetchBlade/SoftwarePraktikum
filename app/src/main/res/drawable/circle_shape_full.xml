@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Hintergrundfarbe des Kreises -->
+    <solid android:color="@color/white" />
+
+
+    <!-- Größe des Schattenradius -->
+    <size
+        android:width="60dp"
+        android:height="60dp" />
+</shape>

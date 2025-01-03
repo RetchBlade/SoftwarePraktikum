@@ -61,9 +61,6 @@
 
 
 
-
-
-
     <string name="task_options">Aufgabenoptionen</string>
     <string name="task_not_due">Diese Aufgabe kann nur am Fälligkeitsdatum als erledigt markiert werden.</string>
     <string name="delete_task_confirmation">Möchten Sie diese Aufgabe wirklich löschen?</string>
@@ -128,6 +125,19 @@
         <item>Samstag</item>
         <item>Sonntag</item>
     </string-array>
+
+    <!-- Strings für WG-Ansicht -->
+
+    <!-- Titel -->
+    <string name="title_wg_overview">WG Übersicht</string>
+
+    <!-- Labels -->
+    <string name="label_wg_address">WG Adresse:</string>
+    <string name="editButton">bearbeiten</string>
+
+    <string name="label_room_count">Anzahl Zimmer:</string>
+    <string name="label_wg_size">Größe:</string>
+    <string name="label_roommates">Bewohner</string>
 
 
     <!-- Weitere Strings für das Haushaltsbuch -->

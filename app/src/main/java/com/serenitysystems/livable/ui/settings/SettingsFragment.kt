@@ -32,11 +32,17 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialisiere die Benutzeroberfläche
+        setupUserProfile()
+        setupClickListeners()
+    }
+
+    private fun setupUserProfile() {
         userPic = binding.profileImage
-        // Beobachten der Benutzerdaten
-        // Das Benutzerbild vom ViewModel beobachten
+
+        // Beobachte das Benutzerprofilbild
         viewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
-            if (profileImageUrl != null) {
+            if (!profileImageUrl.isNullOrEmpty()) {
                 // Bild mit Glide laden
                 Glide.with(this)
                     .load(profileImageUrl)
@@ -47,17 +53,20 @@ class SettingsFragment : Fragment() {
                 userPic.setImageResource(R.drawable.pp) // Platzhalter setzen, falls kein Bild vorhanden ist
             }
         })
+    }
 
-        // Set up the listener for the "WG-Info" card click
+    private fun setupClickListeners() {
+        // Navigiere zur WG-Ansicht
         binding.wgInfoCard.setOnClickListener {
-            // Navigate to the WG Ansicht fragment
             findNavController().navigate(R.id.action_settingsFragment_to_wgAnsichtFragment)
         }
 
-        // You can also add other click listeners or functionality here for the other buttons
+        // Navigiere zur Profilverwaltung
         binding.editProfileButton.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_profilverwaltenFragment)
         }
+
+        // Weitere Navigationen können hier hinzugefügt werden
     }
 
     override fun onDestroyView() {
