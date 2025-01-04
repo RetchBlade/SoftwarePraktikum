@@ -1,12 +1,20 @@
-package com.serenitysystems.livable.ui.userprofil
+package com.serenitysystems.livable.ui.wgansicht
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class WgEditFragment : Fragment() {
 
@@ -16,6 +24,7 @@ class WgEditFragment : Fragment() {
     private lateinit var saveButton: Button
 
     private val sharedViewModel: WgSharedViewModel by activityViewModels()
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,15 +52,14 @@ class WgEditFragment : Fragment() {
     }
 
     private fun populateFields() {
-        // Daten aus dem SharedViewModel einfügen
         sharedViewModel.wgAddress.observe(viewLifecycleOwner) {
             wgAddressEdit.setText(it)
         }
         sharedViewModel.roomCount.observe(viewLifecycleOwner) {
             roomCountEdit.setText(it)
         }
-        sharedViewModel.wgSize.observe(viewLifecycleOwner) {
-            wgSizeEdit.setText(it)
+        sharedViewModel.wgSize.observe(viewLifecycleOwner) { size ->
+            wgSizeEdit.setText("$size")
         }
     }
 
@@ -65,11 +73,31 @@ class WgEditFragment : Fragment() {
             return
         }
 
-        // Änderungen im SharedViewModel speichern
-        sharedViewModel.setWgDetails(newAddress, newRoomCount, newWgSize)
-        Toast.makeText(requireContext(), "Änderungen gespeichert!", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            try {
+                saveToFirestore(newAddress, newRoomCount, newWgSize)
+                sharedViewModel.setWgDetails(newAddress, newRoomCount, newWgSize)
+                Toast.makeText(requireContext(), "Änderungen gespeichert!", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Fehler beim Speichern der Änderungen!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
-        // Zurück zur Ansicht navigieren
-        findNavController().popBackStack()
+    private suspend fun saveToFirestore(address: String, rooms: String, size: String) {
+        val wgId = sharedViewModel.wgId.value ?: throw Exception("WG ID nicht verfügbar!")
+        val wgData = mapOf(
+            "adresse" to address,
+            "zimmerAnzahl" to rooms,
+            "groesse" to size
+        )
+
+        withContext(Dispatchers.IO) {
+            firestore.collection("WGs")
+                .document(wgId)
+                .update(wgData)
+                .await()
+        }
     }
 }

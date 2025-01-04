@@ -17,9 +17,11 @@ class DayPagerAdapter(
 
         init {
             itemView.setOnClickListener {
-                val bindingAdapterPosition = 0
-                val day = days[bindingAdapterPosition] // Updated to use `bindingAdapterPosition` to avoid potential issues
-                onDaySelected(day)
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val day = days[position]
+                    onDaySelected(day)
+                }
             }
         }
     }
@@ -28,10 +30,10 @@ class DayPagerAdapter(
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.wochenplan_day_header, parent, false)
 
-        // Ensure the width and height are set to match_parent to avoid layout issues in ViewPager2
+        // Ensure the layout size is correctly set (if necessary)
         view.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
         return DayViewHolder(view)
@@ -43,3 +45,4 @@ class DayPagerAdapter(
 
     override fun getItemCount(): Int = days.size
 }
+

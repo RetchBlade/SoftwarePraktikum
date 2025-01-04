@@ -100,7 +100,7 @@
 
     <fragment
         android:id="@+id/nav_wgEditFragment"
-        android:name="com.serenitysystems.livable.ui.userprofil.WgEditFragment"
+        android:name="com.serenitysystems.livable.ui.wgansicht.WgEditFragment"
         android:label="WG Bearbeiten"
         tools:layout="@layout/fragment_wg_edit">
 

@@ -37,7 +37,6 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-
         </LinearLayout>
 
         <EditText
@@ -76,7 +75,31 @@
             android:padding="12dp"
             android:textSize="16sp" />
 
+        <!-- Toggle for Assignee -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Ohne Zuständiger"
+                android:textColor="@color/own_text_Farbe"
+                android:textSize="16sp" />
+
+            <Switch
+                android:id="@+id/asigneeToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Assignee Section -->
         <TextView
+            android:id="@+id/asigneeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"

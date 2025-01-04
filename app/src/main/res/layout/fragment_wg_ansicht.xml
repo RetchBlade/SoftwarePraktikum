@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Beispielstraße 123"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -82,7 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="3"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -107,7 +107,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="85 m²"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -118,9 +118,10 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="end"
-                    android:layout_marginTop="-120dp"
-                    android:src="@drawable/ic_more_vert"
-                    android:contentDescription="Bearbeiten" />
+                    android:layout_marginTop="-16dp"
+                    android:visibility="gone"
+                    android:contentDescription="Bearbeiten"
+                    android:src="@drawable/ic_more_vert" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -139,7 +140,7 @@
         <LinearLayout
             android:id="@+id/bewohnerContainer"
             android:layout_width="match_parent"
-            android:layout_height="426dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical" />
 
     </LinearLayout>

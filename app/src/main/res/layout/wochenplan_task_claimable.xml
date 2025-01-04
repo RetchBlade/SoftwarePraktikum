@@ -1,9 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/wochenplan_rounded_corners"
+    android:background="@drawable/wochenplan_claimable"
     android:padding="16dp"
     android:layout_marginTop="16dp"
     android:layout_gravity="center_horizontal"
@@ -20,21 +19,32 @@
         android:padding="8dp"
         android:src="@drawable/ic_settings" />
 
-    <!-- Claim Button -->
-    <Button
-        android:id="@+id/claimButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+    <!-- Claim Icon -->
+    <ImageView
+        android:id="@+id/claimIcon"
+        android:layout_width="55dp"
+        android:layout_height="77dp"
         android:layout_below="@id/taskOptions"
-        android:text="Claim"
-        android:visibility="gone"
-        android:backgroundTint="@color/primaryColor"
-        android:textColor="@android:color/white"
-        android:padding="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="-7dp"
+        android:contentDescription="Übernehmen"
         android:elevation="4dp"
+        android:src="@drawable/ic_claim"
         tools:ignore="HardcodedText" />
+
+    <!-- Claim Indicator (Text under claim icon) -->
+    <TextView
+        android:id="@+id/claimIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="105dp"
+        android:text="Zu Übernehmen !"
+        android:textColor="@color/green"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
     <!-- Task Description Section -->
     <LinearLayout
@@ -94,20 +104,6 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Claim Indicator (when unassigned) -->
-    <TextView
-        android:id="@+id/claimIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/taskDescriptionLayout"
-        android:layout_marginTop="60dp"
-        android:layout_alignStart="@id/taskPoints"
-        android:text="Unassigned - Claimable"
-        android:textColor="@color/primaryColor"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:visibility="gone" />
-
     <!-- Task Assignee Avatar - Bottom Right Corner -->
     <ImageView
         android:id="@+id/taskAssigneeAvatar"
@@ -119,7 +115,8 @@
         android:contentDescription="Avatar"
         android:elevation="6dp"
         android:padding="3dp"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo"
+        android:visibility="gone" />
 
     <!-- Task Assignee Text - Below Avatar -->
     <TextView
@@ -135,5 +132,6 @@
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="#FF5E6162"
         android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 </RelativeLayout>

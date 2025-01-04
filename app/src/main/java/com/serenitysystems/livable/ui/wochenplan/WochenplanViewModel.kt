@@ -312,7 +312,7 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         taskListener?.remove()
     }
 
-    private fun fetchUserToken(action: (UserToken?) -> Unit) {
+    fun fetchUserToken(action: (UserToken?) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
                 action(userToken)
@@ -325,6 +325,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             onAssigneesLoaded(_assignees.value!!)
             return
         }
+
+
 
         fetchUserToken { token ->
             token?.let { userToken ->
@@ -365,6 +367,29 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+
+    fun claimTask(task: DynamicTask, userEmail: String, userName: String) {
+        fetchUserToken { token ->
+            token?.let {
+                db.collection("WGs")
+                    .document(it.email) // Get wgId here
+                    .collection("Wochenplan")
+                    .document(task.id)
+                    .update(
+                        "assignee", userName,
+                        "assigneeEmail", userEmail
+                    )
+                    .addOnSuccessListener {
+                        Log.d("WochenplanViewModel", "Task claimed successfully.")
+                        loadTasks() // Refresh data
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("WochenplanViewModel", "Failed to claim task", e)
+                    }
+            }
+        }
+    }
+
 }
 
 
