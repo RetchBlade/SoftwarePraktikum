@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.wochenplan
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.graphics.Paint
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.view.animation.BounceInterpolator
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -30,6 +32,7 @@ class WochenplanFragment : Fragment() {
     private lateinit var wochenplanViewModel: WochenplanViewModel
     private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("de", "DE"))
     private val db = FirebaseFirestore.getInstance()
+    private var isTabSwitching = false // Flag für Animation
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -90,14 +93,15 @@ class WochenplanFragment : Fragment() {
                 addTab(tab)
             }
 
-            // Default selection
+            // Standardmäßig den mittleren Tab auswählen
             getTabAt(1)?.select()
             weekTitle.text = "Aktueller Plan: Diese Woche"
             loadThisWeek()
 
-            // Update title on tab selection
+            // Tab-Auswahl Listener
             addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
+                    isTabSwitching = true // Setze Flag für Animation
                     val newText = when (tab.position) {
                         0 -> {
                             loadLastWeek()
@@ -296,16 +300,18 @@ class WochenplanFragment : Fragment() {
         } ?: emptyList()
         displayTasks(dayTasks)
     }
+
+
     private fun displayTasks(tasks: List<DynamicTask>) {
         val layout = binding.taskLayout
         layout.removeAllViews()
 
-        // Group tasks by date
+        // Tasks nach Datum gruppieren
         val groupedTasks = tasks.groupBy { it.date }
 
-        // Iterate through each group of tasks by date
+        // Iteriere über jede Gruppe von Tasks basierend auf dem Datum
         for ((date, tasksForDate) in groupedTasks) {
-            // Add date header
+            // Datum-Header hinzufügen
             val dateHeaderView = TextView(requireContext())
             dateHeaderView.text = formatDateHeader(date)
             dateHeaderView.setTextColor(
@@ -314,7 +320,7 @@ class WochenplanFragment : Fragment() {
             dateHeaderView.setPadding(16, 16, 16, 8)
             layout.addView(dateHeaderView)
 
-            // Iterate through each task in the group
+            // Iteriere durch jeden Task in der Gruppe
             for (task in tasksForDate) {
                 val taskView = if (task.assignee == "Unassigned") {
                     LayoutInflater.from(requireContext())
@@ -332,28 +338,27 @@ class WochenplanFragment : Fragment() {
                 val claimIcon = taskView.findViewById<ImageView>(R.id.claimIcon)
                 val taskOptionsImageView = taskView.findViewById<ImageView>(R.id.taskOptions)
 
-                // Set task details
+                // Task-Details setzen
                 descriptionTextView.text = task.description
                 priorityTextView.text = task.priority
                 pointsTextView.text = "${task.points} Punkte"
 
                 if (task.assignee == "Unassigned") {
-                    // Task is claimable
+                    // Task ist übernehmbar
                     claimIcon?.visibility = View.VISIBLE
                     assigneeTextView.visibility = View.GONE
                     assigneeAvatarImageView.visibility = View.GONE
-
                     claimIcon?.setOnClickListener {
                         assignTaskToCurrentUser(task)
                     }
                 } else {
-                    // Task is already assigned
+                    // Task ist bereits zugewiesen
                     claimIcon?.visibility = View.GONE
                     assigneeTextView.visibility = View.VISIBLE
                     assigneeAvatarImageView.visibility = View.VISIBLE
                     assigneeTextView.text = task.assignee
 
-                    // Load avatar using Glide
+                    // Lade Avatar mit Glide
                     task.assigneeEmail?.let { email ->
                         db.collection("users").document(email)
                             .get()
@@ -371,8 +376,7 @@ class WochenplanFragment : Fragment() {
                     }
                 }
 
-
-                // Analyze task date for overdue handling
+                // Überfälligkeit des Tasks analysieren
                 val taskDate = Calendar.getInstance()
                 try {
                     taskDate.time = dateFormat.parse(task.date)
@@ -404,7 +408,7 @@ class WochenplanFragment : Fragment() {
                     e.printStackTrace()
                 }
 
-                // Set completed task appearance
+                // Darstellung für abgeschlossene Tasks setzen
                 if (task.isDone) {
                     taskView.background = ContextCompat.getDrawable(
                         requireContext(),
@@ -414,7 +418,7 @@ class WochenplanFragment : Fragment() {
                         descriptionTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
 
-                // Set priority colors for non-overdue tasks
+                // Farben basierend auf der Priorität setzen (wenn nicht überfällig)
                 if (!task.priority.startsWith("Überfällig")) {
                     when (task.priority) {
                         "Hoch" -> priorityTextView.setTextColor(
@@ -429,32 +433,48 @@ class WochenplanFragment : Fragment() {
                     }
                 }
 
-                // Handle task options click
+                // Optionen für den Task behandeln
                 taskOptionsImageView.setOnClickListener {
                     showTaskOptions(task)
                 }
 
                 layout.addView(taskView)
+
+                // Fade-In Animation nur bei Tabwechsel
+                if (isTabSwitching) {
+                    val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in)
+                    taskView.startAnimation(animation)
+                }
             }
         }
+        isTabSwitching = false // Animation nur für Tabwechsel
     }
+
+
+
+
 
 
     private fun assignTaskToCurrentUser(task: DynamicTask) {
         wochenplanViewModel.fetchUserToken { token ->
             token?.let { userToken ->
-                val userName = userToken.nickname // Assuming your UserToken has a name field
+                val userName = userToken.nickname
                 val userEmail = userToken.email
 
-                // Update task with current user's details
                 task.assignee = userName
                 task.assigneeEmail = userEmail
 
-                // Save the updated task to Firestore
+                val taskView = findTaskView(task)
+                taskView?.let {
+                    val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.task_update)
+                    it.startAnimation(animation)
+                }
+
                 wochenplanViewModel.updateTask(task)
             }
         }
     }
+
 
 
     private fun formatDateHeader(date: String): String {
@@ -474,26 +494,28 @@ class WochenplanFragment : Fragment() {
     }
 
     private fun showTaskOptions(task: DynamicTask) {
-        val options = if (task.isDone) {
-            arrayOf("Nicht erledigt", "Bearbeiten", "Löschen")
-        } else {
-            arrayOf("Erledigt", "Bearbeiten", "Löschen")
+        // Dynamisch die Optionen basierend auf dem Status der Aufgabe erstellen
+        val options = mutableListOf<String>()
+
+        if (task.assignee != "Unassigned") {
+            if (task.isDone) {
+                options.add("Nicht erledigt")
+            } else {
+                options.add("Erledigt")
+            }
         }
+
+        options.add("Bearbeiten")
+        options.add("Löschen")
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.task_options)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> {
-                        if (task.isDone) {
-                            markTaskAsNotDone(task)
-                        } else {
-                            markTaskAsDone(task)
-                        }
-                    }
-
-                    1 -> showTaskDialog(task)
-                    2 -> deleteTask(task)
+            .setItems(options.toTypedArray()) { _, which ->
+                when (options[which]) {
+                    "Nicht erledigt" -> markTaskAsNotDone(task)
+                    "Erledigt" -> markTaskAsDone(task)
+                    "Bearbeiten" -> showTaskDialog(task)
+                    "Löschen" -> deleteTask(task)
                 }
             }
             .create()
@@ -502,20 +524,49 @@ class WochenplanFragment : Fragment() {
     }
 
 
+    private fun findTaskView(task: DynamicTask): View? {
+        val layout = binding.taskLayout
+        for (i in 0 until layout.childCount) {
+            val childView = layout.getChildAt(i)
+            val descriptionTextView = childView?.findViewById<TextView>(R.id.taskDescription)
+            if (descriptionTextView != null && descriptionTextView.text == task.description) {
+                return childView
+            }
+        }
+        return null // Return null if no matching task view is found
+    }
+
+
+
     private fun markTaskAsDone(task: DynamicTask) {
         val updatedTask = task.copy(isDone = true)
+
+        // Find the corresponding task view
+        val taskView = findTaskView(task)
+        taskView?.let {
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.task_update)
+            it.startAnimation(animation)
+        }
+
         // Update the task in the ViewModel
         wochenplanViewModel.updateTask(updatedTask)
         updateTabs()
     }
 
+
     private fun markTaskAsNotDone(task: DynamicTask) {
-        task.copy().apply {
-            isDone = false
-            wochenplanViewModel.updateTask(this)
+        val updatedTask = task.copy(isDone = false)
+
+        val taskView = findTaskView(task)
+        taskView?.let {
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.task_update)
+            it.startAnimation(animation)
         }
+
+        wochenplanViewModel.updateTask(updatedTask)
         updateTabs()
     }
+
 
     private fun deleteTask(task: DynamicTask) {
         AlertDialog.Builder(requireContext())
@@ -561,6 +612,7 @@ class WochenplanFragment : Fragment() {
             else -> false
         }
     }
+    @SuppressLint("MissingInflatedId")
     private fun showTaskDialog(existingTask: DynamicTask? = null) {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
@@ -573,6 +625,7 @@ class WochenplanFragment : Fragment() {
         val taskAssigneeSpinner: Spinner = dialogView.findViewById(R.id.taskAssigneeSpinner)
         val assigneeToggle: Switch = dialogView.findViewById(R.id.asigneeToggle)
         val assigneeLabel: TextView = dialogView.findViewById(R.id.asigneeLabel)
+        val ohneassigneeLabel: TextView = dialogView.findViewById(R.id.ohneAssignee)
         val repeatToggle: Switch = dialogView.findViewById(R.id.repeatingTaskToggle)
         val repeatFrequencyLayout: View = dialogView.findViewById(R.id.repeatingTaskDetails)
         val repeatFrequencySpinner: Spinner = dialogView.findViewById(R.id.repeatFrequencySpinner)
@@ -590,7 +643,6 @@ class WochenplanFragment : Fragment() {
                 resources.getStringArray(R.array.prio_liste).indexOf(it.priority)
             )
             taskPoints.setText(it.points.toString())
-            assigneeToggle.isChecked = it.assignee == null
             repeatToggle.isChecked = it.isRepeating
             repeatFrequencyLayout.visibility = if (it.isRepeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
@@ -599,6 +651,15 @@ class WochenplanFragment : Fragment() {
             repeatDaySpinner.setSelection(
                 resources.getStringArray(R.array.days_of_week).indexOf(it.repeatDay ?: "")
             )
+
+            // If task is "Überfällig", hide the "Ohne Zuständiger" toggle and label
+            if (it.priority.startsWith("Überfällig")) {
+                assigneeToggle.visibility = View.GONE
+              ohneassigneeLabel.visibility = View.GONE
+                taskAssigneeSpinner.visibility = View.VISIBLE
+            } else {
+                assigneeToggle.isChecked = it.assignee == "Unassigned"
+            }
         }
 
         // Load assignees and populate the spinner
@@ -705,7 +766,6 @@ class WochenplanFragment : Fragment() {
                     repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
                 )
 
-
                 if (existingTask == null) {
                     wochenplanViewModel.addTask(newTask)
                 } else {
@@ -721,6 +781,10 @@ class WochenplanFragment : Fragment() {
     // stellt sicher dass bei jeder navigation in der app, der zuständiger wird observed und updated
     override fun onResume() {
         super.onResume()
+        val layout = binding.taskLayout
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in)
+        layout?.startAnimation(animation)
+
         wochenplanViewModel.loadAssignees {
         }
     }
