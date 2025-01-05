@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.wgansicht.WgSharedViewModel
@@ -23,8 +24,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class WgAnsichtFragment : Fragment() {
-    private val sharedViewModel: WgSharedViewModel by activityViewModels()
 
+    private val sharedViewModel: WgSharedViewModel by activityViewModels()
     private lateinit var wgAddressText: TextView
     private lateinit var roomCountText: TextView
     private lateinit var wgSizeText: TextView
@@ -43,24 +44,20 @@ class WgAnsichtFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initializeViews(view)
-
-        // Observe LiveData from the ViewModel to update UI
         observeWgDetails()
 
-        // Load WG details and check user role
         lifecycleScope.launch {
-            val userEmail = fetchUserEmailFromFirestore()
-            sharedViewModel.loadWgDetails(userEmail)
-
-            // Check if the user is a Wg-Leiter
-            checkAndSetLeiterStatus(userEmail)
+            try {
+                val userEmail = fetchUserEmailFromFirestore()
+                sharedViewModel.loadWgDetails(userEmail)
+                checkAndSetLeiterStatus(userEmail)
+            } catch (e: Exception) {
+                showError(view, "Fehler beim Laden der Daten: ${e.message}")
+            }
         }
 
-        editButton.setOnClickListener {
-            navigateToEditFragment()
-        }
+        editButton.setOnClickListener { navigateToEditFragment() }
     }
 
     private fun initializeViews(view: View) {
@@ -70,6 +67,7 @@ class WgAnsichtFragment : Fragment() {
         editButton = view.findViewById(R.id.editButton)
         bewohnerContainer = view.findViewById(R.id.bewohnerContainer)
     }
+
     private fun observeWgDetails() {
         sharedViewModel.wgAddress.observe(viewLifecycleOwner) { address ->
             wgAddressText.text = address
@@ -80,82 +78,80 @@ class WgAnsichtFragment : Fragment() {
         }
 
         sharedViewModel.wgSize.observe(viewLifecycleOwner) { size ->
-            wgSizeText.text = "$size m²" // Append "m²" to the size value
+            wgSizeText.text = "$size m²"
         }
 
-        sharedViewModel.bewohnerList.observe(viewLifecycleOwner) { bewohnerList ->
-            populateRoommateList(bewohnerList)
+        sharedViewModel.bewohnerList.observe(viewLifecycleOwner) { newBewohnerList ->
+            updateRoommateList(newBewohnerList)
         }
     }
-
-
-    private fun populateRoommateList(roommates: List<Pair<String, String>>) {
-        bewohnerContainer.removeAllViews()
+    private fun updateRoommateList(newRoommates: List<Pair<String, String>>) {
         val inflater = LayoutInflater.from(context)
-        for ((name, email) in roommates) {
+        bewohnerContainer.removeAllViews() // Clear the container
+
+        newRoommates.forEach { (name, email) ->
             val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
-            val profilePicture: ImageView = roommateView.findViewById(R.id.profilePicture)
-            val profileName: TextView = roommateView.findViewById(R.id.profileName)
+            val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
+            val profileName = roommateView.findViewById<TextView>(R.id.profileName)
 
             profileName.text = name
 
-            // Fetch and load profile image
+            // Fetch and update the profile picture
             fetchUserProfileImage(email) { profileImageUrl ->
-                if (!profileImageUrl.isNullOrEmpty()) {
-                    Glide.with(requireContext())
-                        .load(profileImageUrl)
-                        .circleCrop()
-                        .into(profilePicture)
-                } else {
-                    profilePicture.setImageResource(R.drawable.pp_placeholder) // Default placeholder
-                }
+                Glide.with(requireContext())
+                    .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                    .circleCrop()
+                    .into(profilePicture)
             }
 
             bewohnerContainer.addView(roommateView)
         }
     }
 
-    private suspend fun fetchUserEmailFromFirestore(): String {
-        return withContext(Dispatchers.IO) {
-            try {
-                val userPreferences = db.collection("users").get().await()
-                val currentUser = userPreferences.documents.firstOrNull()
-                val email = currentUser?.getString("email")
-                Log.d("WgAnsichtFragment", "Fetched user email: $email") // Debug log
-                email ?: throw Exception("User email not found.")
-            } catch (e: Exception) {
-                Log.e("WgAnsichtFragment", "Failed to fetch user email", e)
-                throw e
-            }
+
+    private fun addRoommate(roommate: Pair<String, String>) {
+        val inflater = LayoutInflater.from(context)
+        val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
+        updateRoommateView(roommateView, roommate)
+        bewohnerContainer.addView(roommateView)
+    }
+
+    private fun updateRoommateView(view: View, roommate: Pair<String, String>) {
+        val profilePicture = view.findViewById<ImageView>(R.id.profilePicture)
+        val profileName = view.findViewById<TextView>(R.id.profileName)
+        profileName.text = roommate.first
+
+        fetchUserProfileImage(roommate.second) { profileImageUrl ->
+            Glide.with(requireContext())
+                .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                .circleCrop()
+                .into(profilePicture)
         }
     }
 
+    private suspend fun fetchUserEmailFromFirestore(): String {
+        return withContext(Dispatchers.IO) {
+            val userPreferences = db.collection("users").get().await()
+            val currentUser = userPreferences.documents.firstOrNull()
+            currentUser?.getString("email")
+                ?: throw Exception("User email not found.")
+        }
+    }
 
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
         db.collection("users").document(email)
             .get()
-            .addOnSuccessListener { document ->
-                val profileImageUrl = document.getString("profileImageUrl")
-                callback(profileImageUrl)
-            }
-            .addOnFailureListener {
-                callback(null)
-            }
+            .addOnSuccessListener { callback(it.getString("profileImageUrl")) }
+            .addOnFailureListener { callback(null) }
     }
 
     private suspend fun checkAndSetLeiterStatus(userEmail: String) {
         withContext(Dispatchers.IO) {
-            try {
-                val userDoc = db.collection("users").document(userEmail).get().await()
-                val wgRole = userDoc.getString("wgRole")
-                isLeiter = (wgRole == "Wg-Leiter")
-                withContext(Dispatchers.Main) {
-                    editButton.visibility = if (isLeiter) View.VISIBLE else View.GONE
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    editButton.visibility = View.GONE
-                }
+            val userDoc = db.collection("users").document(userEmail).get().await()
+            val wgRole = userDoc.getString("wgRole")
+            isLeiter = (wgRole == "Wg-Leiter")
+            withContext(Dispatchers.Main) {
+                editButton.visibility = if (isLeiter) View.VISIBLE else View.GONE
             }
         }
     }
@@ -167,5 +163,25 @@ class WgAnsichtFragment : Fragment() {
             wgSizeText.text.toString()
         )
         findNavController().navigate(R.id.action_wgAnsichtFragment_to_wgEditFragment)
+    }
+
+    private fun showError(view: View, message: String) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    class RoommateDiffCallback(
+        private val oldList: List<Pair<String, String>>,
+        private val newList: List<Pair<String, String>>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].second == newList[newItemPosition].second
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }

@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.R
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ class WgEditFragment : Fragment() {
     private lateinit var roomCountEdit: EditText
     private lateinit var wgSizeEdit: EditText
     private lateinit var saveButton: Button
+    private lateinit var bewohnerContainer: LinearLayout
 
     private val sharedViewModel: WgSharedViewModel by activityViewModels()
     private val firestore = FirebaseFirestore.getInstance()
@@ -35,12 +38,12 @@ class WgEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initializeViews(view)
         populateFields()
+        populateRoommateList(isEditMode = true)
 
         saveButton.setOnClickListener {
-            saveChanges()
+            saveChanges(view)
         }
     }
 
@@ -49,6 +52,7 @@ class WgEditFragment : Fragment() {
         roomCountEdit = view.findViewById(R.id.roomCountEdit)
         wgSizeEdit = view.findViewById(R.id.wgSizeEdit)
         saveButton = view.findViewById(R.id.saveButton)
+        bewohnerContainer = view.findViewById(R.id.bewohnerContainer)
     }
 
     private fun populateFields() {
@@ -59,17 +63,79 @@ class WgEditFragment : Fragment() {
             roomCountEdit.setText(it)
         }
         sharedViewModel.wgSize.observe(viewLifecycleOwner) { size ->
-            wgSizeEdit.setText("$size")
+            wgSizeEdit.setText(size.replace(" m²", ""))
         }
     }
 
-    private fun saveChanges() {
+    private fun populateRoommateList(isEditMode: Boolean) {
+        val roommates = sharedViewModel.bewohnerList.value.orEmpty()
+        bewohnerContainer.removeAllViews()
+        val inflater = LayoutInflater.from(context)
+        roommates.forEach { (name, email) ->
+            val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
+            val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
+            val profileName = roommateView.findViewById<TextView>(R.id.profileName)
+            val removeButton = roommateView.findViewById<ImageView>(R.id.removeRoommateButton)
+
+            profileName.text = name
+
+            fetchUserProfileImage(email) { profileImageUrl ->
+                Glide.with(requireContext())
+                    .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                    .circleCrop()
+                    .into(profilePicture)
+            }
+
+            // Set visibility of the remove button based on edit mode
+            removeButton.visibility = if (isEditMode) View.VISIBLE else View.GONE
+            removeButton.setOnClickListener {
+                showRemoveRoommateDialog(email)
+            }
+
+            bewohnerContainer.addView(roommateView)
+        }
+    }
+
+    private fun showRemoveRoommateDialog(email: String) {
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Mitbewohner entfernen")
+            .setMessage("Sind Sie sicher, dass Sie diesen Mitbewohner entfernen möchten?")
+            .setPositiveButton("Ja") { _, _ ->
+                removeRoommate(email) // Call updated remove method
+            }
+            .setNegativeButton("Abbrechen", null)
+            .create()
+
+        dialog.show()
+    }
+
+    private fun removeRoommate(email: String) {
+        lifecycleScope.launch {
+            try {
+                val wgId = sharedViewModel.wgId.value ?: throw Exception("WG ID nicht verfügbar!")
+                val currentRoommates = sharedViewModel.bewohnerList.value?.map { it.second }?.toMutableList()
+                currentRoommates?.remove(email)
+
+                firestore.collection("WGs")
+                    .document(wgId)
+                    .update("mitgliederEmails", currentRoommates)
+                    .await()
+
+                sharedViewModel.loadWgDetails(email) // Reload details to update UI
+                Snackbar.make(requireView(), "Mitbewohner entfernt!", Snackbar.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Snackbar.make(requireView(), "Fehler beim Entfernen des Mitbewohners: ${e.message}", Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun saveChanges(view: View) {
         val newAddress = wgAddressEdit.text.toString().trim()
         val newRoomCount = roomCountEdit.text.toString().trim()
         val newWgSize = wgSizeEdit.text.toString().trim()
 
         if (newAddress.isEmpty() || newRoomCount.isEmpty() || newWgSize.isEmpty()) {
-            Toast.makeText(requireContext(), "Alle Felder ausfüllen!", Toast.LENGTH_SHORT).show()
+            Snackbar.make(view, "Alle Felder ausfüllen!", Snackbar.LENGTH_LONG).show()
             return
         }
 
@@ -77,10 +143,10 @@ class WgEditFragment : Fragment() {
             try {
                 saveToFirestore(newAddress, newRoomCount, newWgSize)
                 sharedViewModel.setWgDetails(newAddress, newRoomCount, newWgSize)
-                Toast.makeText(requireContext(), "Änderungen gespeichert!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(view, "Änderungen gespeichert!", Snackbar.LENGTH_LONG).show()
                 findNavController().popBackStack()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Fehler beim Speichern der Änderungen!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(view, "Fehler beim Speichern der Änderungen!", Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -99,5 +165,12 @@ class WgEditFragment : Fragment() {
                 .update(wgData)
                 .await()
         }
+    }
+
+    private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
+        firestore.collection("users").document(email)
+            .get()
+            .addOnSuccessListener { callback(it.getString("profileImageUrl")) }
+            .addOnFailureListener { callback(null) }
     }
 }

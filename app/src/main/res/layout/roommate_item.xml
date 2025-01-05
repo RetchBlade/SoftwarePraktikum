@@ -5,6 +5,7 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
+    <!-- Profile Picture -->
     <ImageView
         android:id="@+id/profilePicture"
         android:layout_width="60dp"
@@ -14,14 +15,28 @@
         android:src="@drawable/pp_placeholder"
         android:background="@drawable/circle_shape_full"
         android:clipToOutline="true" />
+
+    <!-- Profile Name -->
     <TextView
         android:id="@+id/profileName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="24dp"
-
-        android:layout_height="wrap_content"
         android:text="Mitbewohner 1"
         android:textColor="@color/own_text_Farbe"
         android:textSize="16sp" />
+
+    <!-- Remove Button -->
+    <ImageView
+        android:id="@+id/removeRoommateButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/ic_remove"
+        android:visibility="gone"
+        android:contentDescription="Remove Roommate"
+        />
 </LinearLayout>

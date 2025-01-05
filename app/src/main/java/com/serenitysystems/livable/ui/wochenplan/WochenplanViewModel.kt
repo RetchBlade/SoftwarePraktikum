@@ -50,48 +50,50 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
     private fun loadTasks() {
         fetchUserToken { token ->
             token?.let { userToken ->
-                if (userToken != null) {
-                    val userEmail = userToken.email
+                val userEmail = userToken.email
 
-                    // Hole die wgId aus der Sammlung "users" basierend auf der E-Mail
-                    db.collection("users")
-                        .document(userEmail)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            val wgId = document.getString("wgId")
-                            if (wgId != null) {
-                                // Hole die Tasks für die WG anhand der wgId
-                                taskListener = db.collection("WGs")
-                                    .document(wgId)
-                                    .collection("Wochenplan")
-                                    .addSnapshotListener { snapshot, e ->
-                                        if (e != null) {
-                                            Log.w("WochenplanViewModel", "Listen failed.", e)
-                                            return@addSnapshotListener
-                                        }
+                // Hole die wgId aus der Sammlung "users" basierend auf der E-Mail
+                db.collection("users")
+                    .document(userEmail)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            // Lösche alte Tasks, bevor die aktuellen Tasks geladen werden
+                            deleteOldTasks(wgId)
 
-                                        val tasksList = mutableListOf<DynamicTask>()
-                                        snapshot?.documents?.forEach { document ->
-                                            val task = document.toObject(DynamicTask::class.java)
-                                            if (task != null) {
-                                                tasksList.add(task)
-                                            }
-                                        }
-
-                                        // Aufteilen der Aufgaben in verschiedene Wochen
-                                        categorizeTasksByWeek(tasksList)
+                            // Hole die Tasks für die WG anhand der wgId
+                            taskListener = db.collection("WGs")
+                                .document(wgId)
+                                .collection("Wochenplan")
+                                .addSnapshotListener { snapshot, e ->
+                                    if (e != null) {
+                                        Log.w("WochenplanViewModel", "Listen failed.", e)
+                                        return@addSnapshotListener
                                     }
-                            } else {
-                                Log.e("WochenplanViewModel", "wgId not found for user: $userEmail")
-                            }
+
+                                    val tasksList = mutableListOf<DynamicTask>()
+                                    snapshot?.documents?.forEach { document ->
+                                        val task = document.toObject(DynamicTask::class.java)
+                                        if (task != null) {
+                                            tasksList.add(task)
+                                        }
+                                    }
+
+                                    // Aufteilen der Aufgaben in verschiedene Wochen
+                                    categorizeTasksByWeek(tasksList)
+                                }
+                        } else {
+                            Log.e("WochenplanViewModel", "wgId not found for user: $userEmail")
                         }
-                        .addOnFailureListener { e ->
-                            Log.e("WochenplanViewModel", "Error getting user data", e)
-                        }
-                }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("WochenplanViewModel", "Error getting user data", e)
+                    }
             }
         }
     }
+
 
     // Kategorisiert die Aufgaben in verschiedene Wochen
     private fun categorizeTasksByWeek(tasksList: List<DynamicTask>) {
@@ -305,6 +307,71 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+    private fun deleteOldTasks(wgId: String) {
+        val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
+        val calendar = Calendar.getInstance()
+
+        // Setze das Datum auf 15 Tage vor heute
+        calendar.add(Calendar.DAY_OF_YEAR, -15)
+        val fifteenDaysAgo = calendar.time
+
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+
+                // Hole die wgId aus der Sammlung "users" basierend auf der E-Mail
+                db.collection("users")
+                    .document(userEmail)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            // Greife auf die Tasksammlung der WG zu
+                            db.collection("WGs")
+                                .document(wgId)
+                                .collection("Wochenplan")
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    snapshot?.documents?.forEach { document ->
+                                        val taskDateStr = document.getString("date")
+                                        val taskDate = try {
+                                            dateFormat.parse(taskDateStr!!)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            null
+                                        }
+
+                                        // Prüfe, ob das Datum älter als 15 Tage ist
+                                        if (taskDate != null && taskDate.before(fifteenDaysAgo)) {
+                                            // Lösche den Task aus der Datenbank
+                                            db.collection("WGs")
+                                                .document(wgId)
+                                                .collection("Wochenplan")
+                                                .document(document.id)
+                                                .delete()
+                                                .addOnSuccessListener {
+                                                    Log.d("Wochenplan", "Task gelöscht: ${document.id}")
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("Wochenplan", "Fehler beim Löschen des Tasks", e)
+                                                }
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("Wochenplan", "Fehler beim Abrufen der Tasks", e)
+                                }
+                        } else {
+                            Log.e("Wochenplan", "wgId nicht gefunden für den Benutzer: $userEmail")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Wochenplan", "Fehler beim Abrufen der Benutzerdaten", e)
+                    }
+            }
+        }
+    }
+
 
     // Vergiss nicht, den Listener zu entfernen, wenn der ViewModel nicht mehr benötigt wird
     override fun onCleared() {

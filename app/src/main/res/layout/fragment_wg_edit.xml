@@ -68,6 +68,23 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Mitbewohner Liste -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Mitbewohner"
+            android:textColor="@color/own_text_Farbe"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Dynamischer Container für Mitbewohner -->
+        <LinearLayout
+            android:id="@+id/bewohnerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
         <!-- Speichern Button -->
         <Button
             android:id="@+id/saveButton"
