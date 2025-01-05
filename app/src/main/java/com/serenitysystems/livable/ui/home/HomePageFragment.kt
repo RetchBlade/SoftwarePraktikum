@@ -95,6 +95,10 @@ class HomePageFragment : Fragment() {
             dialog?.dismiss()
         }
 
+        dialogView.findViewById<Button>(R.id.showWGInfo).setOnClickListener {
+            findNavController().navigate(R.id.nav_wgansichtFragment)
+            dialog?.dismiss()
+        }
 
         val createWGButton: Button = dialogView.findViewById(R.id.createWGButton)
         val joinWGButton: Button = dialogView.findViewById(R.id.joinWGButton)
