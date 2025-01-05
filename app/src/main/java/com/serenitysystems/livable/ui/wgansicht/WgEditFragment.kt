@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -26,7 +26,7 @@ class WgEditFragment : Fragment() {
     private lateinit var saveButton: Button
     private lateinit var bewohnerContainer: LinearLayout
 
-    private val sharedViewModel: WgSharedViewModel by activityViewModels()
+    private val sharedViewModel: WgSharedViewModel by viewModels()
     private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
@@ -68,31 +68,32 @@ class WgEditFragment : Fragment() {
     }
 
     private fun populateRoommateList(isEditMode: Boolean) {
-        val roommates = sharedViewModel.bewohnerList.value.orEmpty()
-        bewohnerContainer.removeAllViews()
-        val inflater = LayoutInflater.from(context)
-        roommates.forEach { (name, email) ->
-            val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
-            val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
-            val profileName = roommateView.findViewById<TextView>(R.id.profileName)
-            val removeButton = roommateView.findViewById<ImageView>(R.id.removeRoommateButton)
+        sharedViewModel.bewohnerList.observe(viewLifecycleOwner) { roommates ->
+            bewohnerContainer.removeAllViews()
+            val inflater = LayoutInflater.from(context)
 
-            profileName.text = name
+            roommates.forEach { (name, email) ->
+                val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
+                val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
+                val profileName = roommateView.findViewById<TextView>(R.id.profileName)
+                val removeButton = roommateView.findViewById<ImageView>(R.id.removeRoommateButton)
 
-            fetchUserProfileImage(email) { profileImageUrl ->
-                Glide.with(requireContext())
-                    .load(profileImageUrl ?: R.drawable.pp_placeholder)
-                    .circleCrop()
-                    .into(profilePicture)
+                profileName.text = name
+
+                fetchUserProfileImage(email) { profileImageUrl ->
+                    Glide.with(requireContext())
+                        .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                        .circleCrop()
+                        .into(profilePicture)
+                }
+
+                removeButton.visibility = if (isEditMode) View.VISIBLE else View.GONE
+                removeButton.setOnClickListener {
+                    showRemoveRoommateDialog(email)
+                }
+
+                bewohnerContainer.addView(roommateView)
             }
-
-            // Set visibility of the remove button based on edit mode
-            removeButton.visibility = if (isEditMode) View.VISIBLE else View.GONE
-            removeButton.setOnClickListener {
-                showRemoveRoommateDialog(email)
-            }
-
-            bewohnerContainer.addView(roommateView)
         }
     }
 
@@ -121,7 +122,8 @@ class WgEditFragment : Fragment() {
                     .update("mitgliederEmails", currentRoommates)
                     .await()
 
-                sharedViewModel.loadWgDetails(email) // Reload details to update UI
+                sharedViewModel.loadUserEmailAndWgDetails()
+
                 Snackbar.make(requireView(), "Mitbewohner entfernt!", Snackbar.LENGTH_LONG).show()
             } catch (e: Exception) {
                 Snackbar.make(requireView(), "Fehler beim Entfernen des Mitbewohners: ${e.message}", Snackbar.LENGTH_LONG).show()
@@ -146,17 +148,21 @@ class WgEditFragment : Fragment() {
                 Snackbar.make(view, "Änderungen gespeichert!", Snackbar.LENGTH_LONG).show()
                 findNavController().popBackStack()
             } catch (e: Exception) {
-                Snackbar.make(view, "Fehler beim Speichern der Änderungen!", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(view, "Fehler beim Speichern der Änderungen: ${e.message}", Snackbar.LENGTH_LONG).show()
             }
         }
     }
 
+
     private suspend fun saveToFirestore(address: String, rooms: String, size: String) {
         val wgId = sharedViewModel.wgId.value ?: throw Exception("WG ID nicht verfügbar!")
+        val currentUserEmail = sharedViewModel.currentUserEmail.value ?: throw Exception("Benutzer-E-Mail nicht verfügbar!")
+
         val wgData = mapOf(
             "adresse" to address,
             "zimmerAnzahl" to rooms,
-            "groesse" to size
+            "groesse" to size,
+            "lastEditedBy" to currentUserEmail // Speichert, wer die Änderungen vorgenommen hat
         )
 
         withContext(Dispatchers.IO) {
@@ -166,6 +172,7 @@ class WgEditFragment : Fragment() {
                 .await()
         }
     }
+
 
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
         firestore.collection("users").document(email)

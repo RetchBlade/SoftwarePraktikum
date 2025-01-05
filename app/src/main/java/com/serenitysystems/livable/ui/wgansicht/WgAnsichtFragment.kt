@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,9 +50,7 @@ class WgAnsichtFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val userEmail = fetchUserEmailFromFirestore()
-                sharedViewModel.loadWgDetails(userEmail)
-                checkAndSetLeiterStatus(userEmail)
+                sharedViewModel.loadUserEmailAndWgDetails()
             } catch (e: Exception) {
                 showError(view, "Fehler beim Laden der Daten: ${e.message}")
             }
@@ -81,14 +80,23 @@ class WgAnsichtFragment : Fragment() {
             wgSizeText.text = "$size m²"
         }
 
+        sharedViewModel.currentUserEmail.observe(viewLifecycleOwner) { email ->
+            lifecycleScope.launch {
+                if (email != null) {
+                    checkAndSetLeiterStatus(email)
+                }
+            }
+        }
+
         sharedViewModel.bewohnerList.observe(viewLifecycleOwner) { newBewohnerList ->
             updateRoommateList(newBewohnerList)
         }
     }
-    private fun updateRoommateList(newRoommates: List<Pair<String, String>>) {
-        val inflater = LayoutInflater.from(context)
-        bewohnerContainer.removeAllViews() // Clear the container
 
+    private fun updateRoommateList(newRoommates: List<Pair<String, String>>) {
+        bewohnerContainer.removeAllViews()
+
+        val inflater = LayoutInflater.from(context)
         newRoommates.forEach { (name, email) ->
             val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
             val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
@@ -96,7 +104,6 @@ class WgAnsichtFragment : Fragment() {
 
             profileName.text = name
 
-            // Fetch and update the profile picture
             fetchUserProfileImage(email) { profileImageUrl ->
                 Glide.with(requireContext())
                     .load(profileImageUrl ?: R.drawable.pp_placeholder)
@@ -108,36 +115,6 @@ class WgAnsichtFragment : Fragment() {
         }
     }
 
-
-    private fun addRoommate(roommate: Pair<String, String>) {
-        val inflater = LayoutInflater.from(context)
-        val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
-        updateRoommateView(roommateView, roommate)
-        bewohnerContainer.addView(roommateView)
-    }
-
-    private fun updateRoommateView(view: View, roommate: Pair<String, String>) {
-        val profilePicture = view.findViewById<ImageView>(R.id.profilePicture)
-        val profileName = view.findViewById<TextView>(R.id.profileName)
-        profileName.text = roommate.first
-
-        fetchUserProfileImage(roommate.second) { profileImageUrl ->
-            Glide.with(requireContext())
-                .load(profileImageUrl ?: R.drawable.pp_placeholder)
-                .circleCrop()
-                .into(profilePicture)
-        }
-    }
-
-    private suspend fun fetchUserEmailFromFirestore(): String {
-        return withContext(Dispatchers.IO) {
-            val userPreferences = db.collection("users").get().await()
-            val currentUser = userPreferences.documents.firstOrNull()
-            currentUser?.getString("email")
-                ?: throw Exception("User email not found.")
-        }
-    }
-
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
         db.collection("users").document(email)
             .get()
@@ -145,9 +122,9 @@ class WgAnsichtFragment : Fragment() {
             .addOnFailureListener { callback(null) }
     }
 
-    private suspend fun checkAndSetLeiterStatus(userEmail: String) {
+    private suspend fun checkAndSetLeiterStatus(email: String) {
         withContext(Dispatchers.IO) {
-            val userDoc = db.collection("users").document(userEmail).get().await()
+            val userDoc = db.collection("users").document(email).get().await()
             val wgRole = userDoc.getString("wgRole")
             isLeiter = (wgRole == "Wg-Leiter")
             withContext(Dispatchers.Main) {
@@ -167,21 +144,5 @@ class WgAnsichtFragment : Fragment() {
 
     private fun showError(view: View, message: String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    class RoommateDiffCallback(
-        private val oldList: List<Pair<String, String>>,
-        private val newList: List<Pair<String, String>>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].second == newList[newItemPosition].second
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
-        }
     }
 }
