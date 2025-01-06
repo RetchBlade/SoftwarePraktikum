@@ -7,14 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.FragmentProfilverwaltenBinding
+import com.serenitysystems.livable.ui.login.LoginActivity
+import com.serenitysystems.livable.ui.login.data.UserPreferences
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
@@ -49,10 +53,14 @@ class ProfilverwaltenFragment : Fragment() {
         binding.saveProfileButton.setOnClickListener {
             saveProfileChanges()
         }
+
+        binding.deleteAccountButton.setOnClickListener {
+            deleteAccount()
+        }
     }
 
     private fun observeViewModel() {
-        profilverwaltenViewModel.userData.observe(viewLifecycleOwner) { user ->
+        profilverwaltenViewModel.liveUserData.observe(viewLifecycleOwner) { user ->
             user?.let {
                 binding.benutzerName.setText(it.nickname)
                 binding.emailInput.setText(it.email)
@@ -62,7 +70,19 @@ class ProfilverwaltenFragment : Fragment() {
                     .load(it.profileImageUrl)
                     .placeholder(R.drawable.pp_placeholder)
                     .into(binding.profileImageView)
+
+                updateDeleteButtonState(it.wgId.isNullOrEmpty() && it.wgRole.isNullOrEmpty())
             }
+        }
+    }
+
+    private fun updateDeleteButtonState(isDeletable: Boolean) {
+        if (isDeletable) {
+            binding.deleteAccountButton.isEnabled = true
+            binding.deleteAccountButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red))
+        } else {
+            binding.deleteAccountButton.isEnabled = false
+            binding.deleteAccountButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.own_grayish_yellow))
         }
     }
 
@@ -108,16 +128,16 @@ class ProfilverwaltenFragment : Fragment() {
                 return
             }
 
-            if (!verifyOldPassword(profilverwaltenViewModel.userData.value?.password ?: "", oldPassword)) {
+            if (!verifyOldPassword(profilverwaltenViewModel.liveUserData.value?.password ?: "", oldPassword)) {
                 binding.oldPasswordInput.error = "Altes Passwort ist falsch"
                 return
             }
         }
 
-        val hashedPassword = if (password.isNotBlank()) hashPassword(password) else profilverwaltenViewModel.userData.value?.password
+        val hashedPassword = if (password.isNotBlank()) hashPassword(password) else profilverwaltenViewModel.liveUserData.value?.password
 
         val updatedUser = hashedPassword?.let {
-            profilverwaltenViewModel.userData.value?.copy(
+            profilverwaltenViewModel.liveUserData.value?.copy(
                 nickname = nickname,
                 email = email,
                 password = it
@@ -146,8 +166,27 @@ class ProfilverwaltenFragment : Fragment() {
                     profilverwaltenViewModel.updateUserData(updatedUser, null)
                 }
 
-                // Navigation zurück
                 findNavController().popBackStack()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun deleteAccount() {
+        val user = profilverwaltenViewModel.liveUserData.value ?: return
+
+        lifecycleScope.launch {
+            try {
+                FirebaseFirestore.getInstance().collection("users").document(user.email).delete().await()
+
+                val userPreferences = UserPreferences(requireContext())
+                userPreferences.clearUserToken()
+
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                requireActivity().finish()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

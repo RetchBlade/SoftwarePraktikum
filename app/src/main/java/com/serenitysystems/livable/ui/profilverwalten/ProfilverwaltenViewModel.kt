@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
@@ -17,54 +18,73 @@ import kotlinx.coroutines.tasks.await
 class ProfilverwaltenViewModel(application: Application) : AndroidViewModel(application) {
 
     private val firestore = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance()
     private val userPreferences = UserPreferences(application)
 
-    private val _userData = MutableLiveData<UserToken?>()
-    val userData: MutableLiveData<UserToken?> get() = _userData
+    private val _liveUserData = MutableLiveData<UserToken?>()
+    val liveUserData: LiveData<UserToken?> get() = _liveUserData
 
-    private val _profileImageUrl = MutableLiveData<String>()
-    val profileImageUrl: LiveData<String> get() = _profileImageUrl
-
+    private var userListener: ListenerRegistration? = null
     private var currentEmail: String? = null
 
     init {
-        loadUserData()
+        loadCurrentUser()
     }
 
-    private fun loadUserData() {
+    private fun loadCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { token ->
                 token?.email?.let { email ->
                     currentEmail = email
-                    val document = firestore.collection("users").document(email).get().await()
-                    val userToken = document.toObject(UserToken::class.java)
-                    _userData.postValue(userToken)
-                    _profileImageUrl.postValue(userToken?.profileImageUrl ?: "")
+                    observeUserData(email)
                 }
             }
         }
+    }
+
+    private fun observeUserData(email: String) {
+        // Entferne vorherigen Listener, falls vorhanden
+        userListener?.remove()
+
+        // Setze einen Echtzeit-Listener für die Benutzerdaten
+        userListener = firestore.collection("users").document(email)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    _liveUserData.postValue(null)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val userData = snapshot.toObject(UserToken::class.java)
+                    _liveUserData.postValue(userData)
+                } else {
+                    _liveUserData.postValue(null)
+                }
+            }
     }
 
     fun updateUserData(updatedUser: UserToken, newImageUri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val email = currentEmail ?: return@launch
-                // Update image in Firebase Storage if newImageUri is provided
+
+                // Aktualisiere das Bild, falls ein neues hochgeladen wird
                 newImageUri?.let {
-                    val imageRef = storage.reference.child("profile_images/$email.jpg")
+                    val imageRef = FirebaseStorage.getInstance().reference.child("profile_images/$email.jpg")
                     imageRef.putFile(it).await()
                     val downloadUrl = imageRef.downloadUrl.await()
                     updatedUser.profileImageUrl = downloadUrl.toString()
                 }
 
-                // Update Firestore document
+                // Speichere die aktualisierten Benutzerdaten in Firestore
                 firestore.collection("users").document(email).set(updatedUser).await()
-                _userData.postValue(updatedUser)
-                _profileImageUrl.postValue(updatedUser.profileImageUrl)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        userListener?.remove() // Entferne den Listener, um Speicherlecks zu vermeiden
     }
 }
