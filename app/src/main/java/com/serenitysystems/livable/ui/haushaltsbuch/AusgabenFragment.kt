@@ -35,8 +35,8 @@ class AusgabenFragment : Fragment() {
         adapter = ExpenseAdapter(
             mutableListOf(),
             onEditClick = { expense -> showEditTransactionDialog(expense) },
-            onExpenseUpdated = { haushaltsbuchViewModel.updateExpense(it) },
-            onExpenseRemoved = { haushaltsbuchViewModel.deleteExpense(it) },
+            onExpenseUpdated = { haushaltsbuchViewModel.updateExpenseInFirestore(it) },
+            onExpenseRemoved = { haushaltsbuchViewModel.deleteExpenseFromFirestore(it) },
             onRequestDelete = { expense, _ ->
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("Bestätigung")
@@ -55,7 +55,7 @@ class AusgabenFragment : Fragment() {
 
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { expenses ->
+        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner) { expenses ->
             val ausgaben = expenses.filter { !it.istEinnahme }
             adapter.updateExpenses(ausgaben)
             updateKontostand()
@@ -70,7 +70,6 @@ class AusgabenFragment : Fragment() {
         }
 
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
 
         binding.leftArrow.setOnClickListener {
             changeDate(-1)

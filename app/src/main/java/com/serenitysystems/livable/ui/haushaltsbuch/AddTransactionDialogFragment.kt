@@ -2,6 +2,7 @@ package com.serenitysystems.livable.ui.haushaltsbuch
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,7 @@ import com.serenitysystems.livable.R
 import com.serenitysystems.livable.databinding.DialogAddTransactionBinding
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class AddTransactionDialogFragment : DialogFragment() {
 
@@ -76,11 +76,18 @@ class AddTransactionDialogFragment : DialogFragment() {
             getString(R.string.ausgabe_button_text)
         }
 
+        // Correctly fetch categories and set up the adapter
         val categories = haushaltsbuchViewModel.categories
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerCategory.adapter = adapter
+        context?.let { ctx ->
+            val adapter = ArrayAdapter(
+                ctx,
+                android.R.layout.simple_spinner_item,
+                haushaltsbuchViewModel.categories
+            )
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerCategory.adapter = adapter
+        } ?: Log.e("HaushaltsbuchAddtrans", "Context is null")
+
 
         expense?.let {
             binding.editAmount.setText(it.betrag.toString())
@@ -144,10 +151,9 @@ class AddTransactionDialogFragment : DialogFragment() {
             datum = date,
             istEinnahme = isEinnahme
         )
-        haushaltsbuchViewModel.addExpense(newExpense)
+        haushaltsbuchViewModel.addExpenseToFirestore(newExpense)
         dismiss()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

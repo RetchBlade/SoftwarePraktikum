@@ -1,91 +1,164 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
+import com.serenitysystems.livable.ui.login.data.UserPreferences
+import com.serenitysystems.livable.ui.login.data.UserToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HaushaltsbuchViewModel : ViewModel() {
+class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Alle Ausgaben und Einnahmen
+    private val db = FirebaseFirestore.getInstance()
+    private val userPreferences: UserPreferences = UserPreferences(application)
+
     private val _allExpenses = MutableLiveData<List<Expense>>(listOf())
     val allExpenses: LiveData<List<Expense>> get() = _allExpenses
 
-    // Ausgaben und Einnahmen für das ausgewählte Datum
     private val _selectedDateExpenses = MutableLiveData<List<Expense>>()
     val selectedDateExpenses: LiveData<List<Expense>> get() = _selectedDateExpenses
 
-    // Aktueller Kontostand
     private val _kontostand = MutableLiveData<Float>(0f)
     val kontostand: LiveData<Float> get() = _kontostand
 
-    // Aktuell ausgewähltes Datum
     val selectedDate: Calendar = Calendar.getInstance()
 
-    // Verfügbare Kategorien
     val categories = listOf(
         "Haushalt", "Lebensmittel", "Gesundheit", "Kleidung", "Freizeit",
         "Transport", "Versicherung", "Bildung", "Unterhaltung", "Reisen", "Sonstiges"
     )
 
-    // Hinzufügen einer neuen Ausgabe oder Einnahme
-    fun addExpense(expense: Expense) {
-        if (expense.kategorie.isEmpty() || expense.datum.isEmpty() || expense.betrag <= 0) {
-            Log.e("ViewModel", "Invalid expense data")
-            return
-        }
-        viewModelScope.launch {
-            _allExpenses.value = (_allExpenses.value ?: emptyList()) + expense
-            loadExpensesForDateAsync(formatDate(selectedDate))
-        }
+    init {
+        listenForRealtimeUpdates()
     }
 
-
-    // Aktualisieren einer bestehenden Ausgabe oder Einnahme
-    fun updateExpense(expense: Expense) {
-        viewModelScope.launch {
-            val currentExpenses = _allExpenses.value ?: listOf()
-            val index = currentExpenses.indexOfFirst { it == expense }
-            if (index >= 0) {
-                val updatedExpenses = currentExpenses.toMutableList()
-                updatedExpenses[index] = expense
-                _allExpenses.value = updatedExpenses
-                loadExpensesForDateAsync(formatDate(selectedDate))
+    private fun listenForRealtimeUpdates() {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                                .addSnapshotListener { snapshot, error ->
+                                    if (error != null) {
+                                        Log.e("HaushaltsbuchViewModel", "Error fetching updates: ${error.message}")
+                                        return@addSnapshotListener
+                                    }
+                                    val expenses = snapshot?.documents?.mapNotNull { it.toObject(Expense::class.java) }
+                                        ?: listOf()
+                                    _allExpenses.value = expenses
+                                    loadExpensesForDate(formatDate(selectedDate))
+                                }
+                        } else {
+                            Log.e("HaushaltsbuchViewModel", "WG-ID is null")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("HaushaltsbuchViewModel", "Error fetching WG-ID: ${e.message}")
+                    }
             }
         }
     }
 
-    // Löschen einer Ausgabe oder Einnahme
-    fun deleteExpense(expense: Expense) {
-        viewModelScope.launch {
-            val currentExpenses = _allExpenses.value ?: listOf()
-            val updatedExpenses = currentExpenses - expense
-            _allExpenses.value = updatedExpenses
-            loadExpensesForDateAsync(formatDate(selectedDate))
+
+    fun addExpenseToFirestore(expense: Expense) {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Haushaltsbuch").add(expense)
+                                .addOnSuccessListener { Log.d("HaushaltsbuchViewModel", "Transaction added successfully.") }
+                                .addOnFailureListener { Log.e("HaushaltsbuchViewModel", "Error adding transaction.") }
+                        }
+                    }
+            }
         }
     }
 
-    // Berechnung des prozentualen Anteils einer Kategorie
-    fun getCategoryPercentage(category: String): Float {
-        val totalAusgabe = _selectedDateExpenses.value?.filter { !it.istEinnahme }
-            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 1f
-        val categoryTotal = _selectedDateExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }
-            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
-        return if (totalAusgabe != 0f) (categoryTotal / totalAusgabe) * 100 else 0f
+    fun updateExpenseInFirestore(expense: Expense) {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                                .whereEqualTo("datum", expense.datum)
+                                .whereEqualTo("kategorie", expense.kategorie)
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    snapshot.documents.firstOrNull()?.reference?.set(expense)
+                                }
+                        }
+                    }
+            }
+        }
     }
 
-    // Berechnung des Betrags einer Kategorie
-    fun getCategoryAmount(category: String): Float {
-        return _selectedDateExpenses.value?.filter { it.kategorie == category && !it.istEinnahme }
-            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+    fun deleteExpenseFromFirestore(expense: Expense) {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                                .whereEqualTo("datum", expense.datum)
+                                .whereEqualTo("kategorie", expense.kategorie)
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    snapshot.documents.forEach { it.reference.delete() }
+                                }
+                        }
+                    }
+            }
+        }
     }
 
-    // Farbe für eine Kategorie erhalten
+    private fun fetchUserToken(action: (UserToken?) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userPreferences.userToken.collect { userToken ->
+                action(userToken)
+            }
+        }
+    }
+
+    private fun formatDate(calendar: Calendar): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+    fun loadExpensesForDate(date: String) {
+        viewModelScope.launch {
+            val expensesForDate = _allExpenses.value?.filter { it.datum == date } ?: emptyList()
+            _selectedDateExpenses.value = expensesForDate
+            updateTotals()
+        }
+    }
+
+    private fun updateTotals() {
+        val totalIncome = _selectedDateExpenses.value?.filter { it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+        val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
+            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
+        _kontostand.value = totalIncome - totalExpense
+    }
+
     fun getCategoryColor(category: String): Int {
         return when (category) {
             "Haushalt" -> 0xFFFF5722.toInt() // Orange
@@ -101,39 +174,5 @@ class HaushaltsbuchViewModel : ViewModel() {
             "Sonstiges" -> 0xFF607D8B.toInt() // Grau
             else -> 0xFF000000.toInt() // Schwarz
         }
-    }
-
-    // Aktualisierung des Kontostands
-    private fun updateTotals() {
-        val totalIncome = _selectedDateExpenses.value?.filter { it.istEinnahme }
-            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
-        val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
-            ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
-        _kontostand.value = totalIncome - totalExpense
-    }
-
-    // Laden der Ausgaben und Einnahmen für das ausgewählte Datum
-    fun loadExpensesForDate(date: String) {
-        viewModelScope.launch {
-            loadExpensesForDateAsync(date)
-        }
-    }
-
-    private suspend fun loadExpensesForDateAsync(date: String) {
-        val expensesForDate = _allExpenses.value?.filter { it.datum == date } ?: emptyList()
-        _selectedDateExpenses.value = expensesForDate
-        updateTotals()
-    }
-
-    // Ändern des ausgewählten Datums um eine bestimmte Anzahl von Tagen
-    fun changeDateByDays(days: Int) {
-        selectedDate.add(Calendar.DAY_OF_MONTH, days)
-        loadExpensesForDate(formatDate(selectedDate))
-    }
-
-    // Hilfsfunktion zum Formatieren des Datums
-    private fun formatDate(calendar: Calendar): String {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        return dateFormat.format(calendar.time)
     }
 }
