@@ -67,25 +67,35 @@ class AddTransactionDialogFragment : DialogFragment() {
         val isEinnahme = arguments?.getBoolean(ARG_IS_EINNAHME)
         val expense = arguments?.getParcelable<Expense>(ARG_EXPENSE)
 
-        binding.spinnerCategory.visibility = View.VISIBLE
-        binding.title.text = if (isEinnahme == true) {
-            binding.title.setBackgroundResource(R.drawable.green_filled_background)
-            getString(R.string.einnahme_button_text)
+        if (expense != null) {
+            // Setze Titel und Hintergrundfarbe basierend auf `istEinnahme` aus der Transaktion
+            if (expense.istEinnahme) {
+                binding.title.text = getString(R.string.einnahme_button_text)
+                binding.title.setBackgroundResource(R.drawable.green_filled_background)
+            } else {
+                binding.title.text = getString(R.string.ausgabe_button_text)
+                binding.title.setBackgroundResource(R.drawable.red_filled_background)
+            }
         } else {
-            binding.title.setBackgroundResource(R.drawable.red_filled_background)
-            getString(R.string.ausgabe_button_text)
+            // Standard: Basierend auf ARG_IS_EINNAHME
+            if (isEinnahme == true) {
+                binding.title.text = getString(R.string.einnahme_button_text)
+                binding.title.setBackgroundResource(R.drawable.green_filled_background)
+            } else {
+                binding.title.text = getString(R.string.ausgabe_button_text)
+                binding.title.setBackgroundResource(R.drawable.red_filled_background)
+            }
         }
 
+        // Setze Kategorien, Werte und Datum basierend auf der bestehenden Transaktion (falls vorhanden)
         val categories = haushaltsbuchViewModel.categories
-        context?.let { ctx ->
-            val adapter = ArrayAdapter(
-                ctx,
-                android.R.layout.simple_spinner_item,
-                categories
-            )
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerCategory.adapter = adapter
-        } ?: Log.e("AddTransactionDialog", "Context is null")
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            categories
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCategory.adapter = adapter
 
         expense?.let {
             binding.editAmount.setText(it.betrag.toString())
@@ -102,13 +112,14 @@ class AddTransactionDialogFragment : DialogFragment() {
         }
 
         binding.saveButton.setOnClickListener {
-            saveTransaction(isEinnahme ?: expense?.istEinnahme ?: false)
+            saveTransaction(expense?.istEinnahme ?: isEinnahme ?: false)
         }
 
         binding.cancelButton.setOnClickListener {
             dismiss()
         }
     }
+
 
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
@@ -148,7 +159,7 @@ class AddTransactionDialogFragment : DialogFragment() {
             betrag = amount,
             notiz = note,
             datum = date,
-            istEinnahme = isEinnahme
+            istEinnahme = isEinnahme // Beibehalten von istEinnahme
         ) ?: Expense(
             kategorie = category,
             betrag = amount,
@@ -164,6 +175,7 @@ class AddTransactionDialogFragment : DialogFragment() {
         }
         dismiss()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
