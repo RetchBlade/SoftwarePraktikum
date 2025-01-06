@@ -120,4 +120,16 @@
             android:defaultValue="" />
     </fragment>
 
+
+    <fragment
+        android:id="@+id/nav_profilansicht"
+        android:name="com.serenitysystems.livable.ui.userprofil.ProfilansichtFragment"
+        android:label="Profilansicht"
+        tools:layout="@layout/fragment_profilansicht" />
+
+    <action
+        android:id="@+id/action_nav_homepage_to_nav_profilansicht"
+        app:destination="@id/nav_profilansicht" />
+
+
 </navigation>

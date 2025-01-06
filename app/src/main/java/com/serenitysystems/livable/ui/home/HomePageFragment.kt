@@ -43,6 +43,10 @@ class HomePageFragment : Fragment() {
             userNicknameTextView.text = nickname ?: ""
         })
 
+        userPic.setOnClickListener {
+            findNavController().navigate(R.id.nav_profilansicht)
+        }
+
         // Das Benutzerbild vom ViewModel beobachten
         homePageViewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
             if (profileImageUrl != null) {
