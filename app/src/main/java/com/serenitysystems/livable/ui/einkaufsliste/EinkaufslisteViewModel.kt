@@ -2,6 +2,7 @@ package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -161,14 +162,29 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
                     .addOnSuccessListener { document ->
                         val wgId = document.getString("wgId")
                         if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Einkaufsliste")
-                                .document(item.id)
-                                .delete()
+                            // Löschen des Produkts aus Firestore
+                            val itemRef = db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                            itemRef.delete().addOnSuccessListener {
+                                // Wenn das Produkt gelöscht wurde, prüfe auf ein Bild
+                                if (!item.imageUri.isNullOrEmpty()) {
+                                    val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(item.imageUri!!)
+                                    imageRef.delete().addOnSuccessListener {
+                                        // Bild erfolgreich gelöscht
+                                        Log.d("deleteItem", "Bild erfolgreich gelöscht: ${item.imageUri}")
+                                    }.addOnFailureListener { e ->
+                                        // Fehler beim Löschen des Bildes
+                                        Log.e("deleteItem", "Fehler beim Löschen des Bildes: ${e.message}")
+                                    }
+                                }
+                            }.addOnFailureListener { e ->
+                                Log.e("deleteItem", "Fehler beim Löschen des Produkts: ${e.message}")
+                            }
                         }
                     }
             }
         }
     }
+
 
     // Gibt alle Items für ein bestimmtes Datum zurück
     fun getItemsForDate(dateKey: String): List<Produkt> {

@@ -273,7 +273,7 @@ class EinkaufsItemAdapter(
                             .setTitle("Löschen bestätigen")
                             .setMessage("Sind Sie sicher, dass Sie dieses Produkt löschen möchten?")
                             .setPositiveButton("Ja") { _, _ ->
-                                onItemDeleted(item)
+                                onItemDeleted(item) // Callback, der die deleteItem-Methode im ViewModel aufruft
                                 removeItemFromCurrentDate(position)
                             }
                             .setNegativeButton("Nein") { dialog, _ ->
@@ -300,10 +300,10 @@ class EinkaufsItemAdapter(
                             .show()
                     }
                 } else {
-                    // Ungültiger Index, Swipe rückgängig machen
-                    notifyItemChanged(position)
+                    notifyItemChanged(position) // Ungültiger Index, Swipe rückgängig machen
                 }
             }
+
 
             // Zeichnet den Hintergrund und das Icon beim Wischen
             override fun onChildDraw(
