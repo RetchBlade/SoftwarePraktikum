@@ -77,18 +77,22 @@ class ToDoFragment : Fragment() {
         binding.todoListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = todayAdapter
+            itemAnimator = null // Animationen deaktivieren
         }
         binding.todoListRecyclerView2.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = tomorrowAdapter
+            itemAnimator = null // Animationen deaktivieren
         }
         binding.todoListRecyclerView3.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = weekAdapter
+            itemAnimator = null // Animationen deaktivieren
         }
         binding.todoListRecyclerView4.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = laterAdapter
+            itemAnimator = null // Animationen deaktivieren
         }
 
         // Swipe-to-delete für alle RecyclerViews einrichten
@@ -111,12 +115,12 @@ class ToDoFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 val todo = adapter.currentList[position]
 
-                // Löschen des Todos aus dem ViewModel
+                // Lösche das Todo im ViewModel
                 todoViewModel.deleteTodo(todo)
 
-                // **Wichtig**: Liste aktualisieren
+                // Aktualisiere die Liste, indem du das Todo entfernst
                 val updatedList = adapter.currentList.toMutableList().apply { removeAt(position) }
-                adapter.submitList(updatedList)
+                adapter.submitList(updatedList) // Liste wird aktualisiert
             }
 
         }

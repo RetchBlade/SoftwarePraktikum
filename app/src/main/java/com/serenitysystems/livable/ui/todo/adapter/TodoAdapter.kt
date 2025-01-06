@@ -17,13 +17,20 @@ import java.util.Locale
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 
-
 class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
     ListAdapter<TodoItem, TodoAdapter.TodoViewHolder>(TodoDiffCallback()) {
 
+    init {
+        setHasStableIds(true) // Aktiviert stabile IDs für die RecyclerView
+    }
+
+    override fun getItemId(position: Int): Long {
+        return getItem(position).id.hashCode().toLong() // Eindeutige ID basierend auf der Todo-ID
+    }
+
     fun updateList(newList: List<TodoItem>) {
         submitList(newList)
-        notifyDataSetChanged()
+        // notifyDataSetChanged() wurde entfernt, um unnötige Aktualisierungen zu vermeiden
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
@@ -61,7 +68,6 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
                 binding.todoDetailedDescription.visibility =
                     if (isExpanded) View.VISIBLE else View.GONE
                 binding.deleteButton.visibility = if (isExpanded) View.VISIBLE else View.GONE
-
 
                 // Den Fokus von der EditText entfernen
                 binding.todoDetailedDescription.clearFocus()
@@ -118,6 +124,3 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
         }
     }
 }
-
-
-
