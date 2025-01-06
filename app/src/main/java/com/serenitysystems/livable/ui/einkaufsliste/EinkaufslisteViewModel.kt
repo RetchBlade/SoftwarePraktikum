@@ -128,16 +128,23 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
         val storageRef = FirebaseStorage.getInstance().reference
         val imageRef = storageRef.child("Einkaufsliste/$itemId.jpg")
 
-        imageRef.putFile(uri)
-            .addOnSuccessListener {
-                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    onUploadComplete(downloadUri.toString())
+        // Prüfen, ob die URI lokal ist
+        if (uri.scheme == "content" || uri.scheme == "file") {
+            imageRef.putFile(uri)
+                .addOnSuccessListener {
+                    imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                        onUploadComplete(downloadUri.toString())
+                    }
                 }
-            }
-            .addOnFailureListener {
-                onUploadComplete(null) // Fehlerbehandlung
-            }
+                .addOnFailureListener {
+                    onUploadComplete(null) // Fehlerbehandlung
+                }
+        } else {
+            // URI ist keine lokale Datei - Fehler melden
+            onUploadComplete(null)
+        }
     }
+
 
 
 

@@ -115,19 +115,29 @@ class AddItemDialogFragment : DialogFragment() {
             val category = binding.spinnerCategory.selectedItem?.toString() ?: ""
             val date = selectedDate?.let { dateFormat.format(it.time) }
 
+            // Reset der Fehleranzeigen
+            binding.editItemName.error = null
+            binding.editItemQuantity.error = null
+            binding.etSelectedDate.error = null
+
             // Eingabevalidierung
+            var isValid = true
+
             if (name.isEmpty()) {
                 binding.editItemName.error = "Bitte geben Sie einen Produktnamen ein."
-                return@setOnClickListener
+                isValid = false
             }
             if (quantity.isEmpty()) {
                 binding.editItemQuantity.error = "Bitte geben Sie eine Menge ein."
-                return@setOnClickListener
+                isValid = false
             }
             if (date == null) {
-                Toast.makeText(requireContext(), "Bitte wählen Sie ein Datum aus.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                binding.etSelectedDate.error = "Bitte wählen Sie ein Datum aus."
+                isValid = false
             }
+
+            // Abbrechen, falls eine Eingabe ungültig ist
+            if (!isValid) return@setOnClickListener
 
             // URI des ausgewählten Bildes
             val imageUri = selectedImageUri
@@ -151,8 +161,6 @@ class AddItemDialogFragment : DialogFragment() {
                     if (downloadUri != null) {
                         newItem.imageUri = downloadUri // Bild-URI im Produkt setzen
                         addItem() // Item speichern
-                    } else {
-                        Toast.makeText(requireContext(), "Fehler beim Hochladen des Bildes.", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
@@ -160,6 +168,7 @@ class AddItemDialogFragment : DialogFragment() {
                 addItem()
             }
         }
+
 
 
 
@@ -260,17 +269,26 @@ class AddItemDialogFragment : DialogFragment() {
                 calendar
             }
 
-            // Lade die URI des Bildes, falls vorhanden
+            // Verarbeite die URI des Bildes
             if (!item.imageUri.isNullOrEmpty()) {
-                selectedImageUri = Uri.parse(item.imageUri) // Setze die URI für später
-                Glide.with(requireContext())
-                    .load(selectedImageUri)
-                    .into(binding.productImage) // Lade das Bild in das ImageView
+                val uri = Uri.parse(item.imageUri)
+                if (uri.scheme == "http" || uri.scheme == "https") {
+                    // Lade das Bild direkt aus der HTTP-URL mit Glide
+                    Glide.with(requireContext())
+                        .load(uri)
+                        .into(binding.productImage)
+                } else {
+                    // Setze die URI für spätere Bearbeitungen
+                    selectedImageUri = uri
+                    binding.productImage.setImageURI(uri)
+                }
             } else {
-                binding.productImage.setImageResource(R.drawable.ic_add_image) // Platzhalterbild setzen
+                // Kein Bild vorhanden, Platzhalter setzen
+                binding.productImage.setImageResource(R.drawable.ic_add_image)
             }
         }
     }
+
 
 
     // Setzt das aktuelle Produkt zum Bearbeiten
