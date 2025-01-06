@@ -108,6 +108,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+        profileImageView.setOnClickListener {
+            navController.navigate(R.id.nav_profilansicht)
+            drawerLayout.closeDrawers()
+        }
+
         // Set a listener for navigation
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
