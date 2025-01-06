@@ -66,7 +66,9 @@ class SettingsFragment : Fragment() {
             findNavController().navigate(R.id.action_settingsFragment_to_profilverwaltenFragment)
         }
 
-        // Weitere Navigationen können hier hinzugefügt werden
+        userPic.setOnClickListener {
+            findNavController().navigate(R.id.nav_profilansicht)
+        }
     }
 
     override fun onDestroyView() {
