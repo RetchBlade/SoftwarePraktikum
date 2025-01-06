@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,6 +35,8 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
     private val _role = MutableLiveData<String?>()
     val role: LiveData<String?> = _role
 
+    private var snapshotListener: ListenerRegistration? = null
+
     init {
         fetchUserData()
     }
@@ -42,21 +45,33 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
                 userToken?.let {
-                    firestore.collection("users").document(it.email)
-                        .get()
-                        .addOnSuccessListener { document ->
-                            _profileImage.postValue(document.getString("profileImageUrl"))
-                            _username.postValue(document.getString("nickname"))
-                            _email.postValue(document.getString("email"))
-                            _birthdate.postValue(document.getString("birthdate"))
-                            _gender.postValue(document.getString("gender"))
-                            _role.postValue(document.getString("wgRole"))
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("ProfilansichtViewModel", "Error fetching data: ${e.message}")
+                    // Setze einen Snapshot-Listener für Echtzeit-Updates
+                    snapshotListener?.remove() // Entferne alte Listener, falls vorhanden
+                    snapshotListener = firestore.collection("users").document(it.email)
+                        .addSnapshotListener { snapshot, e ->
+                            if (e != null) {
+                                Log.e("ProfilansichtViewModel", "SnapshotListener Fehler: ${e.message}")
+                                return@addSnapshotListener
+                            }
+                            if (snapshot != null && snapshot.exists()) {
+                                _profileImage.postValue(snapshot.getString("profileImageUrl"))
+                                _username.postValue(snapshot.getString("nickname"))
+                                _email.postValue(snapshot.getString("email"))
+                                _birthdate.postValue(snapshot.getString("birthdate"))
+                                _gender.postValue(snapshot.getString("gender"))
+                                _role.postValue(snapshot.getString("wgRole"))
+                            } else {
+                                Log.w("ProfilansichtViewModel", "Snapshot ist null oder existiert nicht")
+                            }
                         }
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Entferne den Snapshot-Listener beim Beenden
+        snapshotListener?.remove()
     }
 }
