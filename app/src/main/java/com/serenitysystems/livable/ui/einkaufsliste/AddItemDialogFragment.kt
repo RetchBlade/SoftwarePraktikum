@@ -138,13 +138,12 @@ class AddItemDialogFragment : DialogFragment() {
                 isValid = false
             }
 
-            // Abbrechen, falls eine Eingabe ungültig ist
             if (!isValid) return@setOnClickListener
 
             // URI des ausgewählten Bildes
             val imageUri = selectedImageUri
 
-            // Neues Produktobjekt erstellen
+            // Neues Produkt erstellen
             val newItem = Produkt(
                 id = currentItem?.id ?: UUID.randomUUID().toString(),
                 name = name,
@@ -152,24 +151,30 @@ class AddItemDialogFragment : DialogFragment() {
                 unit = unit,
                 category = category,
                 date = date,
-                imageUri = null, // Platzhalter, falls ein Bild hochgeladen wird
+                imageUri = null, // Platzhalter für das Bild
                 isChecked = currentItem?.isChecked ?: false,
                 statusIcon = currentItem?.statusIcon
             )
 
-            // Falls ein Bild vorhanden ist, hochladen und dann speichern
+            // Bild hochladen, wenn eins ausgewählt wurde
             if (imageUri != null) {
                 viewModel.uploadImageToFirebaseStorage(imageUri, newItem.id) { downloadUri ->
                     if (downloadUri != null) {
-                        newItem.imageUri = downloadUri // Bild-URI im Produkt setzen
-                        addItem() // Item speichern
+                        newItem.imageUri = downloadUri // Richtige URL speichern
+                        viewModel.addItem(date!!, newItem) // Produkt speichern
+                        dismiss() // Dialog schließen
+                    } else {
+                        // Fehlerbehandlung
+                        Toast.makeText(requireContext(), "Fehler beim Hochladen des Bildes.", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
-                // Direkt speichern, wenn kein Bild hochgeladen wird
-                addItem()
+                // Produkt ohne Bild speichern
+                viewModel.addItem(date!!, newItem)
+                dismiss() // Dialog schließen
             }
         }
+
 
 
         // Abbrechen-Button: Dialog schließen

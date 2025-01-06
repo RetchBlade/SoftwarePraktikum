@@ -127,30 +127,24 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun uploadImageToFirebaseStorage(
-        uri: Uri,
-        itemId: String,
-        onUploadComplete: (String?) -> Unit
-    ) {
+    fun uploadImageToFirebaseStorage(uri: Uri, itemId: String, onUploadComplete: (String?) -> Unit) {
         val storageRef = FirebaseStorage.getInstance().reference
         val imageRef = storageRef.child("Einkaufsliste/$itemId.jpg")
 
-        // Prüfen, ob die URI lokal ist
-        if (uri.scheme == "content" || uri.scheme == "file") {
-            imageRef.putFile(uri)
-                .addOnSuccessListener {
-                    imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                        onUploadComplete(downloadUri.toString())
-                    }
+        imageRef.putFile(uri)
+            .addOnSuccessListener {
+                // Abrufen der Download-URL nach erfolgreichem Hochladen
+                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    Log.d("FirebaseStorage", "Download-URL: $downloadUri")
+                    onUploadComplete(downloadUri.toString()) // Korrekte URL zurückgeben
                 }
-                .addOnFailureListener {
-                    onUploadComplete(null) // Fehlerbehandlung
-                }
-        } else {
-            // URI ist keine lokale Datei - Fehler melden
-            onUploadComplete(null)
-        }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseStorage", "Fehler beim Hochladen: ${e.message}")
+                onUploadComplete(null) // Fehler behandeln
+            }
     }
+
 
 
     // Löscht ein Item
