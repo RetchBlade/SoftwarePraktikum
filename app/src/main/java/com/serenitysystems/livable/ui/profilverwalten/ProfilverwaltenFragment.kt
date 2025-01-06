@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.serenitysystems.livable.R
@@ -144,6 +145,9 @@ class ProfilverwaltenFragment : Fragment() {
                 } else {
                     profilverwaltenViewModel.updateUserData(updatedUser, null)
                 }
+
+                // Navigation zurück
+                findNavController().popBackStack()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
