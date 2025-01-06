@@ -35,27 +35,27 @@ class AusgabenFragment : Fragment() {
         adapter = ExpenseAdapter(
             mutableListOf(),
             onEditClick = { expense -> showEditTransactionDialog(expense) },
-            onExpenseUpdated = { haushaltsbuchViewModel.updateExpense(it) },
-            onExpenseRemoved = { haushaltsbuchViewModel.deleteExpense(it) },
+            onExpenseUpdated = { haushaltsbuchViewModel.updateExpenseInFirestore(it) },
+            onExpenseRemoved = { haushaltsbuchViewModel.deleteExpenseFromFirestore(it) },
             onRequestDelete = { expense, _ ->
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("Bestätigung")
                 builder.setMessage("Möchten Sie diesen Eintrag wirklich löschen?")
                 builder.setPositiveButton("Ja") { dialog, _ ->
-                    adapter.confirmDelete(expense)
+                    haushaltsbuchViewModel.deleteExpenseFromFirestore(expense)
                     dialog.dismiss()
                 }
                 builder.setNegativeButton("Nein") { dialog, _ ->
-                    adapter.restoreExpense(expense)
                     dialog.dismiss()
                 }
                 builder.show()
             }
+
         )
 
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { expenses ->
+        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner) { expenses ->
             val ausgaben = expenses.filter { !it.istEinnahme }
             adapter.updateExpenses(ausgaben)
             updateKontostand()
@@ -70,7 +70,6 @@ class AusgabenFragment : Fragment() {
         }
 
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
 
         binding.leftArrow.setOnClickListener {
             changeDate(-1)
@@ -104,6 +103,7 @@ class AusgabenFragment : Fragment() {
         val dialog = AddTransactionDialogFragment.newInstance(expense)
         dialog.show(parentFragmentManager, "EditTransactionDialogFragment")
     }
+
 
     private fun updateDateDisplay() {
         binding.dateTextView.text = formatDate(selectedDate)

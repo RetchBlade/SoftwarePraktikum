@@ -4,14 +4,16 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Expense(
-    val kategorie: String,
-    val betrag: Float,
-    val notiz: String,
-    val datum: String,
-    val istEinnahme: Boolean,
+    val id: String = "",
+    val kategorie: String = "",
+    val betrag: Float = 0f,
+    val notiz: String = "",
+    val datum: String = "",
+    val istEinnahme: Boolean = false,
     var isDeleted: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readFloat(),
         parcel.readString() ?: "",
