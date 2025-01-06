@@ -68,7 +68,7 @@
     <!-- Profile Management Fragment -->
     <fragment
         android:id="@+id/nav_profilverwaltenFragment"
-        android:name="com.serenitysystems.livable.ui.userprofil.ProfilverwaltenFragment"
+        android:name="com.serenitysystems.livable.ui.profilverwalten.ProfilverwaltenFragment"
         android:label="Profil Verwalten"
         tools:layout="@layout/fragment_profilverwalten" />
 

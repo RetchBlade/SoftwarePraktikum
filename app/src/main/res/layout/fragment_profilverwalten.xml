@@ -99,7 +99,7 @@
                         android:layout_marginBottom="-20dp"
                         android:background="@android:color/transparent"
                         android:padding="20dp"
-                        android:text="WG-Rolle: Mitglied"
+                        android:text="WG-Rolle: "
                         android:textColor="@color/own_very_dark_gray"
                         android:textSize="15dp" />
 
@@ -153,6 +153,26 @@
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             android:hint="Email Adresse bestätigen"
+                            android:inputType="textPassword"
+                            android:padding="20dp"
+                            android:textColor="@color/own_very_dark_gray"
+                            android:textSize="14sp" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Altes Passwort -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="300dp"
+                        android:layout_height="60dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="20dp"
+                        app:cardCornerRadius="8dp">
+
+                        <EditText
+                            android:id="@+id/oldPasswordInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:hint="Altes Passwort"
                             android:inputType="textPassword"
                             android:padding="20dp"
                             android:textColor="@color/own_very_dark_gray"
@@ -217,15 +237,15 @@
                         android:textSize="19sp" />
 
                     <Button
-                        android:id="@+id/logoutButton"
+                        android:id="@+id/deleteAccountButton"
                         android:layout_width="290dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="12dp"
                         android:layout_marginBottom="50dp"
 
-                        android:backgroundTint="#03DAC5"
-                        android:text="Abmelden"
+                        android:backgroundTint="@color/red"
+                        android:text="Konto Löschen"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="19sp" />
