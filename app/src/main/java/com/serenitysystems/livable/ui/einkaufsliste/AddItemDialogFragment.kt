@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteViewModel
 import kotlinx.coroutines.*
 
@@ -258,12 +259,19 @@ class AddItemDialogFragment : DialogFragment() {
                 calendar.time = dateFormat.parse(it)!!
                 calendar
             }
-            item.imageUri?.let {
-                selectedImageUri = Uri.parse(it)
-                productImage.setImageURI(selectedImageUri)
+
+            // Lade die URI des Bildes, falls vorhanden
+            if (!item.imageUri.isNullOrEmpty()) {
+                selectedImageUri = Uri.parse(item.imageUri) // Setze die URI für später
+                Glide.with(requireContext())
+                    .load(selectedImageUri)
+                    .into(binding.productImage) // Lade das Bild in das ImageView
+            } else {
+                binding.productImage.setImageResource(R.drawable.ic_add_image) // Platzhalterbild setzen
             }
         }
     }
+
 
     // Setzt das aktuelle Produkt zum Bearbeiten
     fun setCurrentItem(item: Produkt) {
