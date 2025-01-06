@@ -140,6 +140,7 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
     }
 
 
+
     // Löscht ein Item
     fun deleteItem(date: String, item: Produkt) {
         fetchUserToken { token ->

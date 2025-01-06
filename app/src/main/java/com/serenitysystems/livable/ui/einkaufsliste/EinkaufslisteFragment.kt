@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -45,21 +46,6 @@ class EinkaufslisteFragment : Fragment() {
     private var selectedItemForImageChange: Produkt? = null
     private val selectedDateKey get() = dateFormat.format(selectedDate.time)
 
-    // ActivityResultLauncher für die Bildauswahl
-    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null && selectedItemForImageChange != null) {
-            // Bildverarbeitung im Hintergrund
-            CoroutineScope(Dispatchers.IO).launch {
-                val imageUriString = uri.toString()
-                selectedItemForImageChange?.imageUri = imageUriString
-                viewModel.updateItemImage(selectedDateKey, selectedItemForImageChange!!)
-
-                withContext(Dispatchers.Main) {
-                    loadItemsForDate()  // Liste nach Bildänderung neu laden
-                }
-            }
-        }
-    }
 
     // Fragment-Ansicht erstellen
     override fun onCreateView(
@@ -209,6 +195,28 @@ class EinkaufslisteFragment : Fragment() {
         imagePickerLauncher.launch("image/*")
     }
 
+    // ActivityResultLauncher für die Bildauswahl
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null && selectedItemForImageChange != null) {
+            val item = selectedItemForImageChange!!
+
+            // Bild in Firebase Storage hochladen
+            viewModel.uploadImageToFirebaseStorage(uri, item.id) { downloadUri ->
+                if (downloadUri != null) {
+                    // Bild-URI im Produkt aktualisieren
+                    item.imageUri = downloadUri
+
+                    // Produkt mit aktualisierter URI speichern
+                    viewModel.addItem(item.date ?: dateFormat.format(selectedDate.time), item)
+
+                    // RecyclerView aktualisieren
+                    loadItemsForDate()
+                }
+            }
+        }
+    }
+
+
     // FloatingActionButton einrichten - Neues Produkt hinzufügen
     private fun setupFab() {
         binding.fab.setOnClickListener {
@@ -274,23 +282,22 @@ class EinkaufslisteFragment : Fragment() {
         val dateKey = dateFormat.format(selectedDate.time)
         val itemsForDate = viewModel.getItemsForDate(dateKey)
 
-        // Listen der Kategorien leeren
         lebensmittelAdapter.setItems(emptyList())
         getrankeAdapter.setItems(emptyList())
         haushaltAdapter.setItems(emptyList())
         sonstigesAdapter.setItems(emptyList())
 
-        // Produkte den jeweiligen Kategorien hinzufügen
         itemsForDate.forEach { item ->
             when (item.category) {
                 "Lebensmittel" -> lebensmittelAdapter.addItem(item)
                 "Getränke" -> getrankeAdapter.addItem(item)
                 "Haushalt" -> haushaltAdapter.addItem(item)
                 "Sonstiges" -> sonstigesAdapter.addItem(item)
-                else -> sonstigesAdapter.addItem(item)  // Für unbekannte Kategorien
+                else -> sonstigesAdapter.addItem(item)
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
