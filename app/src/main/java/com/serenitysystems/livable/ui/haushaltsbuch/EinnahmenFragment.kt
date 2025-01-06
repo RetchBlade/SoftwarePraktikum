@@ -42,15 +42,15 @@ class EinnahmenFragment : Fragment() {
                 builder.setTitle("Bestätigung")
                 builder.setMessage("Möchten Sie diesen Eintrag wirklich löschen?")
                 builder.setPositiveButton("Ja") { dialog, _ ->
-                    adapter.confirmDelete(expense)
+                    haushaltsbuchViewModel.deleteExpenseFromFirestore(expense)
                     dialog.dismiss()
                 }
                 builder.setNegativeButton("Nein") { dialog, _ ->
-                    adapter.restoreExpense(expense)
                     dialog.dismiss()
                 }
                 builder.show()
             }
+
         )
 
         binding.recyclerView.adapter = adapter
@@ -103,6 +103,7 @@ class EinnahmenFragment : Fragment() {
         val dialog = AddTransactionDialogFragment.newInstance(expense)
         dialog.show(parentFragmentManager, "EditTransactionDialogFragment")
     }
+
 
     private fun updateDateDisplay() {
         binding.dateTextView.text = formatDate(selectedDate)

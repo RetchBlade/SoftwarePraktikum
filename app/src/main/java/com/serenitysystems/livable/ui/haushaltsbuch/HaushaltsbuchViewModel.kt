@@ -41,92 +41,125 @@ class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun listenForRealtimeUpdates() {
+        Log.d("HaushaltsbuchViewModel", "Starting to listen for real-time updates")
         fetchUserToken { token ->
-            token?.let { userToken ->
-                val userEmail = userToken.email
-                db.collection("users").document(userEmail).get()
-                    .addOnSuccessListener { document ->
-                        val wgId = document.getString("wgId")
-                        if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
-                                .addSnapshotListener { snapshot, error ->
-                                    if (error != null) {
-                                        Log.e("HaushaltsbuchViewModel", "Error fetching updates: ${error.message}")
-                                        return@addSnapshotListener
-                                    }
-                                    val expenses = snapshot?.documents?.mapNotNull { it.toObject(Expense::class.java) }
-                                        ?: listOf()
-                                    _allExpenses.value = expenses
-                                    loadExpensesForDate(formatDate(selectedDate))
-                                }
-                        } else {
-                            Log.e("HaushaltsbuchViewModel", "WG-ID is null")
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("HaushaltsbuchViewModel", "Error fetching WG-ID: ${e.message}")
-                    }
+            if (token == null) {
+                Log.e("HaushaltsbuchViewModel", "User token is null")
+                return@fetchUserToken
             }
+            val userEmail = token.email
+            Log.d("HaushaltsbuchViewModel", "User email: $userEmail")
+
+            db.collection("users").document(userEmail).get()
+                .addOnSuccessListener { document ->
+                    val wgId = document.getString("wgId")
+                    if (wgId == null) {
+                        Log.e("HaushaltsbuchViewModel", "WG-ID is null")
+                        return@addOnSuccessListener
+                    }
+                    Log.d("HaushaltsbuchViewModel", "WG-ID: $wgId")
+
+                    db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                        .addSnapshotListener { snapshot, error ->
+                            if (error != null) {
+                                Log.e("HaushaltsbuchViewModel", "Error fetching updates: ${error.message}")
+                                return@addSnapshotListener
+                            }
+                            val expenses = snapshot?.documents?.mapNotNull { doc ->
+                                doc.toObject(Expense::class.java)?.copy(id = doc.id)
+                            } ?: listOf()
+                            Log.d("HaushaltsbuchViewModel", "Fetched ${expenses.size} expenses")
+                            _allExpenses.value = expenses
+                            loadExpensesForDate(formatDate(selectedDate))
+                        }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("HaushaltsbuchViewModel", "Error fetching WG-ID: ${e.message}")
+                }
         }
     }
 
-
     fun addExpenseToFirestore(expense: Expense) {
+        Log.d("HaushaltsbuchViewModel", "Adding expense: $expense")
         fetchUserToken { token ->
-            token?.let { userToken ->
-                val userEmail = userToken.email
-                db.collection("users").document(userEmail).get()
-                    .addOnSuccessListener { document ->
-                        val wgId = document.getString("wgId")
-                        if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Haushaltsbuch").add(expense)
-                                .addOnSuccessListener { Log.d("HaushaltsbuchViewModel", "Transaction added successfully.") }
-                                .addOnFailureListener { Log.e("HaushaltsbuchViewModel", "Error adding transaction.") }
-                        }
-                    }
+            if (token == null) {
+                Log.e("HaushaltsbuchViewModel", "User token is null")
+                return@fetchUserToken
             }
+            val userEmail = token.email
+            db.collection("users").document(userEmail).get()
+                .addOnSuccessListener { document ->
+                    val wgId = document.getString("wgId")
+                    if (wgId == null) {
+                        Log.e("HaushaltsbuchViewModel", "WG-ID is null")
+                        return@addOnSuccessListener
+                    }
+                    val docRef = db.collection("WGs").document(wgId).collection("Haushaltsbuch").document()
+                    val expenseWithId = expense.copy(id = docRef.id)
+                    docRef.set(expenseWithId)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Transaction added with ID: ${docRef.id}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error adding transaction: ${e.message}")
+                        }
+                }
         }
     }
 
     fun updateExpenseInFirestore(expense: Expense) {
+        Log.d("HaushaltsbuchViewModel", "Updating expense with ID: ${expense.id}")
         fetchUserToken { token ->
-            token?.let { userToken ->
-                val userEmail = userToken.email
-                db.collection("users").document(userEmail).get()
-                    .addOnSuccessListener { document ->
-                        val wgId = document.getString("wgId")
-                        if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
-                                .whereEqualTo("datum", expense.datum)
-                                .whereEqualTo("kategorie", expense.kategorie)
-                                .get()
-                                .addOnSuccessListener { snapshot ->
-                                    snapshot.documents.firstOrNull()?.reference?.set(expense)
-                                }
-                        }
-                    }
+            if (token == null) {
+                Log.e("HaushaltsbuchViewModel", "User token is null")
+                return@fetchUserToken
             }
+            val userEmail = token.email
+            db.collection("users").document(userEmail).get()
+                .addOnSuccessListener { document ->
+                    val wgId = document.getString("wgId")
+                    if (wgId == null || expense.id.isEmpty()) {
+                        Log.e("HaushaltsbuchViewModel", "WG-ID is null or expense ID is empty")
+                        return@addOnSuccessListener
+                    }
+                    db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                        .document(expense.id)
+                        .set(expense)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Transaction updated with ID: ${expense.id}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error updating transaction: ${e.message}")
+                        }
+                }
         }
     }
 
     fun deleteExpenseFromFirestore(expense: Expense) {
+        Log.d("HaushaltsbuchViewModel", "Deleting expense with ID: ${expense.id}")
         fetchUserToken { token ->
-            token?.let { userToken ->
-                val userEmail = userToken.email
-                db.collection("users").document(userEmail).get()
-                    .addOnSuccessListener { document ->
-                        val wgId = document.getString("wgId")
-                        if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Haushaltsbuch")
-                                .whereEqualTo("datum", expense.datum)
-                                .whereEqualTo("kategorie", expense.kategorie)
-                                .get()
-                                .addOnSuccessListener { snapshot ->
-                                    snapshot.documents.forEach { it.reference.delete() }
-                                }
-                        }
-                    }
+            if (token == null) {
+                Log.e("HaushaltsbuchViewModel", "User token is null")
+                return@fetchUserToken
             }
+            val userEmail = token.email
+            db.collection("users").document(userEmail).get()
+                .addOnSuccessListener { document ->
+                    val wgId = document.getString("wgId")
+                    if (wgId == null || expense.id.isEmpty()) {
+                        Log.e("HaushaltsbuchViewModel", "WG-ID is null or expense ID is empty")
+                        return@addOnSuccessListener
+                    }
+                    db.collection("WGs").document(wgId).collection("Haushaltsbuch")
+                        .document(expense.id)
+                        .delete()
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Transaction deleted with ID: ${expense.id}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error deleting transaction: ${e.message}")
+                        }
+                }
         }
     }
 
@@ -144,8 +177,10 @@ class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun loadExpensesForDate(date: String) {
+        Log.d("HaushaltsbuchViewModel", "Loading expenses for date: $date")
         viewModelScope.launch {
             val expensesForDate = _allExpenses.value?.filter { it.datum == date } ?: emptyList()
+            Log.d("HaushaltsbuchViewModel", "Found ${expensesForDate.size} expenses for date: $date")
             _selectedDateExpenses.value = expensesForDate
             updateTotals()
         }
@@ -157,6 +192,7 @@ class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(applic
         val totalExpense = _selectedDateExpenses.value?.filter { !it.istEinnahme }
             ?.sumOf { it.betrag.toDouble() }?.toFloat() ?: 0f
         _kontostand.value = totalIncome - totalExpense
+        Log.d("HaushaltsbuchViewModel", "Total income: $totalIncome, total expense: $totalExpense, balance: ${_kontostand.value}")
     }
 
     fun getCategoryColor(category: String): Int {

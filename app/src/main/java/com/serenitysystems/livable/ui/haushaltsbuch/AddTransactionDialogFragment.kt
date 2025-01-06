@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.serenitysystems.livable.R
@@ -76,18 +76,16 @@ class AddTransactionDialogFragment : DialogFragment() {
             getString(R.string.ausgabe_button_text)
         }
 
-        // Correctly fetch categories and set up the adapter
         val categories = haushaltsbuchViewModel.categories
         context?.let { ctx ->
             val adapter = ArrayAdapter(
                 ctx,
                 android.R.layout.simple_spinner_item,
-                haushaltsbuchViewModel.categories
+                categories
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerCategory.adapter = adapter
-        } ?: Log.e("HaushaltsbuchAddtrans", "Context is null")
-
+        } ?: Log.e("AddTransactionDialog", "Context is null")
 
         expense?.let {
             binding.editAmount.setText(it.betrag.toString())
@@ -140,18 +138,30 @@ class AddTransactionDialogFragment : DialogFragment() {
         val category = binding.spinnerCategory.selectedItem?.toString()
 
         if (amount == null || date.isEmpty() || category.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "Bitte alle Felder ausfüllen", Toast.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, "Bitte alle Felder ausfüllen", Snackbar.LENGTH_LONG).show()
             return
         }
 
-        val newExpense = Expense(
+        val expense = arguments?.getParcelable<Expense>(ARG_EXPENSE)
+        val newExpense = expense?.copy(
+            kategorie = category,
+            betrag = amount,
+            notiz = note,
+            datum = date,
+            istEinnahme = isEinnahme
+        ) ?: Expense(
             kategorie = category,
             betrag = amount,
             notiz = note,
             datum = date,
             istEinnahme = isEinnahme
         )
-        haushaltsbuchViewModel.addExpenseToFirestore(newExpense)
+
+        if (expense != null && expense.id.isNotEmpty()) {
+            haushaltsbuchViewModel.updateExpenseInFirestore(newExpense)
+        } else {
+            haushaltsbuchViewModel.addExpenseToFirestore(newExpense)
+        }
         dismiss()
     }
 
