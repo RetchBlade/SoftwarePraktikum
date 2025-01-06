@@ -81,7 +81,12 @@ class EinkaufslisteFragment : Fragment() {
         lebensmittelAdapter = EinkaufsItemAdapter(
             mutableListOf(),
             onItemClicked = { item -> showEditItemDialog(item) },   // Direktes Bearbeiten des Produkts
-            onDateChanged = { item, neuesDatum -> moveItemToNewDate(item, neuesDatum) },  // Datum ändern
+            onDateChanged = { item, neuesDatum ->
+                moveItemToNewDate(
+                    item,
+                    neuesDatum
+                )
+            },  // Datum ändern
             onImageClicked = { item -> handleImageClick(item) }, // Bildklick verarbeiten
             onItemDeleted = { item -> deleteItem(item) },         // Produkt löschen
             onItemStatusChanged = { item -> updateItemStatus(item) }, // Status zurücksetzen
@@ -196,25 +201,26 @@ class EinkaufslisteFragment : Fragment() {
     }
 
     // ActivityResultLauncher für die Bildauswahl
-    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null && selectedItemForImageChange != null) {
-            val item = selectedItemForImageChange!!
+    private val imagePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null && selectedItemForImageChange != null) {
+                val item = selectedItemForImageChange!!
 
-            // Bild in Firebase Storage hochladen
-            viewModel.uploadImageToFirebaseStorage(uri, item.id) { downloadUri ->
-                if (downloadUri != null) {
-                    // Bild-URI im Produkt aktualisieren
-                    item.imageUri = downloadUri
+                // Bild in Firebase Storage hochladen
+                viewModel.uploadImageToFirebaseStorage(uri, item.id) { downloadUri ->
+                    if (downloadUri != null) {
+                        // Bild-URI im Produkt aktualisieren
+                        item.imageUri = downloadUri
 
-                    // Produkt mit aktualisierter URI speichern
-                    viewModel.addItem(item.date ?: dateFormat.format(selectedDate.time), item)
+                        // Produkt mit aktualisierter URI speichern
+                        viewModel.addItem(item.date ?: dateFormat.format(selectedDate.time), item)
 
-                    // RecyclerView aktualisieren
-                    loadItemsForDate()
+                        // RecyclerView aktualisieren
+                        loadItemsForDate()
+                    }
                 }
             }
         }
-    }
 
 
     // FloatingActionButton einrichten - Neues Produkt hinzufügen

@@ -62,7 +62,8 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
                     .addOnSuccessListener { document ->
                         val wgId = document.getString("wgId")
                         if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste")
+                                .document(item.id)
                                 .set(item)
                         }
                     }
@@ -89,7 +90,7 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
         currentMap[newDate] = newItems
 
         _itemsByDate.value = currentMap.toMutableMap() // Trigger LiveData update
-        updateItem(newDate,item)
+        updateItem(newDate, item)
     }
 
 
@@ -102,7 +103,8 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
                     .addOnSuccessListener { document ->
                         val wgId = document.getString("wgId")
                         if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste")
+                                .document(item.id)
                                 .set(item)
                         }
                     }
@@ -124,7 +126,11 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun uploadImageToFirebaseStorage(uri: Uri, itemId: String, onUploadComplete: (String?) -> Unit) {
+    fun uploadImageToFirebaseStorage(
+        uri: Uri,
+        itemId: String,
+        onUploadComplete: (String?) -> Unit
+    ) {
         val storageRef = FirebaseStorage.getInstance().reference
         val imageRef = storageRef.child("Einkaufsliste/$itemId.jpg")
 
@@ -146,8 +152,6 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
     }
 
 
-
-
     // Löscht ein Item
     fun deleteItem(date: String, item: Produkt) {
         fetchUserToken { token ->
@@ -157,7 +161,8 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
                     .addOnSuccessListener { document ->
                         val wgId = document.getString("wgId")
                         if (wgId != null) {
-                            db.collection("WGs").document(wgId).collection("Einkaufsliste").document(item.id)
+                            db.collection("WGs").document(wgId).collection("Einkaufsliste")
+                                .document(item.id)
                                 .delete()
                         }
                     }

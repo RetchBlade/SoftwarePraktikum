@@ -87,7 +87,9 @@ class AddItemDialogFragment : DialogFragment() {
 
         // Kategorie-Spinner einrichten
         val categoryAdapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.einkaufsliste_category_array, android.R.layout.simple_spinner_item
+            requireContext(),
+            R.array.einkaufsliste_category_array,
+            android.R.layout.simple_spinner_item
         )
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = categoryAdapter
@@ -170,8 +172,6 @@ class AddItemDialogFragment : DialogFragment() {
         }
 
 
-
-
         // Abbrechen-Button: Dialog schließen
         binding.btnCancel.setOnClickListener { dismiss() }
 
@@ -205,7 +205,8 @@ class AddItemDialogFragment : DialogFragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
-        datePicker.datePicker.minDate = Calendar.getInstance().timeInMillis // Verhindert die Auswahl vergangener Daten
+        datePicker.datePicker.minDate =
+            Calendar.getInstance().timeInMillis // Verhindert die Auswahl vergangener Daten
         datePicker.show()
     }
 
@@ -229,7 +230,8 @@ class AddItemDialogFragment : DialogFragment() {
         }
 
         if (date == null) {
-            Toast.makeText(requireContext(), "Bitte wählen Sie ein Datum aus.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Bitte wählen Sie ein Datum aus.", Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
@@ -247,10 +249,14 @@ class AddItemDialogFragment : DialogFragment() {
             category = category,
             imageUri = imageUriString,
             date = date,
-            isChecked = currentItem?.isChecked ?: false, // Status vom bestehenden Produkt beibehalten
+            isChecked = currentItem?.isChecked
+                ?: false, // Status vom bestehenden Produkt beibehalten
             statusIcon = currentItem?.statusIcon // Statusicon beibehalten
         )
-        onAddItem?.invoke(newItem, currentItem) // Callback für das Hinzufügen oder Aktualisieren aufrufen
+        onAddItem?.invoke(
+            newItem,
+            currentItem
+        ) // Callback für das Hinzufügen oder Aktualisieren aufrufen
 
         dismiss() // Dialog schließen
     }
@@ -260,8 +266,16 @@ class AddItemDialogFragment : DialogFragment() {
         binding.apply {
             editItemName.setText(item.name)
             editItemQuantity.setText(item.quantity)
-            spinnerUnit.setSelection((spinnerUnit.adapter as? ArrayAdapter<String>)?.getPosition(item.unit) ?: 0)
-            spinnerCategory.setSelection((spinnerCategory.adapter as? ArrayAdapter<String>)?.getPosition(item.category) ?: 0)
+            spinnerUnit.setSelection(
+                (spinnerUnit.adapter as? ArrayAdapter<String>)?.getPosition(
+                    item.unit
+                ) ?: 0
+            )
+            spinnerCategory.setSelection(
+                (spinnerCategory.adapter as? ArrayAdapter<String>)?.getPosition(
+                    item.category
+                ) ?: 0
+            )
             etSelectedDate.setText(item.date)
             selectedDate = item.date?.let {
                 val calendar = Calendar.getInstance()
@@ -288,7 +302,6 @@ class AddItemDialogFragment : DialogFragment() {
             }
         }
     }
-
 
 
     // Setzt das aktuelle Produkt zum Bearbeiten
