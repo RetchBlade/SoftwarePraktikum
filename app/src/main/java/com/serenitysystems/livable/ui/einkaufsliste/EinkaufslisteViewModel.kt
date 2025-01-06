@@ -1,11 +1,13 @@
 package com.serenitysystems.livable.ui.einkaufsliste
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
@@ -121,6 +123,22 @@ class EinkaufslisteViewModel(application: Application) : AndroidViewModel(applic
             _itemsByDate.postValue(currentMap.toMutableMap())
         }
     }
+
+    fun uploadImageToFirebaseStorage(uri: Uri, itemId: String, onUploadComplete: (String?) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imageRef = storageRef.child("Einkaufsliste/$itemId.jpg")
+
+        imageRef.putFile(uri)
+            .addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    onUploadComplete(downloadUri.toString())
+                }
+            }
+            .addOnFailureListener {
+                onUploadComplete(null) // Fehlerbehandlung
+            }
+    }
+
 
     // Löscht ein Item
     fun deleteItem(date: String, item: Produkt) {

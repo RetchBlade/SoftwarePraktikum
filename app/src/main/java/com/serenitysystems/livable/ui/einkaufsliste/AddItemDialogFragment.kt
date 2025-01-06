@@ -18,6 +18,8 @@ import com.serenitysystems.livable.ui.einkaufsliste.data.Produkt
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.ViewModelProvider
+import com.serenitysystems.livable.ui.einkaufsliste.EinkaufslisteViewModel
 import kotlinx.coroutines.*
 
 class AddItemDialogFragment : DialogFragment() {
@@ -35,6 +37,8 @@ class AddItemDialogFragment : DialogFragment() {
 
     // Maximale Bildgröße (5 MB)
     private val MAX_IMAGE_SIZE = 5 * 1024 * 1024
+
+    private lateinit var viewModel: EinkaufslisteViewModel
 
     // ImagePicker Launcher
     private val imagePickerLauncher = registerForActivityResult(
@@ -66,6 +70,9 @@ class AddItemDialogFragment : DialogFragment() {
     ): View? {
         _binding = DialogAddItemBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        viewModel = ViewModelProvider(requireActivity()).get(EinkaufslisteViewModel::class.java)
+
 
         // Transparenter Hintergrund für den Dialog
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -101,8 +108,59 @@ class AddItemDialogFragment : DialogFragment() {
 
         // Hinzufügen-Button: Neuen Artikel hinzufügen oder bestehendes Produkt aktualisieren
         binding.btnAdd.setOnClickListener {
-            addItem()
+            val name = binding.editItemName.text.toString().trim()
+            val quantity = binding.editItemQuantity.text.toString().trim()
+            val unit = binding.spinnerUnit.selectedItem?.toString() ?: ""
+            val category = binding.spinnerCategory.selectedItem?.toString() ?: ""
+            val date = selectedDate?.let { dateFormat.format(it.time) }
+
+            // Eingabevalidierung
+            if (name.isEmpty()) {
+                binding.editItemName.error = "Bitte geben Sie einen Produktnamen ein."
+                return@setOnClickListener
+            }
+            if (quantity.isEmpty()) {
+                binding.editItemQuantity.error = "Bitte geben Sie eine Menge ein."
+                return@setOnClickListener
+            }
+            if (date == null) {
+                Toast.makeText(requireContext(), "Bitte wählen Sie ein Datum aus.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // URI des ausgewählten Bildes
+            val imageUri = selectedImageUri
+
+            // Neues Produktobjekt erstellen
+            val newItem = Produkt(
+                id = currentItem?.id ?: UUID.randomUUID().toString(),
+                name = name,
+                quantity = quantity,
+                unit = unit,
+                category = category,
+                date = date,
+                imageUri = null, // Platzhalter, falls ein Bild hochgeladen wird
+                isChecked = currentItem?.isChecked ?: false,
+                statusIcon = currentItem?.statusIcon
+            )
+
+            // Falls ein Bild vorhanden ist, hochladen und dann speichern
+            if (imageUri != null) {
+                viewModel.uploadImageToFirebaseStorage(imageUri, newItem.id) { downloadUri ->
+                    if (downloadUri != null) {
+                        newItem.imageUri = downloadUri // Bild-URI im Produkt setzen
+                        addItem() // Item speichern
+                    } else {
+                        Toast.makeText(requireContext(), "Fehler beim Hochladen des Bildes.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                // Direkt speichern, wenn kein Bild hochgeladen wird
+                addItem()
+            }
         }
+
+
 
         // Abbrechen-Button: Dialog schließen
         binding.btnCancel.setOnClickListener { dismiss() }

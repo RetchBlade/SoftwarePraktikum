@@ -50,7 +50,7 @@ class EinkaufsItemAdapter(
                     // Bild mit Glide laden
                     Glide.with(itemView.context)
                         .load(Uri.parse(item.imageUri))
-                        .override(100, 100) // Bildgröße anpassen
+                        .override(100, 100)
                         .into(itemImage)
                 } else {
                     // Platzhalterbild setzen
