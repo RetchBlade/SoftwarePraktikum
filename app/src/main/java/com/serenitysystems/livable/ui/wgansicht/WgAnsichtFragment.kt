@@ -111,9 +111,16 @@ class WgAnsichtFragment : Fragment() {
                     .into(profilePicture)
             }
 
+            // Klick-Listener für das Profilbild
+            profilePicture.setOnClickListener {
+                sharedViewModel.setSelectedUserEmail(email)
+                findNavController().navigate(R.id.nav_profilansicht)
+            }
+
             bewohnerContainer.addView(roommateView)
         }
     }
+
 
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
         db.collection("users").document(email)
@@ -145,4 +152,5 @@ class WgAnsichtFragment : Fragment() {
     private fun showError(view: View, message: String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
+
 }

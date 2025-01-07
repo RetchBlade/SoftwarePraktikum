@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.serenitysystems.livable.R
+import com.serenitysystems.livable.ui.wgansicht.WgSharedViewModel
 
 class ProfilansichtFragment : Fragment() {
 
@@ -59,4 +61,33 @@ class ProfilansichtFragment : Fragment() {
 
         return view
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val sharedViewModel: WgSharedViewModel by activityViewModels()
+
+        sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { email ->
+            if (email != null) {
+                // Lade die Daten des ausgewählten WG-Mitglieds
+                viewModel.loadUserData(email)
+            } else {
+                // Lade die eigenen Daten
+                viewModel.loadCurrentUserData()
+            }
+        }
+
+        // Fallback: Eigene Daten laden, falls keine E-Mail gesetzt ist
+        if (sharedViewModel.selectedUserEmail.value == null) {
+            viewModel.loadCurrentUserData()
+        }
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        val sharedViewModel: WgSharedViewModel by activityViewModels()
+        sharedViewModel.setSelectedUserEmail(null) // Zurücksetzen
+    }
+
 }

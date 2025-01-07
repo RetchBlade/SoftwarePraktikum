@@ -36,9 +36,17 @@ class WgSharedViewModel(application: Application) : AndroidViewModel(application
     private val firestore = FirebaseFirestore.getInstance()
     private val userPreferences: UserPreferences = UserPreferences(application)
 
+    private val _selectedUserEmail = MutableLiveData<String?>(null)
+    val selectedUserEmail: LiveData<String?> get() = _selectedUserEmail
+
     init {
         loadUserEmailAndWgDetails()
     }
+
+    fun setSelectedUserEmail(email: String?) {
+        _selectedUserEmail.value = email
+    }
+
 
     fun loadUserEmailAndWgDetails() {
         viewModelScope.launch(Dispatchers.IO) {

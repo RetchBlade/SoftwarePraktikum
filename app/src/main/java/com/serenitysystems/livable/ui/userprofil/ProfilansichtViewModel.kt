@@ -37,11 +37,8 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
 
     private var snapshotListener: ListenerRegistration? = null
 
-    init {
-        fetchUserData()
-    }
 
-    private fun fetchUserData() {
+    fun loadCurrentUserData() {
         viewModelScope.launch(Dispatchers.IO) {
             userPreferences.userToken.collect { userToken ->
                 userToken?.let {
@@ -68,6 +65,28 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
             }
         }
     }
+
+
+    fun loadUserData(email: String) {
+        firestore.collection("users").document(email)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e("ProfilansichtViewModel", "Fehler beim Laden der Benutzerdaten: ${e.message}")
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    _profileImage.postValue(snapshot.getString("profileImageUrl"))
+                    _username.postValue(snapshot.getString("nickname"))
+                    _email.postValue(snapshot.getString("email"))
+                    _birthdate.postValue(snapshot.getString("birthdate"))
+                    _gender.postValue(snapshot.getString("gender"))
+                    _role.postValue(snapshot.getString("wgRole"))
+                } else {
+                    Log.w("ProfilansichtViewModel", "Keine Benutzerdaten gefunden.")
+                }
+            }
+    }
+
 
     override fun onCleared() {
         super.onCleared()
