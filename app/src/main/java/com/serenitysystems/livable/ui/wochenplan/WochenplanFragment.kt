@@ -621,7 +621,7 @@ class WochenplanFragment : Fragment() {
         val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
         val taskDescription: EditText = dialogView.findViewById(R.id.taskDescription)
         val taskPriority: Spinner = dialogView.findViewById(R.id.taskPriority)
-        val taskPoints: EditText = dialogView.findViewById(R.id.taskPoints)
+        val taskPointsSpinner: Spinner = dialogView.findViewById(R.id.taskPointsSpinner)
         val taskAssigneeSpinner: Spinner = dialogView.findViewById(R.id.taskAssigneeSpinner)
         val assigneeToggle: Switch = dialogView.findViewById(R.id.asigneeToggle)
         val assigneeLabel: TextView = dialogView.findViewById(R.id.asigneeLabel)
@@ -642,7 +642,6 @@ class WochenplanFragment : Fragment() {
             taskPriority.setSelection(
                 resources.getStringArray(R.array.prio_liste).indexOf(it.priority)
             )
-            taskPoints.setText(it.points.toString())
             repeatToggle.isChecked = it.isRepeating
             repeatFrequencyLayout.visibility = if (it.isRepeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
@@ -746,7 +745,7 @@ class WochenplanFragment : Fragment() {
                     return@setOnClickListener
                 }
 
-                val points = taskPoints.text.toString().toIntOrNull() ?: 0
+                val points = taskPointsSpinner.selectedItem.toString().toInt()
                 val selectedAssignee = if (assigneeToggle.isChecked) null else taskAssigneeSpinner.selectedItem.toString()
                 val assigneeEmail = selectedAssignee?.let { name ->
                     wochenplanViewModel.assignees.value?.find { it.first == name }?.second

@@ -64,16 +64,14 @@
             android:layout_marginBottom="20dp"
             android:entries="@array/prio_liste" />
 
-        <EditText
-            android:id="@+id/taskPoints"
+        <Spinner
+            android:id="@+id/taskPointsSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/edit_text_background"
-            android:hint="@string/task_points"
-            android:inputType="number"
-            android:padding="12dp"
-            android:textSize="16sp" />
+            android:entries="@array/points_options" />
+
+
 
         <!-- Toggle for Assignee -->
         <LinearLayout
