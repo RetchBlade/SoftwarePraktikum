@@ -98,91 +98,91 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
     // Kategorisiert die Aufgaben in verschiedene Wochen
     private fun categorizeTasksByWeek(tasksList: List<DynamicTask>) {
         _tasks.value = tasksList
-        val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
 
+        val lastWeek = tasksList.filter { isLastWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
 
-        val lastWeek = mutableListOf<DynamicTask>()
-        val thisWeek = mutableListOf<DynamicTask>()
-        val nextWeek = mutableListOf<DynamicTask>()
-        val today = mutableListOf<DynamicTask>()
+        val thisWeek = tasksList.filter { isThisWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
 
-        tasksList.forEach { task ->
-            val taskDate = try {
-                calendar.apply { time = dateFormat.parse(task.date) ?: Date() }
-            } catch (e: Exception) {
-                Log.e("WochenplanViewModel", "Error parsing task date: ${task.date}", e)
-                calendar // Fallback auf das aktuelle Datum, falls Parsing fehlschlägt
-            }
+        val nextWeek = tasksList.filter { isNextWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
 
-            // Vergleiche das Datum und kategorisiere die Aufgabe
-            when {
-                isThisWeek(taskDate) -> thisWeek.add(task)
-                isLastWeek(taskDate) -> lastWeek.add(task)
-                isNextWeek(taskDate) -> nextWeek.add(task)
-                isToday(taskDate) -> today.add(task)
-            }
-        }
-
-        // Setze die LiveData-Werte für jede Woche
-        _thisWeekTasks.value = thisWeek
         _lastWeekTasks.value = lastWeek
+        _thisWeekTasks.value = thisWeek
         _nextWeekTasks.value = nextWeek
-        _todayTasks.value = today
-
-        Log.d("WochenplanViewModel", "This week tasks: ${thisWeek.size}")
-        Log.d("WochenplanViewModel", "Last week tasks: ${lastWeek.size}")
-        Log.d("WochenplanViewModel", "Next week tasks: ${nextWeek.size}")
-        Log.d("WochenplanViewModel", "Today's tasks: ${today.size}")
     }
+
+    private fun parseDate(dateStr: String): Calendar {
+        val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
+        val date = dateFormat.parse(dateStr) ?: Date()
+
+        return Calendar.getInstance().apply {
+            time = date
+        }
+    }
+
+
 
     private fun isThisWeek(date: Calendar): Boolean {
-        // Kalender in der Berlin-Zeitzone erstellen
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
 
-        // Setze den Start der Woche auf Montag
+        // Setzt den Wochenanfang auf Montag
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
         calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.clear(Calendar.MINUTE)
-        calendar.clear(Calendar.SECOND)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
 
-        // Speichere den Start der Woche (Montag)
         val startOfWeek = calendar.timeInMillis
 
-        // Setze den Endpunkt auf Sonntag der gleichen Woche
-        calendar.add(Calendar.DAY_OF_WEEK, 6) // Gehe auf Sonntag
+        // Gehe zum Sonntag der aktuellen Woche
+        calendar.add(Calendar.DAY_OF_WEEK, 6)
         val endOfWeek = calendar.timeInMillis
 
-        // Prüfe, ob das aktuelle Datum innerhalb des Wochenbereichs liegt
-        Log.d("WochenplanViewModel", "Current Date: ${date.timeInMillis}")
-        Log.d("WochenplanViewModel", "Start of Week (Monday): $startOfWeek")
-        Log.d("WochenplanViewModel", "End of Week (Sunday): $endOfWeek")
-
-        return date.timeInMillis in (startOfWeek - 1000)..(endOfWeek + 1000)
+        return date.timeInMillis in startOfWeek..endOfWeek
     }
 
-
-    // Überprüft, ob das Datum in der letzten Woche ist
     fun isLastWeek(date: Calendar): Boolean {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
+
+        // Eine Woche zurücksetzen
         calendar.add(Calendar.WEEK_OF_YEAR, -1)
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
         val startOfLastWeek = calendar.timeInMillis
+
+        // Gehe zum Sonntag der letzten Woche
         calendar.add(Calendar.DAY_OF_WEEK, 6)
         val endOfLastWeek = calendar.timeInMillis
+
         return date.timeInMillis in startOfLastWeek..endOfLastWeek
     }
 
-    // Überprüft, ob das Datum in der nächsten Woche ist
     private fun isNextWeek(date: Calendar): Boolean {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
+
+        // Eine Woche vorwärts setzen
         calendar.add(Calendar.WEEK_OF_YEAR, 1)
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
         val startOfNextWeek = calendar.timeInMillis
+
+        // Gehe zum Sonntag der nächsten Woche
         calendar.add(Calendar.DAY_OF_WEEK, 6)
         val endOfNextWeek = calendar.timeInMillis
+
         return date.timeInMillis in startOfNextWeek..endOfNextWeek
     }
+
 
     // Überprüft, ob das Datum heute ist
     private fun isToday(date: Calendar): Boolean {
