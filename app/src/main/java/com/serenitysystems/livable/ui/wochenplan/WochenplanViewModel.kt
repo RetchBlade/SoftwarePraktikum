@@ -138,7 +138,7 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun isThisWeek(date: Calendar): Boolean {
         // Kalender in der Berlin-Zeitzone erstellen
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
 
         // Setze den Start der Woche auf Montag
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)

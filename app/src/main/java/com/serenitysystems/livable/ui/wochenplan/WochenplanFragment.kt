@@ -306,8 +306,13 @@ class WochenplanFragment : Fragment() {
         val layout = binding.taskLayout
         layout.removeAllViews()
 
+        // Tasks nach Datum sortieren
+        val sortedTasks = tasks.sortedBy { task ->
+            SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY).parse(task.date)
+        }
+
         // Tasks nach Datum gruppieren
-        val groupedTasks = tasks.groupBy { it.date }
+        val groupedTasks = sortedTasks.groupBy { it.date }
 
         // Iteriere über jede Gruppe von Tasks basierend auf dem Datum
         for ((date, tasksForDate) in groupedTasks) {
@@ -449,6 +454,7 @@ class WochenplanFragment : Fragment() {
         }
         isTabSwitching = false // Animation nur für Tabwechsel
     }
+
 
 
 
