@@ -95,23 +95,43 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
     }
 
 
-    // Kategorisiert die Aufgaben in verschiedene Wochen
     private fun categorizeTasksByWeek(tasksList: List<DynamicTask>) {
-        _tasks.value = tasksList
+        val today = Calendar.getInstance()
+        val updatedTasks = mutableListOf<DynamicTask>()
 
-        val lastWeek = tasksList.filter { isLastWeek(parseDate(it.date)) }
-            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
+        for (task in tasksList) {
+            val taskDate = parseDate(task.date)
 
-        val thisWeek = tasksList.filter { isThisWeek(parseDate(it.date)) }
-            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
+            // Prüfen, ob das Task-Datum in der Vergangenheit liegt und die Punkte noch nicht angepasst wurden
+            if (taskDate.before(today) && !task.isDone && !task.wasUpdated) {
+                if (task.points > 1) {  // Nur halbieren, wenn Punkte > 1 sind
+                    val updatedTask = task.copy(
+                        points = task.points / 2,
+                        wasUpdated = true  // Markiere als aktualisiert, damit es nicht erneut halbiert wird
+                    )
+                    updateTask(updatedTask)  // Firestore aktualisieren
+                    updatedTasks.add(updatedTask)
+                } else {
+                    updatedTasks.add(task)
+                }
+            } else {
+                updatedTasks.add(task)
+            }
+        }
 
-        val nextWeek = tasksList.filter { isNextWeek(parseDate(it.date)) }
-            .sortedBy { parseDate(it.date) }  // SORTIERUNG HINZUGEFÜGT ✅
+        _tasks.value = updatedTasks
 
-        _lastWeekTasks.value = lastWeek
-        _thisWeekTasks.value = thisWeek
-        _nextWeekTasks.value = nextWeek
+        _lastWeekTasks.value = updatedTasks.filter { isLastWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }
+
+        _thisWeekTasks.value = updatedTasks.filter { isThisWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }
+
+        _nextWeekTasks.value = updatedTasks.filter { isNextWeek(parseDate(it.date)) }
+            .sortedBy { parseDate(it.date) }
     }
+
+
 
     private fun parseDate(dateStr: String): Calendar {
         val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
