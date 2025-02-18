@@ -163,7 +163,7 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
 
 
     // Überprüft, ob das Datum in der letzten Woche ist
-    private fun isLastWeek(date: Calendar): Boolean {
+    fun isLastWeek(date: Calendar): Boolean {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"))
         calendar.add(Calendar.WEEK_OF_YEAR, -1)
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)

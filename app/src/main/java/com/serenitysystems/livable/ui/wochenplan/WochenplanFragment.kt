@@ -494,19 +494,30 @@ class WochenplanFragment : Fragment() {
     }
 
     private fun showTaskOptions(task: DynamicTask) {
-        // Dynamisch die Optionen basierend auf dem Status der Aufgabe erstellen
         val options = mutableListOf<String>()
 
-        if (task.assignee != "Unassigned") {
-            if (task.isDone) {
-                options.add("Nicht erledigt")
-            } else {
-                options.add("Erledigt")
-            }
+        // Prüfen, ob die Aufgabe zur letzten Woche gehört
+        val taskDate = Calendar.getInstance().apply {
+            time = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY).parse(task.date)!!
         }
 
-        options.add("Bearbeiten")
-        options.add("Löschen")
+        val isLastWeekTask = wochenplanViewModel.isLastWeek(taskDate)
+
+        // Falls die Aufgabe nicht aus der letzten Woche ist, füge Optionen hinzu
+        if (!isLastWeekTask) {
+            if (task.assignee != "Unassigned") {
+                if (task.isDone) {
+                    options.add("Nicht erledigt")
+                } else {
+                    options.add("Erledigt")
+                }
+            }
+            options.add("Bearbeiten")
+            options.add("Löschen")
+        }
+
+        // Falls keine Optionen verfügbar sind, verlasse die Methode einfach
+        if (options.isEmpty()) return
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(R.string.task_options)
@@ -522,6 +533,8 @@ class WochenplanFragment : Fragment() {
 
         dialog.show()
     }
+
+
 
 
     private fun findTaskView(task: DynamicTask): View? {
