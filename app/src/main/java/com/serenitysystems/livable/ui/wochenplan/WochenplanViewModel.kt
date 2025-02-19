@@ -44,7 +44,9 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
 
     init {
         loadTasks()
+        checkAndCalculateMonthlyPoints()
     }
+
 
     // Lädt die Tasks für die aktuelle WG und die entsprechenden Wochen
     private fun loadTasks() {
@@ -97,20 +99,29 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun categorizeTasksByWeek(tasksList: List<DynamicTask>) {
         val today = Calendar.getInstance()
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
+
         val updatedTasks = mutableListOf<DynamicTask>()
 
         for (task in tasksList) {
             val taskDate = parseDate(task.date)
 
-            // Prüfen, ob das Task-Datum in der Vergangenheit liegt und die Punkte noch nicht angepasst wurden
-            if (taskDate.before(today) && !task.isDone && !task.wasUpdated) {
-                if (task.points > 1) {  // Nur halbieren, wenn Punkte > 1 sind
-                    val updatedTask = task.copy(
-                        points = task.points / 2,
-                        wasUpdated = true  // Markiere als aktualisiert, damit es nicht erneut halbiert wird
-                    )
-                    updateTask(updatedTask)  // Firestore aktualisieren
-                    updatedTasks.add(updatedTask)
+            // Prüfe, ob das Datum in der Vergangenheit liegt (aber NICHT heute)
+            if (taskDate.before(today) && !task.wasUpdated) {
+                if (!task.isDone) {  // Nur überfällige Aufgaben werden angepasst
+                    if (task.points > 1) {
+                        val updatedTask = task.copy(
+                            points = task.points / 2,
+                            wasUpdated = true
+                        )
+                        updateTask(updatedTask) // Firestore aktualisieren
+                        updatedTasks.add(updatedTask)
+                    } else {
+                        updatedTasks.add(task)
+                    }
                 } else {
                     updatedTasks.add(task)
                 }
@@ -130,6 +141,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         _nextWeekTasks.value = updatedTasks.filter { isNextWeek(parseDate(it.date)) }
             .sortedBy { parseDate(it.date) }
     }
+
+
 
 
 
@@ -476,6 +489,89 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+
+    fun calculateMonthlyPoints() {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs")
+                                .document(wgId)
+                                .collection("Wochenplan")
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val userPoints = mutableMapOf<String, Int>()
+
+                                    snapshot.documents.forEach { doc ->
+                                        val task = doc.toObject(DynamicTask::class.java)
+                                        if (task != null && isLastWeek(parseDate(task.date)) && !task.isAccounted) {
+                                            val points = if (task.isDone) task.points else -task.points
+                                            userPoints[task.assigneeEmail] = (userPoints[task.assigneeEmail] ?: 0) + points
+
+                                            // Markiere die Aufgabe als bereits verrechnet
+                                            db.collection("WGs")
+                                                .document(wgId)
+                                                .collection("Wochenplan")
+                                                .document(task.id)
+                                                .update("isAccounted", true)
+                                        }
+                                    }
+
+                                    saveMonthlyPoints(wgId, userPoints)
+                                }
+                        }
+                    }
+            }
+        }
+    }
+
+
+
+    private fun saveMonthlyPoints(wgId: String, userPoints: Map<String, Int>) {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, -1)
+        val monthIdentifier = SimpleDateFormat("yyyy-MM", Locale.GERMANY).format(calendar.time)
+
+        val monthRef = db.collection("WGs")
+            .document(wgId)
+            .collection("PunkteHistorie")
+            .document(monthIdentifier)
+
+        monthRef.get().addOnSuccessListener { document ->
+            val existingPoints = if (document.exists()) {
+                document.get("points") as? MutableMap<String, Long> ?: mutableMapOf()
+            } else {
+                mutableMapOf()
+            }
+
+            userPoints.forEach { (userEmail, points) ->
+                existingPoints[userEmail] = (existingPoints[userEmail] ?: 0) + points
+            }
+
+            monthRef.set(mapOf("month" to monthIdentifier, "points" to existingPoints))
+                .addOnSuccessListener {
+                    Log.d("WochenplanViewModel", "Punkte für $monthIdentifier gespeichert.")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("WochenplanViewModel", "Fehler beim Speichern der Punkte", e)
+                }
+        }
+    }
+
+
+
+
+    fun checkAndCalculateMonthlyPoints() {
+        val calendar = Calendar.getInstance()
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
+            calculateMonthlyPoints()
+        }
+    }
+
 
 }
 

@@ -778,7 +778,6 @@ class WochenplanFragment : Fragment() {
                     points = points,
                     assignee = selectedAssignee ?: "Unassigned", // Use "Unassigned" or a default value if null
                     assigneeEmail = assigneeEmail ?: "",         // Default to an empty string if null
-                    avatar = R.drawable.logo,
                     isRepeating = repeatToggle.isChecked,
                     repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
                     repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
