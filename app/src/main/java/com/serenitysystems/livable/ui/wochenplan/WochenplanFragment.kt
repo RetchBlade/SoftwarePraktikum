@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -831,8 +830,7 @@ class WochenplanFragment : Fragment() {
     private fun showPointsDialog() {
         val builder = AlertDialog.Builder(requireContext())
         val view = layoutInflater.inflate(R.layout.wochenplan_dialog_punkteinsicht, null)
-
-        val dialog = builder.setView(view).create() // Dialog vorher deklarieren
+        val dialog = builder.setView(view).create()
 
         val monthDisplay: TextView = view.findViewById(R.id.monthDisplay)
         val pointsList: LinearLayout = view.findViewById(R.id.pointsList)
@@ -847,9 +845,18 @@ class WochenplanFragment : Fragment() {
             monthDisplay.text = dateFormat.format(currentMonth.time)
         }
 
+        fun calculateLevel(points: Int): Pair<Int, Int> {
+            val pointsPerLevel = 100 // Alle 100 Punkte ein Levelaufstieg
+            val level = (points / pointsPerLevel) + 1 // Level beginnt bei 1
+            val progress = (points % pointsPerLevel) // Fortschritt innerhalb des Levels
+
+            return Pair(level, progress)
+        }
+
+
         fun loadPointsForMonth() {
             val monthIdentifier = SimpleDateFormat("yyyy-MM", Locale.GERMANY).format(currentMonth.time)
-            pointsList.removeAllViews() // Vorherige Einträge löschen
+            pointsList.removeAllViews()
 
             wochenplanViewModel.fetchUserToken { token ->
                 token?.let { userToken ->
@@ -866,40 +873,33 @@ class WochenplanFragment : Fragment() {
                                     .get()
                                     .addOnSuccessListener { doc ->
                                         val pointsData = doc.get("points") as? Map<String, Long>
-
                                         if (pointsData != null && pointsData.isNotEmpty()) {
-                                            // Alle User-IDs (E-Mails) aus den Punkten extrahieren
-                                            val userIds = pointsData.keys.toList()
+                                            val sortedEntries = pointsData.entries.sortedByDescending { it.value }
 
-                                            // Firestore-Abfrage, um alle Nicknames auf einmal zu holen
-                                            FirebaseFirestore.getInstance().collection("users")
-                                                .whereIn("email", userIds) // Holt alle User, deren ID in der PunkteHistorie ist
-                                                .get()
-                                                .addOnSuccessListener { usersSnapshot ->
-                                                    val userMap = mutableMapOf<String, String>() // Map: Email -> Nickname
+                                            for ((email, points) in sortedEntries) {
+                                                val (level, progress) = calculateLevel(points.toInt())
 
-                                                    for (userDoc in usersSnapshot.documents) {
-                                                        val email = userDoc.getString("email") ?: ""
-                                                        val nickname = userDoc.getString("nickname") ?: "Unbekannt"
-                                                        userMap[email] = nickname
-                                                    }
+                                                val userView = LayoutInflater.from(requireContext())
+                                                    .inflate(R.layout.wochenplan_user_points_item, pointsList, false)
 
-                                                    // Jetzt die Punkte mit den Nicknames anzeigen
-                                                    for ((email, points) in pointsData) {
-                                                        val nickname = userMap[email] ?: "Unbekannt"
-                                                        val textView = TextView(requireContext())
-                                                        textView.text = "$nickname: $points Punkte"
-                                                        textView.textSize = 16f
-                                                        textView.setPadding(16, 8, 16, 8)
+                                                val usernameTextView = userView.findViewById<TextView>(R.id.usernameTextView)
+                                                val levelTextView = userView.findViewById<TextView>(R.id.levelTextView)
+                                                val pointsProgressBar = userView.findViewById<ProgressBar>(R.id.pointsProgressBar)
+                                                val pointsTextView = userView.findViewById<TextView>(R.id.pointsTextView)
 
-                                                        pointsList.addView(textView) // View in die Liste einfügen
-                                                    }
+                                                // Suche den Nickname des Benutzers basierend auf der Email
+                                                wochenplanViewModel.loadAssignees { assignees ->
+                                                    val nickname = assignees.find { it.second == email }?.first ?: email
+                                                    usernameTextView.text = nickname
                                                 }
-                                                .addOnFailureListener { e ->
-                                                    Log.e("PunkteDialog", "Fehler beim Abrufen der Nicknames", e)
-                                                }
+
+                                                levelTextView.text = "Level $level"
+                                                pointsProgressBar.progress = (progress) // Fortschritt innerhalb des Levels
+                                                pointsTextView.text = "$points P"
+
+                                                pointsList.addView(userView)
+                                            }
                                         } else {
-                                            // Falls keine Punkte vorhanden sind, eine Info anzeigen
                                             val emptyTextView = TextView(requireContext())
                                             emptyTextView.text = "Keine Punkte für diesen Monat"
                                             emptyTextView.textSize = 16f
@@ -907,15 +907,11 @@ class WochenplanFragment : Fragment() {
                                             pointsList.addView(emptyTextView)
                                         }
                                     }
-                                    .addOnFailureListener { e ->
-                                        Log.e("PunkteDialog", "Fehler beim Laden der Punkte", e)
-                                    }
                             }
                         }
                 }
             }
         }
-
 
 
         prevMonthButton.setOnClickListener {
@@ -931,13 +927,14 @@ class WochenplanFragment : Fragment() {
         }
 
         closeDialogButton.setOnClickListener {
-            dialog.dismiss() // Jetzt ist 'dialog' hier bekannt
+            dialog.dismiss()
         }
 
         updateMonthDisplay()
         loadPointsForMonth()
         dialog.show()
     }
+
 
 
 

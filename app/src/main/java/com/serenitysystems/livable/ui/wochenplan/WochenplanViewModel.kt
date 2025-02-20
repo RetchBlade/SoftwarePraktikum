@@ -646,9 +646,6 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
-
-
-
 }
 
 

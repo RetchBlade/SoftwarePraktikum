@@ -82,11 +82,11 @@
             android:id="@+id/showPointsButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp"
             android:background="@android:color/transparent"
             android:contentDescription="Punkteinsicht"
-            android:src="@drawable/pp_placeholder"
-            android:scaleType="centerInside" />
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/trophy" />
     </androidx.cardview.widget.CardView>
 
     <!-- Floating Action Button for Adding Task -->

@@ -48,6 +48,7 @@
             android:orientation="vertical" />
     </ScrollView>
 
+
     <!-- Schließen Button -->
     <ImageView
         android:id="@+id/closeDialogButton"
