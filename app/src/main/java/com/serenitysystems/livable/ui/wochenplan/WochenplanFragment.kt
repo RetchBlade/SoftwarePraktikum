@@ -543,6 +543,11 @@ class WochenplanFragment : Fragment() {
 
 
     private fun removeAssigneeFromTask(task: DynamicTask) {
+        if (task.assigneeEmail.isEmpty()) return // Kein gültiger Nutzer, nichts zu tun
+
+        // Punkte des aktuellen Zuständigen abziehen, bevor er entfernt wird
+        wochenplanViewModel.deductPointsBeforeUnassigning(task.assigneeEmail, task.points)
+
         val updatedTask = task.copy(assignee = "Unassigned", assigneeEmail = "")
 
         val taskView = findTaskView(task)
@@ -551,9 +556,12 @@ class WochenplanFragment : Fragment() {
             it.startAnimation(animation)
         }
 
+        // Aufgabe in Firestore aktualisieren
         wochenplanViewModel.updateTask(updatedTask)
         updateTabs()
     }
+
+
 
 
 

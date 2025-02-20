@@ -607,6 +607,46 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
     }
 
+    fun deductPointsBeforeUnassigning(userEmail: String, points: Int) {
+        if (userEmail.isEmpty() || points <= 0) return // Kein gültiger User oder keine Punkte
+
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                db.collection("users").document(userToken.email).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId") ?: return@addOnSuccessListener
+                        val monthIdentifier = SimpleDateFormat("yyyy-MM", Locale.GERMANY).format(Date())
+
+                        val monthRef = db.collection("WGs")
+                            .document(wgId)
+                            .collection("PunkteHistorie")
+                            .document(monthIdentifier)
+
+                        monthRef.get().addOnSuccessListener { monthDoc ->
+                            val existingPoints = if (monthDoc.exists()) {
+                                monthDoc.get("points") as? MutableMap<String, Long> ?: mutableMapOf()
+                            } else {
+                                mutableMapOf()
+                            }
+
+                            // Punkte für den aktuellen Zuständigen abziehen
+                            val currentPoints = existingPoints[userEmail] ?: 0
+                            existingPoints[userEmail] = currentPoints - points
+
+                            // Firestore aktualisieren
+                            monthRef.set(mapOf("month" to monthIdentifier, "points" to existingPoints))
+                                .addOnSuccessListener {
+                                    Log.d("WochenplanViewModel", "Punkte für $userEmail abgezogen: -$points")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("WochenplanViewModel", "Fehler beim Abziehen der Punkte", e)
+                                }
+                        }
+                    }
+            }
+        }
+    }
+
 
 
 }
