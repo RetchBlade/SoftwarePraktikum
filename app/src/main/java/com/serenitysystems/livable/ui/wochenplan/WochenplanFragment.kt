@@ -502,27 +502,27 @@ class WochenplanFragment : Fragment() {
     private fun showTaskOptions(task: DynamicTask) {
         val options = mutableListOf<String>()
 
-        // Prüfen, ob die Aufgabe zur letzten Woche gehört
         val taskDate = Calendar.getInstance().apply {
             time = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY).parse(task.date)!!
         }
 
         val isLastWeekTask = wochenplanViewModel.isLastWeek(taskDate)
 
-        // Falls die Aufgabe nicht aus der letzten Woche ist, füge Optionen hinzu
         if (!isLastWeekTask) {
             if (task.assignee != "Unassigned") {
                 if (task.isDone) {
                     options.add("Nicht erledigt")
                 } else {
                     options.add("Erledigt")
+                    if (task.priority.startsWith("Überfällig")) {
+                        options.add("Zuständigkeit abmelden") // Neue Option für überfällige Aufgaben
+                    }
                 }
             }
             options.add("Bearbeiten")
             options.add("Löschen")
         }
 
-        // Falls keine Optionen verfügbar sind, verlasse die Methode einfach
         if (options.isEmpty()) return
 
         val dialog = AlertDialog.Builder(requireContext())
@@ -533,6 +533,7 @@ class WochenplanFragment : Fragment() {
                     "Erledigt" -> markTaskAsDone(task)
                     "Bearbeiten" -> showTaskDialog(task)
                     "Löschen" -> deleteTask(task)
+                    "Zuständigkeit abmelden" -> removeAssigneeFromTask(task) // Neue Funktion
                 }
             }
             .create()
@@ -540,6 +541,19 @@ class WochenplanFragment : Fragment() {
         dialog.show()
     }
 
+
+    private fun removeAssigneeFromTask(task: DynamicTask) {
+        val updatedTask = task.copy(assignee = "Unassigned", assigneeEmail = "")
+
+        val taskView = findTaskView(task)
+        taskView?.let {
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.task_update)
+            it.startAnimation(animation)
+        }
+
+        wochenplanViewModel.updateTask(updatedTask)
+        updateTabs()
+    }
 
 
 
