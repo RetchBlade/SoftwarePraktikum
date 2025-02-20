@@ -683,6 +683,14 @@ class WochenplanFragment : Fragment() {
             taskPriority.setSelection(
                 resources.getStringArray(R.array.prio_liste).indexOf(it.priority)
             )
+
+            val pointsArray = resources.getStringArray(R.array.points_options)
+            val index = pointsArray.indexOf(existingTask?.points.toString())
+            if (index >= 0) {
+                taskPointsSpinner.setSelection(index)
+            }
+
+
             repeatToggle.isChecked = it.isRepeating
             repeatFrequencyLayout.visibility = if (it.isRepeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
