@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.view.animation.BounceInterpolator
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -831,7 +830,7 @@ class WochenplanFragment : Fragment() {
 
     private fun showPointsDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_punkteinsicht, null)
+        val view = layoutInflater.inflate(R.layout.wochenplan_dialog_punkteinsicht, null)
 
         val dialog = builder.setView(view).create() // Dialog vorher deklarieren
 
