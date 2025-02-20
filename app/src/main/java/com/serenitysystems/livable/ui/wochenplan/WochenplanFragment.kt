@@ -72,6 +72,11 @@ class WochenplanFragment : Fragment() {
             showTaskDialog()
         }
 
+        binding.showPointsButton.setOnClickListener {
+            showPointsDialog()
+        }
+
+
         return root
 
 
@@ -823,6 +828,118 @@ class WochenplanFragment : Fragment() {
         }
         dialog.show()
     }
+
+    private fun showPointsDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_punkteinsicht, null)
+
+        val dialog = builder.setView(view).create() // Dialog vorher deklarieren
+
+        val monthDisplay: TextView = view.findViewById(R.id.monthDisplay)
+        val pointsList: LinearLayout = view.findViewById(R.id.pointsList)
+        val prevMonthButton: ImageView = view.findViewById(R.id.prevMonthButton)
+        val nextMonthButton: ImageView = view.findViewById(R.id.nextMonthButton)
+        val closeDialogButton: ImageView = view.findViewById(R.id.closeDialogButton)
+
+        var currentMonth = Calendar.getInstance()
+
+        fun updateMonthDisplay() {
+            val dateFormat = SimpleDateFormat("MM-yyyy", Locale.GERMANY)
+            monthDisplay.text = dateFormat.format(currentMonth.time)
+        }
+
+        fun loadPointsForMonth() {
+            val monthIdentifier = SimpleDateFormat("yyyy-MM", Locale.GERMANY).format(currentMonth.time)
+            pointsList.removeAllViews() // Vorherige Einträge löschen
+
+            wochenplanViewModel.fetchUserToken { token ->
+                token?.let { userToken ->
+                    val userEmail = userToken.email
+                    FirebaseFirestore.getInstance().collection("users").document(userEmail)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            val wgId = document.getString("wgId")
+                            if (wgId != null) {
+                                FirebaseFirestore.getInstance().collection("WGs")
+                                    .document(wgId)
+                                    .collection("PunkteHistorie")
+                                    .document(monthIdentifier)
+                                    .get()
+                                    .addOnSuccessListener { doc ->
+                                        val pointsData = doc.get("points") as? Map<String, Long>
+
+                                        if (pointsData != null && pointsData.isNotEmpty()) {
+                                            // Alle User-IDs (E-Mails) aus den Punkten extrahieren
+                                            val userIds = pointsData.keys.toList()
+
+                                            // Firestore-Abfrage, um alle Nicknames auf einmal zu holen
+                                            FirebaseFirestore.getInstance().collection("users")
+                                                .whereIn("email", userIds) // Holt alle User, deren ID in der PunkteHistorie ist
+                                                .get()
+                                                .addOnSuccessListener { usersSnapshot ->
+                                                    val userMap = mutableMapOf<String, String>() // Map: Email -> Nickname
+
+                                                    for (userDoc in usersSnapshot.documents) {
+                                                        val email = userDoc.getString("email") ?: ""
+                                                        val nickname = userDoc.getString("nickname") ?: "Unbekannt"
+                                                        userMap[email] = nickname
+                                                    }
+
+                                                    // Jetzt die Punkte mit den Nicknames anzeigen
+                                                    for ((email, points) in pointsData) {
+                                                        val nickname = userMap[email] ?: "Unbekannt"
+                                                        val textView = TextView(requireContext())
+                                                        textView.text = "$nickname: $points Punkte"
+                                                        textView.textSize = 16f
+                                                        textView.setPadding(16, 8, 16, 8)
+
+                                                        pointsList.addView(textView) // View in die Liste einfügen
+                                                    }
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("PunkteDialog", "Fehler beim Abrufen der Nicknames", e)
+                                                }
+                                        } else {
+                                            // Falls keine Punkte vorhanden sind, eine Info anzeigen
+                                            val emptyTextView = TextView(requireContext())
+                                            emptyTextView.text = "Keine Punkte für diesen Monat"
+                                            emptyTextView.textSize = 16f
+                                            emptyTextView.setPadding(16, 8, 16, 8)
+                                            pointsList.addView(emptyTextView)
+                                        }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("PunkteDialog", "Fehler beim Laden der Punkte", e)
+                                    }
+                            }
+                        }
+                }
+            }
+        }
+
+
+
+        prevMonthButton.setOnClickListener {
+            currentMonth.add(Calendar.MONTH, -1)
+            updateMonthDisplay()
+            loadPointsForMonth()
+        }
+
+        nextMonthButton.setOnClickListener {
+            currentMonth.add(Calendar.MONTH, 1)
+            updateMonthDisplay()
+            loadPointsForMonth()
+        }
+
+        closeDialogButton.setOnClickListener {
+            dialog.dismiss() // Jetzt ist 'dialog' hier bekannt
+        }
+
+        updateMonthDisplay()
+        loadPointsForMonth()
+        dialog.show()
+    }
+
 
 
     // stellt sicher dass bei jeder navigation in der app, der zuständiger wird observed und updated
