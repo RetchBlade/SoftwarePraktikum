@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/overdue_task_background"
+    android:elevation="5dp"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:id="@+id/taskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Task Beschreibung"
+        android:textColor="@color/own_text_Farbe"
+        android:textSize="14sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/taskOverdueInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Überfällig seit 2 Tagen"
+        android:textColor="@color/priority_overdue"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/taskPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="10 Punkte"
+        android:textColor="@color/own_navy_Dunkelblau"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

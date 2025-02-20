@@ -372,6 +372,43 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    private val _todayUserTasks = MutableLiveData<List<DynamicTask>>()
+    val todayUserTasks: LiveData<List<DynamicTask>> = _todayUserTasks
+
+
+    //aufgaben für den jeweiligen nutzer für den jeweiligen Tag (für homepage fragment)
+
+    fun loadTodayUserTasks() {
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                val userEmail = userToken.email
+                val todayDate = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY).format(Date())
+
+                db.collection("users").document(userEmail).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (!wgId.isNullOrEmpty()) {
+                            db.collection("WGs").document(wgId)
+                                .collection("Wochenplan")
+                                .whereEqualTo("date", todayDate)
+                                .whereEqualTo("assigneeEmail", userEmail)
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val tasksList = snapshot.documents.mapNotNull { it.toObject(DynamicTask::class.java) }
+                                    _todayUserTasks.postValue(tasksList)
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("WochenplanViewModel", "Fehler beim Laden der Aufgaben", e)
+                                }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("WochenplanViewModel", "Fehler beim Abrufen der WG-ID", e)
+                    }
+            }
+        }
+    }
+
 
     // Vergiss nicht, den Listener zu entfernen, wenn der ViewModel nicht mehr benötigt wird
     override fun onCleared() {
