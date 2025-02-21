@@ -37,6 +37,9 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
 
     private var snapshotListener: ListenerRegistration? = null
 
+    private val _lifetimePoints = MutableLiveData<Int>()
+    val lifetimePoints: LiveData<Int> = _lifetimePoints
+
 
     fun loadCurrentUserData() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -87,6 +90,28 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
             }
     }
 
+    fun loadLifetimePoints(email: String) {
+        firestore.collection("users").document(email).get()
+            .addOnSuccessListener { userDoc ->
+                val wgId = userDoc.getString("wgId")
+                if (!wgId.isNullOrEmpty()) {
+                    firestore.collection("WGs")
+                        .document(wgId)
+                        .collection("lifetimePoints")
+                        .document("gesamt")
+                        .get()
+                        .addOnSuccessListener { lifetimeDoc ->
+                            val pointsData = lifetimeDoc.get("points") as? Map<String, Long>
+                            val userPoints = pointsData?.get(email)?.toInt() ?: 0
+                            _lifetimePoints.postValue(userPoints)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("ProfilansichtViewModel", "Fehler beim Laden der Lifetime-Punkte: ${e.message}")
+                            _lifetimePoints.postValue(0)
+                        }
+                }
+            }
+    }
 
     override fun onCleared() {
         super.onCleared()

@@ -30,6 +30,7 @@ class ProfilansichtFragment : Fragment() {
         val birthdateText: TextView = view.findViewById(R.id.birthdateText)
         val genderText: TextView = view.findViewById(R.id.genderText)
         val roleText: TextView = view.findViewById(R.id.roleText)
+        val lifetimePointsText: TextView = view.findViewById(R.id.lifetimePointsText)
 
         viewModel.profileImage.observe(viewLifecycleOwner, Observer { imageUrl ->
             Glide.with(this)
@@ -45,6 +46,9 @@ class ProfilansichtFragment : Fragment() {
 
         viewModel.email.observe(viewLifecycleOwner, Observer { email ->
             emailText.text = email ?: "N/A"
+            if (email != null) {
+                viewModel.loadLifetimePoints(email)
+            }
         })
 
         viewModel.birthdate.observe(viewLifecycleOwner, Observer { birthdate ->
@@ -59,6 +63,10 @@ class ProfilansichtFragment : Fragment() {
             roleText.text = role ?: "N/A"
         })
 
+        viewModel.lifetimePoints.observe(viewLifecycleOwner, Observer { points ->
+            lifetimePointsText.text = "Lifetime Punkte: $points"
+        })
+
         return view
     }
 
@@ -69,25 +77,22 @@ class ProfilansichtFragment : Fragment() {
 
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { email ->
             if (email != null) {
-                // Lade die Daten des ausgewählten WG-Mitglieds
                 viewModel.loadUserData(email)
+                viewModel.loadLifetimePoints(email)
             } else {
-                // Lade die eigenen Daten
                 viewModel.loadCurrentUserData()
+                viewModel.email.observe(viewLifecycleOwner) { userEmail ->
+                    if (userEmail != null) {
+                        viewModel.loadLifetimePoints(userEmail)
+                    }
+                }
             }
         }
-
-        // Fallback: Eigene Daten laden, falls keine E-Mail gesetzt ist
-        if (sharedViewModel.selectedUserEmail.value == null) {
-            viewModel.loadCurrentUserData()
-        }
     }
-
 
     override fun onPause() {
         super.onPause()
         val sharedViewModel: WgSharedViewModel by activityViewModels()
         sharedViewModel.setSelectedUserEmail(null) // Zurücksetzen
     }
-
 }
