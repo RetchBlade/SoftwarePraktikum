@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
@@ -77,30 +78,72 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         isSyncing = true
         fetchUserToken { token ->
             token?.let { userToken ->
-                val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
+                val userRef = firestore.collection("users").document(userToken.email)
                 userRef.get().addOnSuccessListener { wgDocument ->
                     if (wgDocument.exists()) {
-                        userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
-                            .addOnSuccessListener {
-                                Log.d("com.serenitysystems.livable.ui.home.HomePageViewModel", "Erfolgreich die Wg beigetreten.")
+                        val userEmail = userToken.email
+                        val lifetimeRef = firestore.collection("WGs").document(wgId).collection("lifetimePoints").document("gesamt")
+
+                        // Überprüfen, ob Nutzer bereits existiert
+                        lifetimeRef.get().addOnSuccessListener { lifetimeDoc ->
+                            val existingPoints = if (lifetimeDoc.exists()) {
+                                lifetimeDoc.get("points") as? MutableMap<String, Long> ?: mutableMapOf()
+                            } else {
+                                mutableMapOf()
                             }
-                            .addOnFailureListener { exception ->
-                                Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Fehler beim Aktualisieren des UserToken: ${exception.message}")
+
+                            if (existingPoints.containsKey(userEmail)) {
+                                // Nutzer existiert bereits → Normaler Beitritt
+                                updateUserWG(userRef, wgId, onError)
+                            } else {
+                                // Nutzer existiert nicht → Durchschnitt berechnen
+                                val averagePoints = if (existingPoints.isNotEmpty()) {
+                                    existingPoints.values.sum() / existingPoints.size
+                                } else {
+                                    0 // Falls keine Mitglieder da sind
+                                }
+
+                                // Punkte dem neuen Mitglied geben
+                                existingPoints[userEmail] = averagePoints
+
+                                // Lifetime-Punkte speichern
+                                lifetimeRef.set(mapOf("points" to existingPoints)).addOnSuccessListener {
+                                    Log.d("HomePageViewModel", "Neuer Nutzer erhält durchschnittlich $averagePoints Punkte.")
+
+                                    // Nutzer offiziell zur WG hinzufügen
+                                    updateUserWG(userRef, wgId, onError)
+                                }.addOnFailureListener { e ->
+                                    Log.e("HomePageViewModel", "Fehler beim Speichern der Lifetime-Punkte", e)
+                                    onError("Fehler beim Speichern der Punkte.")
+                                }
                             }
-                            .addOnCompleteListener {
-                                isSyncing = false // Synchronisation abgeschlossen
-                            }
+                        }
                     } else {
                         onError("Die WG-ID existiert nicht.")
                         isSyncing = false
                     }
                 }.addOnFailureListener { exception ->
-                    Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Fehler beim Laden der WG-DokumentationWG ID: ${exception.message}")
+                    Log.e("HomePageViewModel", "Fehler beim Laden der WG-Daten: ${exception.message}")
                     isSyncing = false
                 }
             }
         }
     }
+
+    private fun updateUserWG(userRef: DocumentReference, wgId: String, onError: (String) -> Unit) {
+        userRef.update("wgId", wgId, "wgRole", "Wg-Mitglied")
+            .addOnSuccessListener {
+                Log.d("HomePageViewModel", "Erfolgreich der WG beigetreten.")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("HomePageViewModel", "Fehler beim Beitritt zur WG: ${exception.message}")
+                onError("Fehler beim Beitritt zur WG.")
+            }
+            .addOnCompleteListener {
+                isSyncing = false // Synchronisation abgeschlossen
+            }
+    }
+
 
     fun leaveWG() {
         if (isSyncing) return
