@@ -68,7 +68,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Funktion, um ein neues Todo zu Firestore hinzuzufügen
+    // Funktion, um ein neues Task zu Firestore hinzuzufügen
     fun addTodo(todo: TodoItem) {
         fetchUserToken { token ->
             token?.let { userToken ->

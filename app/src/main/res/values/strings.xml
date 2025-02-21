@@ -35,7 +35,7 @@
     <string name="menu_wg_registrierung">Wg-Registrierung</string>
 
 
-    <!-- Strings für ToDo -->
+    <!-- Strings für Task aus To Do -->
     <string name="todo_heute">Heute</string>
     <string name="todo_morgen">Morgen</string>
     <string name="todo_woche">Diese Woche</string>

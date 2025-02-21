@@ -59,7 +59,6 @@ class ToDoFragment : Fragment() {
 
     private fun handleTodoAction(todo: TodoItem) {
         if (todo.detailedDescription == "deleted_by_button") {
-            // Lösche das Todo vollständig
             todoViewModel.deleteTodo(todo, forceDelete = true)
         } else {
             // Aktualisiere den Status des Todos
@@ -115,10 +114,8 @@ class ToDoFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 val todo = adapter.currentList[position]
 
-                // Lösche das Todo im ViewModel
                 todoViewModel.deleteTodo(todo)
 
-                // Aktualisiere die Liste, indem du das Todo entfernst
                 val updatedList = adapter.currentList.toMutableList().apply { removeAt(position) }
                 adapter.submitList(updatedList) // Liste wird aktualisiert
             }
@@ -241,7 +238,6 @@ class ToDoFragment : Fragment() {
                     // Zeige Fehlermeldung und verhindere das Schließen des Dialogs
                     todoDescription.error = "Beschreibung darf nicht leer sein"
                 } else {
-                    // Füge das neue Todo hinzu und schließe den Dialog
                     val newTodo = TodoItem(
                         description = description,
                         detailedDescription = detailedDescription,

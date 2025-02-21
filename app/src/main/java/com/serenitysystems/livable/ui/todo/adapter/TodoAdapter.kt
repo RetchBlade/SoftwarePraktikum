@@ -25,7 +25,7 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
     }
 
     override fun getItemId(position: Int): Long {
-        return getItem(position).id.hashCode().toLong() // Eindeutige ID basierend auf der Todo-ID
+        return getItem(position).id.hashCode().toLong()
     }
 
     fun updateList(newList: List<TodoItem>) {
@@ -77,7 +77,6 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
                     binding.root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(binding.todoDetailedDescription.windowToken, 0)
 
-                // Todo speichern, falls notwendig
                 val updatedTodo =
                     todo.copy(detailedDescription = binding.todoDetailedDescription.text.toString())
                 onTodoClick(updatedTodo)
@@ -89,13 +88,11 @@ class TodoAdapter(private val onTodoClick: (TodoItem) -> Unit) :
             binding.todoCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 updateStrikeThrough(binding.todoDescription, isChecked)
 
-                // Erstelle das aktualisierte Todo
                 val updatedTodo = todo.copy(isDone = isChecked)
 
                 // Logging, um sicherzustellen, dass die richtigen Daten verarbeitet werden
                 Log.d("Todo", "Updating todo: ${updatedTodo.id}, isDone: ${updatedTodo.isDone}")
 
-                // Todo weitergeben
                 onTodoClick(updatedTodo)
             }
 
