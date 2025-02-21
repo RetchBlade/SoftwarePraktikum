@@ -60,8 +60,13 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                     .get()
                     .addOnSuccessListener { document ->
                         val wgId = document.getString("wgId")
-                        if (wgId != null) {
-                            // Lösche alte Tasks, bevor die aktuellen Tasks geladen werden
+
+                        if (wgId.isNullOrEmpty()) {
+                            Log.e("WochenplanViewModel", "wgId ist null oder leer. Kann keine Daten abrufen.")
+                            return@addOnSuccessListener
+                        }
+
+                        // Lösche alte Tasks, bevor die aktuellen Tasks geladen werden
                             deleteOldTasks(wgId)
 
                             // Hole die Tasks für die WG anhand der wgId
@@ -85,9 +90,6 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                     // Aufteilen der Aufgaben in verschiedene Wochen
                                     categorizeTasksByWeek(tasksList)
                                 }
-                        } else {
-                            Log.e("WochenplanViewModel", "wgId not found for user: $userEmail")
-                        }
                     }
                     .addOnFailureListener { e ->
                         Log.e("WochenplanViewModel", "Error getting user data", e)
