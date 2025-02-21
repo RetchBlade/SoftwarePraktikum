@@ -514,13 +514,10 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                 }
 
                 saveMonthlyPoints(wgId, userPoints)
+                saveLifetimePoints(wgId, userPoints)
                 updateLastCalculationDate(wgId) // ✅ Speichere das Berechnungsdatum
             }
     }
-
-
-
-
 
 
     private fun saveMonthlyPoints(wgId: String, userPoints: Map<String, Int>) {
@@ -646,6 +643,35 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+
+    private fun saveLifetimePoints(wgId: String, userPoints: Map<String, Int>) {
+        val lifetimeRef = db.collection("WGs")
+            .document(wgId)
+            .collection("lifetimePoints")
+            .document("gesamt")
+
+        lifetimeRef.get().addOnSuccessListener { document ->
+            val existingPoints = if (document.exists()) {
+                document.get("points") as? MutableMap<String, Long> ?: mutableMapOf()
+            } else {
+                mutableMapOf()
+            }
+
+            userPoints.forEach { (userEmail, points) ->
+                existingPoints[userEmail] = (existingPoints[userEmail] ?: 0) + points
+            }
+
+            lifetimeRef.set(mapOf("points" to existingPoints))
+                .addOnSuccessListener {
+                    Log.d("WochenplanViewModel", "Lifetime-Punkte aktualisiert.")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("WochenplanViewModel", "Fehler beim Speichern der Lifetime-Punkte", e)
+                }
+        }
+    }
+
+
 }
 
 
