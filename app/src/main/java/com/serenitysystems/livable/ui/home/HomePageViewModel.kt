@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
+import com.serenitysystems.livable.ui.wochenplan.WochenplanViewModel
+import com.serenitysystems.livable.ui.wochenplan.data.DynamicTask
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -55,6 +57,17 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+    private val _todayTasks = MutableLiveData<List<DynamicTask>>()
+    val todayTasks: LiveData<List<DynamicTask>> = _todayTasks
+
+    fun fetchTodayTasks(wochenplanViewModel: WochenplanViewModel) {
+        wochenplanViewModel.todayUserTasks.observeForever { tasks ->
+            _todayTasks.postValue(tasks)
+        }
+        wochenplanViewModel.loadTodayUserTasks()
+    }
+
+
 
     private var isSyncing: Boolean = false // Verhindert wiederholte Abrufe während der Synchronisation
 
