@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-21T19:18:25.135516800Z">
+        <DropdownSelection timestamp="2025-02-21T19:49:07.665815700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\kingd\.android\avd\ZweitesGeraet.avd" />

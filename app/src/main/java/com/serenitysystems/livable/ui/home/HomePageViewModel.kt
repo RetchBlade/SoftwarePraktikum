@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.serenitysystems.livable.ui.login.data.UserPreferences
 import com.serenitysystems.livable.ui.login.data.UserToken
@@ -117,6 +118,9 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
                                     onError("Fehler beim Speichern der Punkte.")
                                 }
                             }
+
+                            // Füge den Nutzer zum `mitgliederEmails`-Array hinzu
+                            addUserToWGEmailsList(wgId, userEmail)
                         }
                     } else {
                         onError("Die WG-ID existiert nicht.")
@@ -144,6 +148,18 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
             }
     }
 
+    private fun addUserToWGEmailsList(wgId: String, userEmail: String) {
+        val wgRef = FirebaseFirestore.getInstance().collection("WGs").document(wgId)
+
+        wgRef.update("mitgliederEmails", FieldValue.arrayUnion(userEmail))
+            .addOnSuccessListener {
+                Log.d("HomePageViewModel", "Nutzer erfolgreich zu `mitgliederEmails` hinzugefügt.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("HomePageViewModel", "Fehler beim Hinzufügen zu `mitgliederEmails`: ${e.message}")
+            }
+    }
+
 
     fun leaveWG() {
         if (isSyncing) return
@@ -151,19 +167,42 @@ class HomePageViewModel(application: Application) : AndroidViewModel(application
         fetchUserToken { token ->
             token?.let { userToken ->
                 val userRef = FirebaseFirestore.getInstance().collection("users").document(userToken.email)
-                userRef.update("wgId", "", "wgRole", "")
-                    .addOnSuccessListener {
-                        Log.d("com.serenitysystems.livable.ui.home.HomePageViewModel", "Erfolgreich aus der WG verlassen.")
+
+                // Zuerst die WG-ID abrufen
+                userRef.get().addOnSuccessListener { document ->
+                    val wgId = document.getString("wgId")
+                    if (!wgId.isNullOrEmpty()) {
+                        removeUserFromWGEmailsList(wgId, userToken.email) // Nutzer aus Mitgliederliste entfernen
                     }
-                    .addOnFailureListener { exception ->
-                        Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Error leaving the WG: ${exception.message}")
-                    }
-                    .addOnCompleteListener {
-                        isSyncing = false
-                    }
+
+                    // Nutzer aus der WG entfernen
+                    userRef.update("wgId", "", "wgRole", "")
+                        .addOnSuccessListener {
+                            Log.d("com.serenitysystems.livable.ui.home.HomePageViewModel", "Erfolgreich aus der WG verlassen.")
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("com.serenitysystems.livable.ui.home.HomePageViewModel", "Error leaving the WG: ${exception.message}")
+                        }
+                        .addOnCompleteListener {
+                            isSyncing = false
+                        }
+                }
             }
         }
     }
+
+    private fun removeUserFromWGEmailsList(wgId: String, userEmail: String) {
+        val wgRef = FirebaseFirestore.getInstance().collection("WGs").document(wgId)
+
+        wgRef.update("mitgliederEmails", FieldValue.arrayRemove(userEmail))
+            .addOnSuccessListener {
+                Log.d("HomePageViewModel", "Nutzer erfolgreich aus `mitgliederEmails` entfernt.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("HomePageViewModel", "Fehler beim Entfernen aus `mitgliederEmails`: ${e.message}")
+            }
+    }
+
 
     fun fetchUserWGInfo(onSuccess: (String?, String?) -> Unit, onError: (String) -> Unit) {
         fetchUserToken { token ->
