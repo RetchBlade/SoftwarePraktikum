@@ -733,6 +733,7 @@ class WochenplanFragment : Fragment() {
         }
 
         datePickerIcon.setOnClickListener {
+            val today = Calendar.getInstance()
             val datePickerDialog = DatePickerDialog(
                 context,
                 { _, year, month, dayOfMonth ->
@@ -743,6 +744,9 @@ class WochenplanFragment : Fragment() {
                 selectedDate.get(Calendar.MONTH),
                 selectedDate.get(Calendar.DAY_OF_MONTH)
             )
+
+            // Setzt das minimale auswählbare Datum auf heute
+            datePickerDialog.datePicker.minDate = today.timeInMillis
             datePickerDialog.show()
         }
 
@@ -776,8 +780,7 @@ class WochenplanFragment : Fragment() {
                 val date = dateFormat.format(selectedDate.time)
                 val description = taskDescription.text.toString().trim()
                 val priorityPosition = taskPriority.selectedItemPosition
-                val priority =
-                    if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
+                val priority = if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
 
                 var isValid = true
 
@@ -809,8 +812,8 @@ class WochenplanFragment : Fragment() {
                     description = description,
                     priority = priority,
                     points = points,
-                    assignee = selectedAssignee ?: "Unassigned", // Use "Unassigned" or a default value if null
-                    assigneeEmail = assigneeEmail ?: "",         // Default to an empty string if null
+                    assignee = selectedAssignee ?: "Unassigned",
+                    assigneeEmail = assigneeEmail ?: "",
                     isRepeating = repeatToggle.isChecked,
                     repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
                     repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
@@ -823,6 +826,7 @@ class WochenplanFragment : Fragment() {
                 }
                 dialog.dismiss()
             }
+
         }
         dialog.show()
     }

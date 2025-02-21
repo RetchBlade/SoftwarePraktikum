@@ -1,7 +1,6 @@
 package com.serenitysystems.livable.ui.userprofil
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -98,7 +95,7 @@ class WgAnsichtFragment : Fragment() {
 
         val inflater = LayoutInflater.from(context)
         newRoommates.forEach { (name, email) ->
-            val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
+            val roommateView = inflater.inflate(R.layout.wgansicht_roommate_item, bewohnerContainer, false)
             val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
             val profileName = roommateView.findViewById<TextView>(R.id.profileName)
 

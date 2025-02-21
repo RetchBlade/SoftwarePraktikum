@@ -73,7 +73,7 @@ class WgEditFragment : Fragment() {
             val inflater = LayoutInflater.from(context)
 
             roommates.forEach { (name, email) ->
-                val roommateView = inflater.inflate(R.layout.roommate_item, bewohnerContainer, false)
+                val roommateView = inflater.inflate(R.layout.wgansicht_roommate_item, bewohnerContainer, false)
                 val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
                 val profileName = roommateView.findViewById<TextView>(R.id.profileName)
                 val removeButton = roommateView.findViewById<ImageView>(R.id.removeRoommateButton)
