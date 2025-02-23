@@ -1,5 +1,8 @@
 package com.serenitysystems.livable.ui.userprofil
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +33,7 @@ class WgAnsichtFragment : Fragment() {
     private lateinit var wgSizeText: TextView
     private lateinit var editButton: ImageView
     private lateinit var bewohnerContainer: LinearLayout
+    private lateinit var wgIdText: TextView
 
     private val db = FirebaseFirestore.getInstance()
     private var isLeiter = false
@@ -52,6 +57,16 @@ class WgAnsichtFragment : Fragment() {
                 showError(view, "Fehler beim Laden der Daten: ${e.message}")
             }
         }
+
+        wgIdText = view.findViewById(R.id.wgIdText)
+
+        sharedViewModel.wgId.observe(viewLifecycleOwner) { wgId ->
+            wgIdText.text = wgId ?: "Nicht verfügbar"
+        }
+
+        // Klick-Listener zum Kopieren der WgID in die Zwischenablage
+        wgIdText.setOnClickListener { copyToClipboard(wgIdText) }
+
 
         editButton.setOnClickListener { navigateToEditFragment() }
     }
@@ -145,6 +160,22 @@ class WgAnsichtFragment : Fragment() {
         )
         findNavController().navigate(R.id.action_wgAnsichtFragment_to_wgEditFragment)
     }
+
+    private fun copyToClipboard(textView: TextView) {
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("WG ID", textView.text)
+        clipboard.setPrimaryClip(clip)
+
+        // Ändere die Farbe für kurze Zeit
+        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.teal_700))
+
+        // Nach 1 Sekunde zurücksetzen
+        textView.postDelayed({
+            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        }, 1000)
+    }
+
+
 
     private fun showError(view: View, message: String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()

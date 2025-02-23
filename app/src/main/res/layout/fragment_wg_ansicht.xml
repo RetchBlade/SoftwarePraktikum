@@ -37,6 +37,34 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- WG ID -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WG ID:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/wgIdText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Lädt..."
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="italic"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+
                 <!-- WG Adresse -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -125,7 +153,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Liste der Bewohner -->
+    <!-- Liste der Bewohner -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
