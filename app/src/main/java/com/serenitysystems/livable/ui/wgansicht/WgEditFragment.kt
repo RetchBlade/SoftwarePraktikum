@@ -122,6 +122,13 @@ class WgEditFragment : Fragment() {
                     .update("mitgliederEmails", currentRoommates)
                     .await()
 
+                firestore.collection("users")
+                    .document(email)
+                    .update(mapOf(
+                        "wgRole" to "",
+                        "wgId" to ""
+                    )).await()
+
                 sharedViewModel.loadUserEmailAndWgDetails()
 
                 Snackbar.make(requireView(), "Mitbewohner entfernt!", Snackbar.LENGTH_LONG).show()

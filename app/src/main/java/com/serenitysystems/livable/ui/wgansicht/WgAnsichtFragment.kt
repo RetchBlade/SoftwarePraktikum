@@ -166,14 +166,14 @@ class WgAnsichtFragment : Fragment() {
         val clip = ClipData.newPlainText("WG ID", textView.text)
         clipboard.setPrimaryClip(clip)
 
-        // Ändere die Farbe für kurze Zeit
-        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.teal_700))
+        textView.text = "✅ WG ID kopiert!"
 
-        // Nach 1 Sekunde zurücksetzen
+        // Nach 1,5 Sekunden wieder zurücksetzen
         textView.postDelayed({
-            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-        }, 1000)
+            textView.text = clipboard.primaryClip?.getItemAt(0)?.text ?: "WG ID"
+        }, 1500)
     }
+
 
 
 
