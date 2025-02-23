@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -173,9 +172,6 @@ class WgAnsichtFragment : Fragment() {
             textView.text = clipboard.primaryClip?.getItemAt(0)?.text ?: "WG ID"
         }, 1500)
     }
-
-
-
 
     private fun showError(view: View, message: String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
