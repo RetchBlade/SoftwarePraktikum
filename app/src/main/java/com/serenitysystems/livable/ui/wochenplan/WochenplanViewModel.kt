@@ -794,12 +794,6 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
     private fun processRepeatingTasks(tasks: List<DynamicTask>) {
         Log.d("WochenplanViewModel", "Starte processRepeatingTasks mit ${tasks.size} Aufgaben")
 
-        val today = Calendar.getInstance()
-        val nextWeekSunday = Calendar.getInstance().apply {
-            add(Calendar.WEEK_OF_YEAR, 1)
-            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-        }
-
         fetchUserToken { token ->
             token?.let { userToken ->
                 db.collection("users").document(userToken.email).get()
@@ -817,13 +811,14 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                     for (task in tasks) {
                                         if (task.repeating) {
                                             val taskDate = parseDate(task.date)
-                                            var previousTaskId = task.parentTaskId ?: task.id // Starte mit der ID der ersten Instanz
+                                            val endDate = task.repeatUntil?.let { parseDate(it) } // Enddatum parsen
+                                            var previousTaskId = task.parentTaskId ?: task.id
 
                                             when (task.repeatFrequency?.trim()) {
                                                 "Täglich" -> {
                                                     val tempDate = taskDate.clone() as Calendar
 
-                                                    while (tempDate.before(nextWeekSunday) || isSameDay(tempDate, nextWeekSunday)) {
+                                                    while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
 
                                                         if (!existingTaskDates.containsKey(formattedDate)) {
@@ -831,10 +826,10 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
                                                                 isDone = false,
-                                                                parentTaskId = previousTaskId // Setze parentTaskId korrekt
+                                                                parentTaskId = previousTaskId
                                                             )
                                                             newTasks.add(newTask)
-                                                            previousTaskId = newTask.id // Diese ID wird für den nächsten Tag verwendet
+                                                            previousTaskId = newTask.id
                                                         }
 
                                                         tempDate.add(Calendar.DAY_OF_YEAR, 1)

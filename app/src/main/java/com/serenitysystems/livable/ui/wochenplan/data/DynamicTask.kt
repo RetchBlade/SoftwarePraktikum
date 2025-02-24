@@ -18,6 +18,7 @@ data class DynamicTask(
     val additionalDetails: Map<String, String> = emptyMap(),
     var wasUpdated: Boolean = false, // Speichert, ob die Punkte bereits angepasst wurden
     var isAccounted: Boolean = false, // Speichert, ob die Aufgabe bereits in die Punkteberechnung einbezogen wurde.
+    val repeatUntil: String? = null,
     val parentTaskId: String? = null
 
 

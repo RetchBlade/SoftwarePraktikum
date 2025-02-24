@@ -679,55 +679,89 @@ class WochenplanFragment : Fragment() {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
 
-        val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
-        val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
-        val taskDescription: EditText = dialogView.findViewById(R.id.taskDescription)
-        val taskPriority: Spinner = dialogView.findViewById(R.id.taskPriority)
-        val taskPointsSpinner: Spinner = dialogView.findViewById(R.id.taskPointsSpinner)
         val taskAssigneeSpinner: Spinner = dialogView.findViewById(R.id.taskAssigneeSpinner)
         val assigneeToggle: Switch = dialogView.findViewById(R.id.asigneeToggle)
         val assigneeLabel: TextView = dialogView.findViewById(R.id.asigneeLabel)
-        val ohneassigneeLabel: TextView = dialogView.findViewById(R.id.ohneAssignee)
+        val ohneAssigneeLabel: TextView = dialogView.findViewById(R.id.ohneAssignee)
+
         val repeatToggle: Switch = dialogView.findViewById(R.id.repeatingTaskToggle)
         val repeatFrequencyLayout: View = dialogView.findViewById(R.id.repeatingTaskDetails)
         val repeatFrequencySpinner: Spinner = dialogView.findViewById(R.id.repeatFrequencySpinner)
+        val repeatUntilContainer: LinearLayout = dialogView.findViewById(R.id.repeatUntilContainer)
+        val repeatUntilDate: TextView = dialogView.findViewById(R.id.repeatUntilDate)
+        val repeatUntilPickerIcon: ImageView = dialogView.findViewById(R.id.repeatUntilPickerIcon)
 
-        val selectedDate = Calendar.getInstance()
-        dateTextView.text = dateFormat.format(selectedDate.time)
+        // Standardwert für das Enddatum
+        var selectedEndDate: Calendar? = null
 
-        // Populate dialog with existing task details if editing
-        existingTask?.let {
-            val parsedDate = dateFormat.parse(it.date)
-            parsedDate?.let { date -> selectedDate.time = date }
-            taskDescription.setText(it.description)
-            taskPriority.setSelection(
-                resources.getStringArray(R.array.prio_liste).indexOf(it.priority)
+        // Öffne DatePicker für das Enddatum
+        val openDatePicker = {
+            val today = Calendar.getInstance()
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    selectedEndDate = Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth)
+                    }
+                    repeatUntilDate.text = dateFormat.format(selectedEndDate!!.time)
+                },
+                today.get(Calendar.YEAR),
+                today.get(Calendar.MONTH),
+                today.get(Calendar.DAY_OF_MONTH)
             )
+            datePickerDialog.datePicker.minDate = today.timeInMillis
+            datePickerDialog.show()
+        }
 
-            val pointsArray = resources.getStringArray(R.array.points_options)
-            val index = pointsArray.indexOf(existingTask?.points.toString())
-            if (index >= 0) {
-                taskPointsSpinner.setSelection(index)
+        repeatUntilDate.setOnClickListener { openDatePicker() }
+        repeatUntilPickerIcon.setOnClickListener { openDatePicker() }
+
+        repeatToggle.setOnCheckedChangeListener { _, isChecked ->
+            repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            repeatUntilContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+
+            if (isChecked) {
+                assigneeToggle.isChecked = true // Schalte "Ohne Zuständiger" automatisch ein
+                taskAssigneeSpinner.visibility = View.GONE
+                assigneeLabel.visibility = View.GONE
+                ohneAssigneeLabel.visibility = View.VISIBLE // Stelle sicher, dass der Text bleibt
             }
+        }
 
+        // Toggle für "Ohne Zuständiger"
+        assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                taskAssigneeSpinner.visibility = View.GONE
+                assigneeLabel.visibility = View.GONE
+                ohneAssigneeLabel.visibility = View.VISIBLE // Sicherstellen, dass der Text bleibt
+            } else {
+                taskAssigneeSpinner.visibility = View.VISIBLE
+                assigneeLabel.visibility = View.VISIBLE
+                ohneAssigneeLabel.visibility = View.VISIBLE // "Ohne Zuständiger" bleibt sichtbar
+            }
+        }
 
+        // Falls eine bestehende Aufgabe bearbeitet wird, Enddatum und Assignee laden
+        existingTask?.let {
             repeatToggle.isChecked = it.repeating
             repeatFrequencyLayout.visibility = if (it.repeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
                 resources.getStringArray(R.array.repeat_frequency_options).indexOf(it.repeatFrequency ?: "")
             )
 
-            // If task is "Überfällig", hide the "Ohne Zuständiger" toggle and label
-            if (it.priority.startsWith("Überfällig")) {
-                assigneeToggle.visibility = View.GONE
-              ohneassigneeLabel.visibility = View.GONE
-                taskAssigneeSpinner.visibility = View.VISIBLE
-            } else {
-                assigneeToggle.isChecked = it.assignee == "Unassigned"
+            if (!it.repeatUntil.isNullOrEmpty()) {
+                val parsedEndDate = dateFormat.parse(it.repeatUntil)
+                parsedEndDate?.let { date ->
+                    selectedEndDate = Calendar.getInstance().apply { time = date }
+                    repeatUntilDate.text = dateFormat.format(selectedEndDate!!.time)
+                }
             }
+
+            assigneeToggle.isChecked = it.assignee == "Unassigned"
+            ohneAssigneeLabel.visibility = View.VISIBLE // Sicherstellen, dass "Ohne Zuständiger" beim Laden sichtbar bleibt
         }
 
-        // Load assignees and populate the spinner
+        // Lade Assignees aus ViewModel und fülle den Spinner
         wochenplanViewModel.assignees.observe(viewLifecycleOwner) { assignees ->
             val assigneeAdapter = ArrayAdapter(
                 context,
@@ -737,7 +771,7 @@ class WochenplanFragment : Fragment() {
             assigneeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             taskAssigneeSpinner.adapter = assigneeAdapter
 
-            // Preselect assignee if editing a task
+            // Falls eine bestehende Aufgabe einen Assignee hat, setzen
             existingTask?.assignee?.let { assignee ->
                 val position = assignees.indexOfFirst { it.first == assignee }
                 if (position != -1) {
@@ -746,57 +780,8 @@ class WochenplanFragment : Fragment() {
             }
         }
 
-        datePickerIcon.setOnClickListener {
-            val today = Calendar.getInstance()
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    selectedDate.set(year, month, dayOfMonth)
-                    dateTextView.text = dateFormat.format(selectedDate.time)
-                },
-                selectedDate.get(Calendar.YEAR),
-                selectedDate.get(Calendar.MONTH),
-                selectedDate.get(Calendar.DAY_OF_MONTH)
-            )
-
-            // Setzt das minimale auswählbare Datum auf heute
-            datePickerDialog.datePicker.minDate = today.timeInMillis
-            datePickerDialog.show()
-        }
-
-        repeatToggle.setOnCheckedChangeListener { _, isChecked ->
-            repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
-
-            if (isChecked) {
-                assigneeToggle.isChecked = true // Schalte "Ohne Zuständiger" automatisch ein
-                taskAssigneeSpinner.visibility = View.GONE
-                assigneeLabel.visibility = View.GONE
-            }
-        }
-
-
-        repeatFrequencySpinner.adapter = ArrayAdapter(
-            context,
-            android.R.layout.simple_spinner_item,
-            listOf("Täglich", "Wöchentlich", "Monatlich")
-        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-
-
-
-        // Toggle logic to show/hide the assignee spinner and label
-        assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                taskAssigneeSpinner.visibility = View.GONE
-                assigneeLabel.visibility = View.GONE
-            } else {
-                taskAssigneeSpinner.visibility = View.VISIBLE
-                assigneeLabel.visibility = View.VISIBLE
-            }
-        }
-
-        val dialogTitle = if (existingTask == null) R.string.add_task else R.string.edit_task
         val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
-            .setTitle(dialogTitle)
+            .setTitle(if (existingTask == null) R.string.add_task else R.string.edit_task)
             .setView(dialogView)
             .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
@@ -806,30 +791,7 @@ class WochenplanFragment : Fragment() {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
                 val id = existingTask?.id ?: UUID.randomUUID().toString()
-                val date = dateFormat.format(selectedDate.time)
-                val description = taskDescription.text.toString().trim()
-                val priorityPosition = taskPriority.selectedItemPosition
-                val priority = if (priorityPosition > 0) taskPriority.selectedItem.toString().trim() else ""
-
-                var isValid = true
-
-                if (description.isEmpty()) {
-                    taskDescription.error = "Bitte eine Aufgabenbeschreibung eingeben."
-                    isValid = false
-                }
-
-                if (priority.isEmpty()) {
-                    val priorityTextView = taskPriority.selectedView as? TextView
-                    priorityTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                    priorityTextView?.text = "Bitte wählen Sie eine Priorität aus."
-                    isValid = false
-                }
-
-                if (!isValid) {
-                    return@setOnClickListener
-                }
-
-                val points = taskPointsSpinner.selectedItem.toString().toInt()
+                val repeatUntil = selectedEndDate?.let { dateFormat.format(it.time) }
                 val selectedAssignee = if (assigneeToggle.isChecked) null else taskAssigneeSpinner.selectedItem.toString()
                 val assigneeEmail = selectedAssignee?.let { name ->
                     wochenplanViewModel.assignees.value?.find { it.first == name }?.second
@@ -837,14 +799,11 @@ class WochenplanFragment : Fragment() {
 
                 val newTask = DynamicTask(
                     id = id,
-                    date = date,
-                    description = description,
-                    priority = priority,
-                    points = points,
-                    assignee = selectedAssignee ?: "Unassigned",
-                    assigneeEmail = assigneeEmail ?: "",
                     repeating = repeatToggle.isChecked,
                     repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
+                    repeatUntil = repeatUntil, // 🚀 Enddatum speichern
+                    assignee = selectedAssignee ?: "Unassigned",
+                    assigneeEmail = assigneeEmail ?: ""
                 )
 
                 if (existingTask == null) {
@@ -854,10 +813,12 @@ class WochenplanFragment : Fragment() {
                 }
                 dialog.dismiss()
             }
-
         }
         dialog.show()
     }
+
+
+
 
     private fun showPointsDialog() {
         val builder = AlertDialog.Builder(requireContext())

@@ -71,8 +71,6 @@
             android:layout_marginBottom="20dp"
             android:entries="@array/points_options" />
 
-
-
         <!-- Toggle for Assignee -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -83,7 +81,6 @@
 
             <TextView
                 android:id="@+id/ohneAssignee"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -159,6 +156,54 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:entries="@array/repeat_frequency_options" />
+
+            <!-- Wiederholen bis (DatePicker und TextView in einer Zeile) -->
+            <LinearLayout
+                android:id="@+id/repeatUntilContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/repeatUntilLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wiederholen bis:"
+                    android:textColor="@color/own_text_Farbe"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/date_picker_background"
+                    android:padding="8dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/repeatUntilDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kein Enddatum"
+                        android:textSize="16sp"
+                        android:textColor="@color/own_text_Farbe"
+                        android:padding="8dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                    <ImageView
+                        android:id="@+id/repeatUntilPickerIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="Datum wählen"/>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
