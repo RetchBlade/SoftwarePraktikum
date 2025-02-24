@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -44,6 +45,10 @@ class ProfilansichtFragment : Fragment() {
         viewModel.rankImageUrl.observe(viewLifecycleOwner) { imageUrl ->
             if (!imageUrl.isNullOrEmpty()) {
                 Glide.with(this).load(imageUrl).into(rankIcon)
+
+                // 🔥 Füge eine coole Fade-In-Animation hinzu
+                val fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.profilansicht_bounce)
+                rankIcon.startAnimation(fadeIn)
             } else {
                 rankIcon.setImageResource(R.drawable.einsteiger_ic)
             }
