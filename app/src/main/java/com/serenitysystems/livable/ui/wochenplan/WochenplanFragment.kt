@@ -299,7 +299,7 @@ class WochenplanFragment : Fragment() {
 
     private fun displayTasksForDay(day: String) {
         val dayTasks = wochenplanViewModel.tasks.value?.filter {
-            it.date == day || (it.isRepeating && shouldTaskBeShownToday(it, day))
+            it.date == day || (it.repeating && shouldTaskBeShownToday(it, day))
         } ?: emptyList()
         displayTasks(dayTasks)
     }
@@ -613,16 +613,34 @@ class WochenplanFragment : Fragment() {
 
 
     private fun deleteTask(task: DynamicTask) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.delete)
-            .setMessage(R.string.delete_task_confirmation)
-            .setPositiveButton(R.string.delete) { _, _ ->
-                wochenplanViewModel.deleteTask(task)
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .create()
-            .show()
+        if (task.repeating) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Wiederkehrende Aufgabe löschen")
+                .setMessage("Möchtest du nur diese Aufgabe oder alle zukünftigen löschen?")
+                .setPositiveButton("Nur diese") { _, _ ->
+                    wochenplanViewModel.deleteTask(task)
+                }
+                .setNegativeButton("Alle zukünftigen") { _, _ ->
+                    wochenplanViewModel.deleteFutureRepeatingTasks(task)
+                }
+                .setNeutralButton("Abbrechen", null)
+                .create()
+                .show()
+        } else {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Aufgabe löschen")
+                .setMessage("Möchtest du diese Aufgabe wirklich löschen?")
+                .setPositiveButton("Löschen") { _, _ ->
+                    wochenplanViewModel.deleteTask(task)
+                }
+                .setNegativeButton("Abbrechen", null)
+                .create()
+                .show()
+        }
     }
+
+
+
 
     private fun shouldTaskBeShownToday(task: DynamicTask, day: String): Boolean {
         val selectedDate = try {
@@ -673,7 +691,6 @@ class WochenplanFragment : Fragment() {
         val repeatToggle: Switch = dialogView.findViewById(R.id.repeatingTaskToggle)
         val repeatFrequencyLayout: View = dialogView.findViewById(R.id.repeatingTaskDetails)
         val repeatFrequencySpinner: Spinner = dialogView.findViewById(R.id.repeatFrequencySpinner)
-        val repeatDaySpinner: Spinner = dialogView.findViewById(R.id.repeatDaySpinner)
 
         val selectedDate = Calendar.getInstance()
         dateTextView.text = dateFormat.format(selectedDate.time)
@@ -694,13 +711,10 @@ class WochenplanFragment : Fragment() {
             }
 
 
-            repeatToggle.isChecked = it.isRepeating
-            repeatFrequencyLayout.visibility = if (it.isRepeating) View.VISIBLE else View.GONE
+            repeatToggle.isChecked = it.repeating
+            repeatFrequencyLayout.visibility = if (it.repeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
                 resources.getStringArray(R.array.repeat_frequency_options).indexOf(it.repeatFrequency ?: "")
-            )
-            repeatDaySpinner.setSelection(
-                resources.getStringArray(R.array.days_of_week).indexOf(it.repeatDay ?: "")
             )
 
             // If task is "Überfällig", hide the "Ohne Zuständiger" toggle and label
@@ -752,7 +766,22 @@ class WochenplanFragment : Fragment() {
 
         repeatToggle.setOnCheckedChangeListener { _, isChecked ->
             repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+
+            if (isChecked) {
+                assigneeToggle.isChecked = true // Schalte "Ohne Zuständiger" automatisch ein
+                taskAssigneeSpinner.visibility = View.GONE
+                assigneeLabel.visibility = View.GONE
+            }
         }
+
+
+        repeatFrequencySpinner.adapter = ArrayAdapter(
+            context,
+            android.R.layout.simple_spinner_item,
+            listOf("Täglich", "Wöchentlich", "Monatlich")
+        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+
+
 
         // Toggle logic to show/hide the assignee spinner and label
         assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
@@ -814,9 +843,8 @@ class WochenplanFragment : Fragment() {
                     points = points,
                     assignee = selectedAssignee ?: "Unassigned",
                     assigneeEmail = assigneeEmail ?: "",
-                    isRepeating = repeatToggle.isChecked,
+                    repeating = repeatToggle.isChecked,
                     repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
-                    repeatDay = if (repeatToggle.isChecked) repeatDaySpinner.selectedItem.toString() else null
                 )
 
                 if (existingTask == null) {

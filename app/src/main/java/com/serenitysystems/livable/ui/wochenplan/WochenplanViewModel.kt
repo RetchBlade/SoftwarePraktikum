@@ -42,6 +42,9 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
     private val _assignees = MutableLiveData<List<Pair<String, String>>>()
     val assignees: LiveData<List<Pair<String, String>>> = _assignees
 
+    private val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
+
+
     init {
         loadTasks()
         checkAndCalculateMonthlyPoints()
@@ -97,6 +100,71 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+
+    fun deleteFutureRepeatingTasks(task: DynamicTask) {
+        Log.d("WochenplanViewModel", "🔍 Starte Kettenlöschung für: ${task.description} mit ID: ${task.id} und parentTaskId: ${task.parentTaskId}")
+
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                db.collection("users").document(userToken.email).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId)
+                                .collection("Wochenplan")
+                                .whereEqualTo("parentTaskId", task.id) // 🔥 Alle Kinder der aktuellen Aufgabe finden
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val tasksToDelete = snapshot.documents.mapNotNull { it.toObject(DynamicTask::class.java) }
+
+                                    Log.d("WochenplanViewModel", "🔥 Gefundene zukünftige Instanzen: ${tasksToDelete.size}")
+
+                                    for (doc in snapshot.documents) {
+                                        Log.d("WochenplanViewModel", "🔥 Lösche: ${doc.getString("description")}, Datum: ${doc.getString("date")}")
+
+                                        doc.reference.delete()
+                                            .addOnSuccessListener {
+                                                Log.d("WochenplanViewModel", "✅ Erfolgreich gelöscht: ${doc.getString("description")}")
+
+                                                val deletedTask = doc.toObject(DynamicTask::class.java)
+                                                if (deletedTask != null) {
+                                                    deleteFutureRepeatingTasks(deletedTask) // 🔥 Löscht die nächste Stufe
+                                                }
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e("WochenplanViewModel", "❌ Fehler beim Löschen von ${doc.getString("description")}", e)
+                                            }
+                                    }
+
+                                    // ✅ **Lösche die ursprüngliche Startaufgabe zuletzt**
+                                    db.collection("WGs").document(wgId)
+                                        .collection("Wochenplan")
+                                        .document(task.id)
+                                        .delete()
+                                        .addOnSuccessListener {
+                                            Log.d("WochenplanViewModel", "✅ Startaufgabe erfolgreich gelöscht: ${task.description}")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("WochenplanViewModel", "❌ Fehler beim Löschen der Startaufgabe", e)
+                                        }
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("WochenplanViewModel", "❌ Fehler beim Abrufen zukünftiger wiederholender Aufgaben", e)
+                                }
+                        }
+                    }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
     private fun categorizeTasksByWeek(tasksList: List<DynamicTask>) {
@@ -254,6 +322,10 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                     .set(task)
                                     .addOnSuccessListener {
                                         Log.d("WochenplanViewModel", "Task added successfully.")
+                                        // 🚀 Falls es eine wiederholende Aufgabe ist, sofort `processRepeatingTasks()` starten
+                                        if (task.repeating) {
+                                            processRepeatingTasks(listOf(task))
+                                        }
                                     }
                                     .addOnFailureListener { e ->
                                         Log.e("WochenplanViewModel", "Error adding task", e)
@@ -710,6 +782,81 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    private fun isSameDay(date1: Calendar, date2: Calendar): Boolean {
+        return date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR) &&
+                date1.get(Calendar.DAY_OF_YEAR) == date2.get(Calendar.DAY_OF_YEAR)
+    }
+
+
+
+
+
+    private fun processRepeatingTasks(tasks: List<DynamicTask>) {
+        Log.d("WochenplanViewModel", "Starte processRepeatingTasks mit ${tasks.size} Aufgaben")
+
+        val today = Calendar.getInstance()
+        val nextWeekSunday = Calendar.getInstance().apply {
+            add(Calendar.WEEK_OF_YEAR, 1)
+            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+        }
+
+        fetchUserToken { token ->
+            token?.let { userToken ->
+                db.collection("users").document(userToken.email).get()
+                    .addOnSuccessListener { document ->
+                        val wgId = document.getString("wgId")
+                        if (wgId != null) {
+                            db.collection("WGs").document(wgId)
+                                .collection("Wochenplan")
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val existingTasks = snapshot.documents.mapNotNull { it.toObject(DynamicTask::class.java) }
+                                    val existingTaskDates = existingTasks.associateBy { it.date }
+                                    val newTasks = mutableListOf<DynamicTask>()
+
+                                    for (task in tasks) {
+                                        if (task.repeating) {
+                                            val taskDate = parseDate(task.date)
+                                            var previousTaskId = task.parentTaskId ?: task.id // Starte mit der ID der ersten Instanz
+
+                                            when (task.repeatFrequency?.trim()) {
+                                                "Täglich" -> {
+                                                    val tempDate = taskDate.clone() as Calendar
+
+                                                    while (tempDate.before(nextWeekSunday) || isSameDay(tempDate, nextWeekSunday)) {
+                                                        val formattedDate = dateFormat.format(tempDate.time)
+
+                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                            val newTask = task.copy(
+                                                                id = UUID.randomUUID().toString(),
+                                                                date = formattedDate,
+                                                                isDone = false,
+                                                                parentTaskId = previousTaskId // Setze parentTaskId korrekt
+                                                            )
+                                                            newTasks.add(newTask)
+                                                            previousTaskId = newTask.id // Diese ID wird für den nächsten Tag verwendet
+                                                        }
+
+                                                        tempDate.add(Calendar.DAY_OF_YEAR, 1)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (newTasks.isNotEmpty()) {
+                                        for (newTask in newTasks) {
+                                            addTask(newTask)
+                                        }
+                                    } else {
+                                        Log.d("WochenplanViewModel", "Keine neuen wiederholenden Aufgaben erforderlich")
+                                    }
+                                }
+                        }
+                    }
+            }
+        }
+    }
 
 }
 

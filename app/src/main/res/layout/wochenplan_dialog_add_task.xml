@@ -149,21 +149,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/repeat_on"
-                android:textColor="@color/own_text_Farbe"
-                android:textSize="16sp" />
-
-            <Spinner
-                android:id="@+id/repeatDaySpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:entries="@array/days_of_week" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:text="@string/repeat_frequency"
                 android:textColor="@color/own_text_Farbe"
                 android:textSize="16sp" />

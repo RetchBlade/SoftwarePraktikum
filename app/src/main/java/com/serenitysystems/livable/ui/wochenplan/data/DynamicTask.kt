@@ -12,12 +12,14 @@ data class DynamicTask(
     var assignee: String = "Unassigned",
     var assigneeEmail: String = "",
     var isDone: Boolean = false,
-    val isRepeating: Boolean = false,
+    val repeating: Boolean = false,
     val repeatFrequency: String? = null,
     val repeatDay: String? = null,
     val additionalDetails: Map<String, String> = emptyMap(),
     var wasUpdated: Boolean = false, // Speichert, ob die Punkte bereits angepasst wurden
-    var isAccounted: Boolean = false // Speichert, ob die Aufgabe bereits in die Punkteberechnung einbezogen wurde.
+    var isAccounted: Boolean = false, // Speichert, ob die Aufgabe bereits in die Punkteberechnung einbezogen wurde.
+    val parentTaskId: String? = null
+
 
 )
 
