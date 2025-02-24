@@ -100,20 +100,30 @@ class WgAnsichtFragment : Fragment() {
         }
 
         sharedViewModel.bewohnerList.observe(viewLifecycleOwner) { newBewohnerList ->
-            updateRoommateList(newBewohnerList)
+            sharedViewModel.rankIcons.observe(viewLifecycleOwner) { rankIcons ->
+                if (rankIcons.isNotEmpty()) {
+                    updateRoommateList(newBewohnerList)
+                }
+            }
         }
+
     }
 
-    private fun updateRoommateList(newRoommates: List<Pair<String, String>>) {
-        bewohnerContainer.removeAllViews()
+    private fun updateRoommateList(newRoommates: List<Triple<String, String, Int>>) {
+        bewohnerContainer.removeAllViews() // 🔥 Wichtig: Vorher leeren
 
         val inflater = LayoutInflater.from(context)
-        newRoommates.forEach { (name, email) ->
+        val rankIcons = sharedViewModel.rankIcons.value ?: emptyMap() // 🔥 Sicherstellen, dass Rank-Icons geladen sind
+
+        newRoommates.forEachIndexed { index, (name, email, points) ->
             val roommateView = inflater.inflate(R.layout.wgansicht_roommate_item, bewohnerContainer, false)
             val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
             val profileName = roommateView.findViewById<TextView>(R.id.profileName)
+            val lifetimePointsText = roommateView.findViewById<TextView>(R.id.lifetimePoints)
+            val rankIcon = roommateView.findViewById<ImageView>(R.id.rankIcon)
 
-            profileName.text = name
+            profileName.text = "${index + 1}. $name"
+            lifetimePointsText.text = "Punkte: $points"
 
             fetchUserProfileImage(email) { profileImageUrl ->
                 Glide.with(requireContext())
@@ -122,7 +132,22 @@ class WgAnsichtFragment : Fragment() {
                     .into(profilePicture)
             }
 
-            // Klick-Listener für das Profilbild
+            // 🔥 Dynamisches Laden des Rank-Icons
+            val rank = when {
+                points < 500 -> "neuling"
+                points < 1000 -> "bronze"
+                points < 3000 -> "silber"
+                points < 5000 -> "gold"
+                else -> "champion"
+            }
+
+            val rankImageUrl = rankIcons[rank]
+            if (!rankImageUrl.isNullOrEmpty()) {
+                Glide.with(requireContext()).load(rankImageUrl).into(rankIcon)
+            } else {
+                rankIcon.setImageResource(R.drawable.einsteiger_ic)
+            }
+
             profilePicture.setOnClickListener {
                 sharedViewModel.setSelectedUserEmail(email)
                 findNavController().navigate(R.id.nav_profilansicht)
@@ -131,6 +156,10 @@ class WgAnsichtFragment : Fragment() {
             bewohnerContainer.addView(roommateView)
         }
     }
+
+
+
+
 
 
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {

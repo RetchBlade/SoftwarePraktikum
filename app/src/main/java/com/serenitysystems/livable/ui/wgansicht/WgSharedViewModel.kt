@@ -24,8 +24,9 @@ class WgSharedViewModel(application: Application) : AndroidViewModel(application
     private val _wgSize = MutableLiveData<String>()
     val wgSize: LiveData<String> get() = _wgSize
 
-    private val _bewohnerList = MutableLiveData<List<Pair<String, String>>>()
-    val bewohnerList: LiveData<List<Pair<String, String>>> get() = _bewohnerList
+    private val _bewohnerList = MutableLiveData<List<Triple<String, String, Int>>>()
+    val bewohnerList: LiveData<List<Triple<String, String, Int>>> get() = _bewohnerList
+
 
     private val _wgId = MutableLiveData<String?>()
     val wgId: MutableLiveData<String?> get() = _wgId
@@ -38,6 +39,10 @@ class WgSharedViewModel(application: Application) : AndroidViewModel(application
 
     private val _selectedUserEmail = MutableLiveData<String?>(null)
     val selectedUserEmail: LiveData<String?> get() = _selectedUserEmail
+
+    private val _rankIcons = MutableLiveData<Map<String, String>>()
+    val rankIcons: LiveData<Map<String, String>> get() = _rankIcons
+
 
     init {
         loadUserEmailAndWgDetails()
@@ -91,20 +96,60 @@ class WgSharedViewModel(application: Application) : AndroidViewModel(application
 
 
     private suspend fun fetchRoommateDetails(emails: List<String>) {
-        val roommates = mutableListOf<Pair<String, String>>()
+        val roommates = mutableListOf<Triple<String, String, Int>>()
+        val rankIcons = mutableMapOf<String, String>() // Cache für Rank-Icons
+
+        // 🔥 Lade Rank-Icons aus Firestore, bevor Bewohner-Daten geladen werden
+        try {
+            val rankDoc = firestore.collection("ranks").document("ranks").get().await()
+            rankIcons["neuling"] = rankDoc.getString("neuling") ?: ""
+            rankIcons["bronze"] = rankDoc.getString("bronze") ?: ""
+            rankIcons["silber"] = rankDoc.getString("silber") ?: ""
+            rankIcons["gold"] = rankDoc.getString("gold") ?: ""
+            rankIcons["champion"] = rankDoc.getString("champion") ?: ""
+            _rankIcons.postValue(rankIcons)
+        } catch (e: Exception) {
+            logError("Fehler beim Laden der Rank-Icons", e)
+        }
+
+        // 🔥 Lade Bewohner-Daten
         emails.forEach { email ->
             try {
                 val userDoc = firestore.collection("users").document(email).get().await()
                 val nickname = userDoc.getString("nickname") ?: "Unbekannt"
-                roommates.add(Pair(nickname, email))
+                val wgId = userDoc.getString("wgId")
+
+                var lifetimePoints = 0
+                if (!wgId.isNullOrEmpty()) {
+                    val lifetimeDoc = firestore.collection("WGs")
+                        .document(wgId)
+                        .collection("lifetimePoints")
+                        .document("gesamt")
+                        .get()
+                        .await()
+
+                    val pointsData = lifetimeDoc.get("points") as? Map<String, Long>
+                    lifetimePoints = pointsData?.get(email)?.toInt() ?: 0
+                }
+
+                if (!roommates.any { it.second == email }) { // 🔥 Verhindert doppelte Einträge
+                    roommates.add(Triple(nickname, email, lifetimePoints))
+                }
             } catch (e: Exception) {
                 logError("Fehler beim Abrufen der Bewohner-Daten für $email: ${e.localizedMessage}", e)
             }
         }
-        if (roommates.isNotEmpty()) {
+
+        roommates.sortByDescending { it.third }
+
+        if (_bewohnerList.value != roommates) { // 🔥 Prüft, ob sich die Liste geändert hat
             _bewohnerList.postValue(roommates)
         }
     }
+
+
+
+
 
 
     fun setWgDetails(address: String, rooms: String, size: String) {
