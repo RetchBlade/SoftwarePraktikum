@@ -762,7 +762,15 @@ class WochenplanFragment : Fragment() {
         repeatToggle.setOnCheckedChangeListener { _, isChecked ->
             repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
             repeatUntilContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+
+            if (isChecked) {
+                assigneeToggle.isChecked = true
+                assigneeToggle.isEnabled = false // Sperren des Toggles
+            } else {
+                assigneeToggle.isEnabled = true // Entsperren des Toggles
+            }
         }
+
 
         assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
             taskAssigneeSpinner.visibility = if (isChecked) View.GONE else View.VISIBLE
