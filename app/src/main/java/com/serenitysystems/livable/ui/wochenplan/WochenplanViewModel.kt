@@ -46,8 +46,27 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
 
 
     init {
+        initializeDaysOfWeek()
         loadTasks()
         checkAndCalculateMonthlyPoints()
+    }
+
+
+    fun initializeDaysOfWeek() {
+        val calendar = Calendar.getInstance()
+        // Setze den Wochenstart auf Montag
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val days = mutableListOf<String>()
+        val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY)
+
+        for (i in 0..6) { // 7 Tage hinzufügen (Montag bis Sonntag)
+            days.add(dateFormat.format(calendar.time))
+            calendar.add(Calendar.DAY_OF_YEAR, 1) // Zum nächsten Tag wechseln
+        }
+
+        daysOfWeek = days
+        Log.d("WochenplanViewModel", "Initialisierte Tage: $daysOfWeek")
     }
 
 
