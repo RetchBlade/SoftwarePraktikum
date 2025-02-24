@@ -120,8 +120,8 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
         return when {
             points < 500 -> "neuling"
             points < 1000 -> "bronze"
-            points < 2000 -> "silber"
-            points < 3000 -> "gold"
+            points < 3000 -> "silber"
+            points < 5000 -> "gold"
             else -> "champion"
         }
     }
