@@ -1,0 +1,23 @@
+<resources>
+    <!-- Dunkle Farbwerte -->
+    <color name="own_very_dark_gray">@color/own_light_gray</color>
+    <color name="white">#FFFFFF</color>
+    <color name="own_grayish_yellow">@color/dark_beige</color>
+    <color name="own_text_Farbe">#094249</color>
+
+    <color name="own_navy_Blau">#1F6E78</color>
+    <color name="black">#000000</color>
+        <color name="dark_beige">#b8b6ac</color> <!-- darker shade for night -->
+
+    <!-- Dunkler Hintergrund -->
+    <color name="backgroundColor">#121212</color>
+
+    <color name="priority_high">#B44D4D</color> <!-- PINK -->
+    <color name="priority_medium">#A48A38</color> <!-- Gelb -->
+    <color name="priority_low">#3B904A</color> <!-- Grün -->
+    <color name="priority_overdue">#A64545</color> <!-- ROT -->
+    <color name="green">#225624</color>
+
+
+
+</resources>

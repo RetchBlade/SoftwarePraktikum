@@ -1,0 +1,43 @@
+<!-- res/drawable/switch_thumb_daynight.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NIGHT MODE (Switch checked = true) -->
+    <item android:state_checked="true">
+        <layer-list>
+            <!-- Night oval base -->
+            <item>
+                <shape android:shape="oval">
+                    <gradient
+                        android:startColor="#B4B4B4"
+                        android:endColor="#818181"
+                        /> <!-- Grayish for moon base -->
+
+                    <size android:width="28dp" android:height="28dp"/>
+                </shape>
+            </item>
+            <!-- Moon icon overlay (with padding) -->
+            <item android:left="4dp" android:top="4dp" android:right="4dp" android:bottom="4dp">
+                <bitmap
+                    android:gravity="center"
+                    android:src="@drawable/moon_icon" />
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- DAY MODE (Switch checked = false) -->
+    <item>
+        <layer-list>
+            <!-- Day oval base -->
+            <item>
+                <shape android:shape="oval">
+                    <gradient
+                        android:startColor="#FFF33A"
+                        android:endColor="#FA9E16"
+                        android:angle="270"/>
+                    <size android:width="28dp" android:height="28dp"/>
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+</selector>

@@ -57,14 +57,13 @@
             android:maxLines="1"
             app:layout_constraintTop_toBottomOf="@id/dateTextView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"        />
-
-        <!--  app:layout_constraintHorizontalBias="0.5" -->
-
+            app:layout_constraintEnd_toEndOf="parent"
+     />
 
 
 
-    <!-- Kontostand -->
+
+        <!-- Kontostand -->
         <TextView
             android:id="@+id/textViewKontostand"
             android:layout_width="wrap_content"

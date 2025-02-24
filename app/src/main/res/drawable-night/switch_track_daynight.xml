@@ -1,0 +1,28 @@
+<!-- switch_track_daynight.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Night mode (Checked = true) -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <!-- Night gradient or background -->
+            <gradient
+                android:startColor="#333333"
+                android:centerColor="#222222"
+                android:endColor="#111111"
+                android:angle="270" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+
+    <!-- Day mode (Checked = false) -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- Day gradient or background -->
+            <gradient
+                android:startColor="#CCE6FF"
+                android:centerColor="#B3D9FF"
+                android:endColor="#99CCFF"
+                android:angle="270" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+</selector>

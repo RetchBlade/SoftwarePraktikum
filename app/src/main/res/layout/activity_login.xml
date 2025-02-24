@@ -39,6 +39,10 @@
         <!-- CardView für Eingabefelder und Buttons -->
 
 
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="350dp"
@@ -51,7 +55,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/gradient_beige">
+                android:background="@drawable/blurred_card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -75,13 +79,13 @@
                             android:id="@+id/usernameEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="20dp"
                             android:background="@android:color/transparent"
                             android:hint="Email Adresse"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginStart="15dp"
 
-                            android:textSize="17sp"
-                            android:textColor="@color/own_very_dark_gray" />
+                            android:textColor="@color/own_very_dark_gray"
+                            android:textSize="15sp" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -89,23 +93,22 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="300dp"
                         android:layout_height="60dp"
-                        android:padding="23dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="7dp"
+                        android:layout_marginTop="20dp"
+                        android:padding="23dp"
                         app:cardCornerRadius="8dp">
 
                         <EditText
                             android:id="@+id/editTextNumberPassword"
                             android:layout_width="270dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="20dp"
                             android:background="@android:color/transparent"
                             android:hint="Passwort"
                             android:inputType="textWebPassword"
-                           android:layout_marginTop="20dp"
-                            android:layout_marginStart="15dp"
-
-                            android:textSize="17sp"
-                            android:textColor="@color/own_very_dark_gray" />
+                            android:textColor="@color/own_very_dark_gray"
+                            android:textSize="15sp" />
 
                     </androidx.cardview.widget.CardView>
 
@@ -116,17 +119,15 @@
                         android:layout_height="50dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginStart="25dp"
-                        android:layout_marginLeft="7dp"
                         android:layout_marginTop="25dp"
                         android:layout_marginEnd="25dp"
-                        android:backgroundTint="@color/own_navy_Blau"
-                        android:paddingLeft="24dp"
-                        android:paddingRight="24dp"
+                        android:background="@drawable/button_background"
+                        android:elevation="4dp"
                         android:text="Login"
-                        android:textColor="@color/own_helle_Beige"
-                        android:textSize="19sp"
                         android:textAllCaps="false"
-                        />
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
 
 
                     <!-- Registrieren TextView -->
@@ -151,7 +152,7 @@
                         android:layout_width="228dp"
                         android:layout_height="41dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="-10dp"
                         android:clickable="true"
                         android:focusable="true"
@@ -167,9 +168,5 @@
     </LinearLayout>
 
     <!-- Das muss hier unten bleiben, NavHostFragment hinzufügen -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </RelativeLayout>

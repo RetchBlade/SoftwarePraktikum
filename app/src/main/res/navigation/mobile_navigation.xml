@@ -59,11 +59,24 @@
             android:id="@+id/action_settingsFragment_to_wgAnsichtFragment"
             app:destination="@id/nav_wgansichtFragment" />
 
+        <!-- Navigation to Profile Management -->
         <action
             android:id="@+id/action_settingsFragment_to_profilverwaltenFragment"
             app:destination="@id/nav_profilverwaltenFragment" />
 
+        <!-- Navigation to FAQ -->
+        <action
+            android:id="@+id/action_settingsFragment_to_faqFragment"
+            app:destination="@id/nav_faq" />
     </fragment>
+
+    <!-- FAQ Fragment (Moved Outside of Settings) -->
+    <fragment
+        android:id="@+id/nav_faq"
+        android:name="com.serenitysystems.livable.ui.settings.FAQFragment"
+        android:label="FAQ"
+        tools:layout="@layout/fragment_faq"/>
+
 
     <!-- Profile Management Fragment -->
     <fragment

@@ -1,10 +1,13 @@
 package com.serenitysystems.livable.ui.settings
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Switch
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -24,7 +27,7 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,41 +35,68 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialisiere die Benutzeroberfläche
         setupUserProfile()
         setupClickListeners()
+        setupThemeToggle()
     }
 
     private fun setupUserProfile() {
         userPic = binding.profileImage
 
-        // Beobachte das Benutzerprofilbild
         viewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
             if (!profileImageUrl.isNullOrEmpty()) {
-                // Bild mit Glide laden
                 Glide.with(this)
                     .load(profileImageUrl)
-                    .placeholder(R.drawable.pp) // Platzhalterbild während des Ladens
-                    .error(R.drawable.pp) // Fehlerbild, falls das Laden fehlschlägt
+                    .placeholder(R.drawable.pp)
+                    .error(R.drawable.pp)
                     .into(userPic)
             } else {
-                userPic.setImageResource(R.drawable.pp) // Platzhalter setzen, falls kein Bild vorhanden ist
+                userPic.setImageResource(R.drawable.pp)
             }
         })
     }
 
     private fun setupClickListeners() {
-        // Navigiere zur WG-Ansicht
         binding.wgInfoCard.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_wgAnsichtFragment)
         }
 
-        // Navigiere zur Profilverwaltung
         binding.editProfileButton.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_profilverwaltenFragment)
         }
 
-        // Weitere Navigationen können hier hinzugefügt werden
+        // ✅ Corrected FAQ Navigation
+        binding.faqCard.setOnClickListener {
+            findNavController().navigate(R.id.action_settingsFragment_to_faqFragment)
+        }
+    }
+
+    private fun setupThemeToggle() {
+        val themeSwitch = binding.themeSwitch
+        val themeLabel = binding.themeLabel
+        val sharedPref = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        val isDarkModeEnabled = sharedPref.getBoolean("dark_mode", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
+        themeSwitch.isChecked = isDarkModeEnabled
+        themeLabel.text = if (isDarkModeEnabled) "Dunkel" else "Hell"
+
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            themeSwitch.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
+                themeSwitch.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+            }.start()
+
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            )
+
+            sharedPref.edit().putBoolean("dark_mode", isChecked).apply()
+            themeLabel.text = if (isChecked) "Dunkel" else "Hell"
+        }
     }
 
     override fun onDestroyView() {
