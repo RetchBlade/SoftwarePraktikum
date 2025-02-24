@@ -40,6 +40,9 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
     private val _lifetimePoints = MutableLiveData<Int>()
     val lifetimePoints: LiveData<Int> = _lifetimePoints
 
+    private val _rankImageUrl = MutableLiveData<String?>()
+    val rankImageUrl: LiveData<String?> = _rankImageUrl
+
 
     fun loadCurrentUserData() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -112,6 +115,35 @@ class ProfilansichtViewModel(application: Application) : AndroidViewModel(applic
                 }
             }
     }
+
+    private fun getRank(points: Int): String {
+        return when {
+            points < 500 -> "neuling"
+            points < 1000 -> "bronze"
+            points < 2000 -> "silber"
+            points < 3000 -> "gold"
+            else -> "champion"
+        }
+    }
+
+    fun loadRankImage(points: Int) {
+        val rank = getRank(points)
+        val firestore = FirebaseFirestore.getInstance()
+
+        firestore.collection("ranks").document("ranks").get()
+            .addOnSuccessListener { document ->
+                val imageUrl = document.getString(rank)
+                if (!imageUrl.isNullOrEmpty()) {
+                    _rankImageUrl.postValue(imageUrl)
+                } else {
+                    Log.e("ProfilansichtViewModel", "Kein Bild für Rang $rank gefunden")
+                }
+            }
+            .addOnFailureListener {
+                Log.e("ProfilansichtViewModel", "Fehler beim Abrufen des Rank-Bildes: ${it.message}")
+            }
+    }
+
 
     override fun onCleared() {
         super.onCleared()

@@ -31,6 +31,7 @@ class ProfilansichtFragment : Fragment() {
         val genderText: TextView = view.findViewById(R.id.genderText)
         val roleText: TextView = view.findViewById(R.id.roleText)
         val lifetimePointsText: TextView = view.findViewById(R.id.lifetimePointsText)
+        val rankIcon: ImageView = view.findViewById(R.id.rankIcon)
 
         viewModel.profileImage.observe(viewLifecycleOwner, Observer { imageUrl ->
             Glide.with(this)
@@ -39,6 +40,14 @@ class ProfilansichtFragment : Fragment() {
                 .error(R.drawable.pp)
                 .into(profileImage)
         })
+
+        viewModel.rankImageUrl.observe(viewLifecycleOwner) { imageUrl ->
+            if (!imageUrl.isNullOrEmpty()) {
+                Glide.with(this).load(imageUrl).into(rankIcon)
+            } else {
+                rankIcon.setImageResource(R.drawable.einsteiger_ic)
+            }
+        }
 
         viewModel.username.observe(viewLifecycleOwner, Observer { username ->
             usernameText.text = username ?: "N/A"
@@ -65,6 +74,7 @@ class ProfilansichtFragment : Fragment() {
 
         viewModel.lifetimePoints.observe(viewLifecycleOwner, Observer { points ->
             lifetimePointsText.text = "Lifetime Punkte: $points"
+            viewModel.loadRankImage(points)
         })
 
         return view
