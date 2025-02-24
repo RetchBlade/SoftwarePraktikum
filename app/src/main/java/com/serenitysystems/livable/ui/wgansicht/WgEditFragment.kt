@@ -40,7 +40,13 @@ class WgEditFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
         populateFields()
-        populateRoommateList(isEditMode = true)
+        sharedViewModel.rankIcons.observe(viewLifecycleOwner) { rankIcons ->
+            if (rankIcons.isNotEmpty()) {
+                populateRoommateList(isEditMode = true)
+            }
+        }
+
+
 
         saveButton.setOnClickListener {
             saveChanges(view)
@@ -72,19 +78,40 @@ class WgEditFragment : Fragment() {
             bewohnerContainer.removeAllViews()
             val inflater = LayoutInflater.from(context)
 
-            roommates.forEach { (name, email) ->
+            val rankIcons = sharedViewModel.rankIcons.value ?: emptyMap() // 🔥 Stelle sicher, dass Icons geladen sind
+
+            roommates.forEach { (name, email, points) ->
                 val roommateView = inflater.inflate(R.layout.wgansicht_roommate_item, bewohnerContainer, false)
                 val profilePicture = roommateView.findViewById<ImageView>(R.id.profilePicture)
                 val profileName = roommateView.findViewById<TextView>(R.id.profileName)
+                val lifetimePointsText = roommateView.findViewById<TextView>(R.id.lifetimePoints)
+                val rankIcon = roommateView.findViewById<ImageView>(R.id.rankIcon)
                 val removeButton = roommateView.findViewById<ImageView>(R.id.removeRoommateButton)
 
                 profileName.text = name
+                lifetimePointsText.text = "Punkte: $points"
 
                 fetchUserProfileImage(email) { profileImageUrl ->
                     Glide.with(requireContext())
                         .load(profileImageUrl ?: R.drawable.pp_placeholder)
                         .circleCrop()
                         .into(profilePicture)
+                }
+
+                // 🔥 Dynamisches Laden des Rank-Icons
+                val rank = when {
+                    points < 500 -> "neuling"
+                    points < 1000 -> "bronze"
+                    points < 3000 -> "silber"
+                    points < 5000 -> "gold"
+                    else -> "champion"
+                }
+
+                val rankImageUrl = rankIcons[rank]
+                if (!rankImageUrl.isNullOrEmpty()) {
+                    Glide.with(requireContext()).load(rankImageUrl).into(rankIcon)
+                } else {
+                    rankIcon.setImageResource(R.drawable.einsteiger_ic)
                 }
 
                 removeButton.visibility = if (isEditMode) View.VISIBLE else View.GONE
@@ -96,6 +123,7 @@ class WgEditFragment : Fragment() {
             }
         }
     }
+
 
     private fun showRemoveRoommateDialog(email: String) {
         val dialog = android.app.AlertDialog.Builder(requireContext())
