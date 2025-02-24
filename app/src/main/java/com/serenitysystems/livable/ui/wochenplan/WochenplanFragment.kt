@@ -679,11 +679,15 @@ class WochenplanFragment : Fragment() {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.wochenplan_dialog_add_task, null)
 
+        val datePickerIcon: ImageView = dialogView.findViewById(R.id.datePickerIcon)
+        val dateTextView: TextView = dialogView.findViewById(R.id.dateTextView)
+        val taskDescription: EditText = dialogView.findViewById(R.id.taskDescription)
+        val taskPriority: Spinner = dialogView.findViewById(R.id.taskPriority)
+        val taskPointsSpinner: Spinner = dialogView.findViewById(R.id.taskPointsSpinner)
         val taskAssigneeSpinner: Spinner = dialogView.findViewById(R.id.taskAssigneeSpinner)
         val assigneeToggle: Switch = dialogView.findViewById(R.id.asigneeToggle)
         val assigneeLabel: TextView = dialogView.findViewById(R.id.asigneeLabel)
         val ohneAssigneeLabel: TextView = dialogView.findViewById(R.id.ohneAssignee)
-
         val repeatToggle: Switch = dialogView.findViewById(R.id.repeatingTaskToggle)
         val repeatFrequencyLayout: View = dialogView.findViewById(R.id.repeatingTaskDetails)
         val repeatFrequencySpinner: Spinner = dialogView.findViewById(R.id.repeatFrequencySpinner)
@@ -691,18 +695,16 @@ class WochenplanFragment : Fragment() {
         val repeatUntilDate: TextView = dialogView.findViewById(R.id.repeatUntilDate)
         val repeatUntilPickerIcon: ImageView = dialogView.findViewById(R.id.repeatUntilPickerIcon)
 
-        // Standardwert für das Enddatum
-        var selectedEndDate: Calendar? = null
+        val selectedDate = Calendar.getInstance()
+        dateTextView.text = dateFormat.format(selectedDate.time)
 
-        // Öffne DatePicker für das Enddatum
+        var selectedEndDate: Calendar? = null
         val openDatePicker = {
             val today = Calendar.getInstance()
             val datePickerDialog = DatePickerDialog(
                 context,
                 { _, year, month, dayOfMonth ->
-                    selectedEndDate = Calendar.getInstance().apply {
-                        set(year, month, dayOfMonth)
-                    }
+                    selectedEndDate = Calendar.getInstance().apply { set(year, month, dayOfMonth) }
                     repeatUntilDate.text = dateFormat.format(selectedEndDate!!.time)
                 },
                 today.get(Calendar.YEAR),
@@ -712,37 +714,19 @@ class WochenplanFragment : Fragment() {
             datePickerDialog.datePicker.minDate = today.timeInMillis
             datePickerDialog.show()
         }
-
         repeatUntilDate.setOnClickListener { openDatePicker() }
         repeatUntilPickerIcon.setOnClickListener { openDatePicker() }
 
-        repeatToggle.setOnCheckedChangeListener { _, isChecked ->
-            repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
-            repeatUntilContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
-
-            if (isChecked) {
-                assigneeToggle.isChecked = true // Schalte "Ohne Zuständiger" automatisch ein
-                taskAssigneeSpinner.visibility = View.GONE
-                assigneeLabel.visibility = View.GONE
-                ohneAssigneeLabel.visibility = View.VISIBLE // Stelle sicher, dass der Text bleibt
-            }
-        }
-
-        // Toggle für "Ohne Zuständiger"
-        assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                taskAssigneeSpinner.visibility = View.GONE
-                assigneeLabel.visibility = View.GONE
-                ohneAssigneeLabel.visibility = View.VISIBLE // Sicherstellen, dass der Text bleibt
-            } else {
-                taskAssigneeSpinner.visibility = View.VISIBLE
-                assigneeLabel.visibility = View.VISIBLE
-                ohneAssigneeLabel.visibility = View.VISIBLE // "Ohne Zuständiger" bleibt sichtbar
-            }
-        }
-
-        // Falls eine bestehende Aufgabe bearbeitet wird, Enddatum und Assignee laden
         existingTask?.let {
+            val parsedDate = dateFormat.parse(it.date)
+            parsedDate?.let { date -> selectedDate.time = date }
+            taskDescription.setText(it.description)
+            taskPriority.setSelection(resources.getStringArray(R.array.prio_liste).indexOf(it.priority))
+
+            val pointsArray = resources.getStringArray(R.array.points_options)
+            val index = pointsArray.indexOf(it.points.toString())
+            if (index >= 0) taskPointsSpinner.setSelection(index)
+
             repeatToggle.isChecked = it.repeating
             repeatFrequencyLayout.visibility = if (it.repeating) View.VISIBLE else View.GONE
             repeatFrequencySpinner.setSelection(
@@ -758,10 +742,8 @@ class WochenplanFragment : Fragment() {
             }
 
             assigneeToggle.isChecked = it.assignee == "Unassigned"
-            ohneAssigneeLabel.visibility = View.VISIBLE // Sicherstellen, dass "Ohne Zuständiger" beim Laden sichtbar bleibt
         }
 
-        // Lade Assignees aus ViewModel und fülle den Spinner
         wochenplanViewModel.assignees.observe(viewLifecycleOwner) { assignees ->
             val assigneeAdapter = ArrayAdapter(
                 context,
@@ -771,17 +753,25 @@ class WochenplanFragment : Fragment() {
             assigneeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             taskAssigneeSpinner.adapter = assigneeAdapter
 
-            // Falls eine bestehende Aufgabe einen Assignee hat, setzen
             existingTask?.assignee?.let { assignee ->
                 val position = assignees.indexOfFirst { it.first == assignee }
-                if (position != -1) {
-                    taskAssigneeSpinner.setSelection(position)
-                }
+                if (position != -1) taskAssigneeSpinner.setSelection(position)
             }
         }
 
+        repeatToggle.setOnCheckedChangeListener { _, isChecked ->
+            repeatFrequencyLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            repeatUntilContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
+        assigneeToggle.setOnCheckedChangeListener { _, isChecked ->
+            taskAssigneeSpinner.visibility = if (isChecked) View.GONE else View.VISIBLE
+            assigneeLabel.visibility = if (isChecked) View.GONE else View.VISIBLE
+        }
+
+        val dialogTitle = if (existingTask == null) R.string.add_task else R.string.edit_task
         val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
-            .setTitle(if (existingTask == null) R.string.add_task else R.string.edit_task)
+            .setTitle(dialogTitle)
             .setView(dialogView)
             .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
@@ -791,6 +781,10 @@ class WochenplanFragment : Fragment() {
             val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
                 val id = existingTask?.id ?: UUID.randomUUID().toString()
+                val date = dateFormat.format(selectedDate.time)
+                val description = taskDescription.text.toString().trim()
+                val priority = taskPriority.selectedItem.toString().trim()
+                val points = taskPointsSpinner.selectedItem.toString().toInt()
                 val repeatUntil = selectedEndDate?.let { dateFormat.format(it.time) }
                 val selectedAssignee = if (assigneeToggle.isChecked) null else taskAssigneeSpinner.selectedItem.toString()
                 val assigneeEmail = selectedAssignee?.let { name ->
@@ -799,11 +793,15 @@ class WochenplanFragment : Fragment() {
 
                 val newTask = DynamicTask(
                     id = id,
+                    date = date,
+                    description = description,
+                    priority = priority,
+                    points = points,
+                    assignee = selectedAssignee ?: "Unassigned",
+                    assigneeEmail = assigneeEmail ?: "",
                     repeating = repeatToggle.isChecked,
                     repeatFrequency = if (repeatToggle.isChecked) repeatFrequencySpinner.selectedItem.toString() else null,
-                    repeatUntil = repeatUntil, // 🚀 Enddatum speichern
-                    assignee = selectedAssignee ?: "Unassigned",
-                    assigneeEmail = assigneeEmail ?: ""
+                    repeatUntil = repeatUntil
                 )
 
                 if (existingTask == null) {
