@@ -744,6 +744,24 @@ class WochenplanFragment : Fragment() {
             assigneeToggle.isChecked = it.assignee == "Unassigned"
         }
 
+        datePickerIcon.setOnClickListener {
+            val today = Calendar.getInstance()
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    selectedDate.set(year, month, dayOfMonth)
+                    dateTextView.text = dateFormat.format(selectedDate.time)
+                },
+                selectedDate.get(Calendar.YEAR),
+                selectedDate.get(Calendar.MONTH),
+                selectedDate.get(Calendar.DAY_OF_MONTH)
+            )
+
+            // Setzt das minimale auswählbare Datum auf heute
+            datePickerDialog.datePicker.minDate = today.timeInMillis
+            datePickerDialog.show()
+        }
+
         wochenplanViewModel.assignees.observe(viewLifecycleOwner) { assignees ->
             val assigneeAdapter = ArrayAdapter(
                 context,
