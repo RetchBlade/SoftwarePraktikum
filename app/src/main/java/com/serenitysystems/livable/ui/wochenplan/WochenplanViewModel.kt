@@ -817,10 +817,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                             when (task.repeatFrequency?.trim()) {
                                                 "Täglich" -> {
                                                     val tempDate = taskDate.clone() as Calendar
-
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-
                                                         if (!existingTaskDates.containsKey(formattedDate)) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
@@ -831,8 +829,43 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                             newTasks.add(newTask)
                                                             previousTaskId = newTask.id
                                                         }
-
                                                         tempDate.add(Calendar.DAY_OF_YEAR, 1)
+                                                    }
+                                                }
+
+                                                "Wöchentlich" -> {
+                                                    val tempDate = taskDate.clone() as Calendar
+                                                    while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
+                                                        val formattedDate = dateFormat.format(tempDate.time)
+                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                            val newTask = task.copy(
+                                                                id = UUID.randomUUID().toString(),
+                                                                date = formattedDate,
+                                                                isDone = false,
+                                                                parentTaskId = previousTaskId
+                                                            )
+                                                            newTasks.add(newTask)
+                                                            previousTaskId = newTask.id
+                                                        }
+                                                        tempDate.add(Calendar.WEEK_OF_YEAR, 1)
+                                                    }
+                                                }
+
+                                                "Monatlich" -> {
+                                                    val tempDate = taskDate.clone() as Calendar
+                                                    while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
+                                                        val formattedDate = dateFormat.format(tempDate.time)
+                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                            val newTask = task.copy(
+                                                                id = UUID.randomUUID().toString(),
+                                                                date = formattedDate,
+                                                                isDone = false,
+                                                                parentTaskId = previousTaskId
+                                                            )
+                                                            newTasks.add(newTask)
+                                                            previousTaskId = newTask.id
+                                                        }
+                                                        tempDate.add(Calendar.MONTH, 1)
                                                     }
                                                 }
                                             }
