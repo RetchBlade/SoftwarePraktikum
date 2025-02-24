@@ -56,4 +56,13 @@
         android:textColor="@android:color/black"
         android:layout_marginTop="4dp" />
 
+    <TextView
+        android:id="@+id/textViewUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Benutzer"
+        android:textStyle="bold"
+        android:textSize="14sp"/>
+
+
 </LinearLayout>

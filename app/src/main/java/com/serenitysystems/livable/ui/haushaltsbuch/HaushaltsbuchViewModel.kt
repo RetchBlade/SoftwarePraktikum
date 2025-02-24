@@ -80,23 +80,28 @@ class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun addExpenseToFirestore(expense: Expense) {
-        Log.d("HaushaltsbuchViewModel", "Adding expense: $expense")
         fetchUserToken { token ->
             if (token == null) {
                 Log.e("HaushaltsbuchViewModel", "User token is null")
                 return@fetchUserToken
             }
             val userEmail = token.email
+
             db.collection("users").document(userEmail).get()
                 .addOnSuccessListener { document ->
-                    val wgId = document.getString("wgId")
-                    if (wgId == null) {
-                        Log.e("HaushaltsbuchViewModel", "WG-ID is null")
-                        return@addOnSuccessListener
-                    }
-                    val docRef = db.collection("WGs").document(wgId).collection("Haushaltsbuch").document()
-                    val expenseWithId = expense.copy(id = docRef.id)
-                    docRef.set(expenseWithId)
+                    val wgId = document.getString("wgId") ?: return@addOnSuccessListener
+                    val userNickname = document.getString("nickname") ?: "Unbekannt"
+
+                    val docRef = db.collection("WGs").document(wgId)
+                        .collection("Haushaltsbuch").document()
+
+                    val expenseWithUser = expense.copy(
+                        id = docRef.id,
+                        userEmail = userEmail,
+                        userNickname = userNickname
+                    )
+
+                    docRef.set(expenseWithUser)
                         .addOnSuccessListener {
                             Log.d("Firestore", "Transaction added with ID: ${docRef.id}")
                         }
@@ -106,6 +111,7 @@ class HaushaltsbuchViewModel(application: Application) : AndroidViewModel(applic
                 }
         }
     }
+
 
     fun updateExpenseInFirestore(expense: Expense) {
         Log.d("HaushaltsbuchViewModel", "Updating expense with ID: ${expense.id}")

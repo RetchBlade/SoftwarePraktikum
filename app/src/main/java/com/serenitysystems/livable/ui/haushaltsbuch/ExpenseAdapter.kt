@@ -69,12 +69,14 @@ class ExpenseAdapter(
             binding.textViewAmount.text = if (expense.istEinnahme) "+${expense.betrag} EUR" else "-${expense.betrag} EUR"
             binding.textViewDate.text = expense.datum
             binding.textViewNotiz.text = expense.notiz
+            binding.textViewUser.text = expense.userNickname // Nickname anzeigen
 
             binding.textViewAmount.setTextColor(
                 if (expense.istEinnahme) binding.root.context.getColor(R.color.green)
                 else binding.root.context.getColor(R.color.red)
             )
         }
+
 
         private fun showEditMenu(expense: Expense) {
             val builder = AlertDialog.Builder(binding.root.context)

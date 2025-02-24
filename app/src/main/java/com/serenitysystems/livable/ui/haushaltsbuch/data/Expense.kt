@@ -10,7 +10,9 @@ data class Expense(
     val notiz: String = "",
     val datum: String = "",
     val istEinnahme: Boolean = false,
-    var isDeleted: Boolean = false
+    var isDeleted: Boolean = false,
+    val userEmail: String = "",  // Speichert die E-Mail des Users
+    val userNickname: String = "" // Speichert den Nickname des Users
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -19,7 +21,9 @@ data class Expense(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte()
+        parcel.readByte() != 0.toByte(),
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
