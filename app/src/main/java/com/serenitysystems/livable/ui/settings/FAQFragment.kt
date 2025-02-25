@@ -21,7 +21,7 @@ class FAQFragment : Fragment() {
         ),
         "👥 WG-System" to listOf(
             "Wie kann ich eine WG erstellen oder beitreten?" to "Du kannst entweder eine neue WG erstellen oder einer bestehenden WG beitreten. Die WG-ID zum Beitritt findest du in der WG-Info oder in deinem Profil.",
-            "Welche Rechte hat ein WG-Leiter?" to "Der WG-Leiter kann Mitglieder hinzufügen oder entfernen, die WG löschen oder einen neuen WG-Leiter bestimmen.",
+            "Welche Rechte hat ein WG-Leiter?" to "Der WG-Leiter kann Mitglieder entfernen, die WG löschen oder einen neuen WG-Leiter bestimmen.",
             "Was passiert, wenn ich eine WG lösche?" to "Bevor du eine WG löschst, musst du einen neuen WG-Leiter festlegen. Falls du der einzige Leiter bist, kannst du die WG erst nach Auflösung löschen."
         ),
         "📅 Wochenplan & Aufgaben" to listOf(

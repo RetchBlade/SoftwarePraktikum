@@ -70,7 +70,7 @@ class WochenplanFragment : Fragment() {
             showTaskDialog()
         }
 
-        binding.showPointsButton.setOnClickListener {
+        binding.showPointsButton?.setOnClickListener {
             showPointsDialog()
         }
 
