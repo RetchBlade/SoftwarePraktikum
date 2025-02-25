@@ -1,0 +1,67 @@
+<!-- res/drawable/switch_track_daynight.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NIGHT MODE (Switch checked = true) -->
+    <item android:state_checked="true">
+        <layer-list>
+
+            <!-- Outer 'shadow' shape -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#CCCCCC" />  <!-- Outer rim color -->
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+
+            <!-- Inner shape (inset for bevel effect) -->
+            <item
+                android:left="3dp"
+                android:top="3dp"
+                android:right="3dp"
+                android:bottom="3dp">
+                <shape android:shape="rectangle">
+                    <!-- Night gradient -->
+                    <gradient
+                        android:startColor="#9B9A9A"
+                        android:centerColor="#403F3F"
+                        android:endColor="#111111"
+                        android:angle="270" />
+                    <corners android:radius="13dp" />
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+
+    <!-- DAY MODE (Switch checked = false) -->
+    <item>
+        <layer-list>
+
+            <!-- Outer 'shadow' shape -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#7EBBFA" />  <!-- Outer rim color -->
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+
+            <!-- Inner shape (inset) -->
+            <item
+                android:left="3dp"
+                android:top="3dp"
+                android:right="3dp"
+                android:bottom="3dp">
+                <shape android:shape="rectangle">
+                    <!-- Day gradient -->
+                    <gradient
+                        android:startColor="#CCE6FF"
+                        android:centerColor="#B3D9FF"
+                        android:endColor="#99CCFF"
+                        android:angle="270" />
+                    <corners android:radius="13dp" />
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+</selector>

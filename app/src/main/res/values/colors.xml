@@ -37,6 +37,11 @@
         <color name="nav_icon_color">#FF4081</color>  <!-- Farbe für Icons -->
 
 
+    <color name="button_ripple">#99FFFFFF</color>
+
+
+
+
     <color name="remove_zone_bg">#FFCDD2</color> <!-- Light red background for the remove zone -->
     <color name="remove_zone_highlight">#E57373</color> <!-- Highlight color when dragging over the remove zone -->
     <color name="remove_zone_active">#FF5252</color> <!-- Active color when dragging is over the zone -->
@@ -56,6 +61,7 @@
     <color name="primaryColor">#6200EE</color>
     <color name="light_sky_blue">#E3F2FD</color> <!-- Adjust if needed -->
 
+    <!-- Ekstra Renkler -->
     <color name="material_grey_300">#E0E0E0</color>
 
 </resources>

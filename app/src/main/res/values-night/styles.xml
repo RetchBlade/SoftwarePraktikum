@@ -2,17 +2,14 @@
     <style name="Theme.Livable" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/own_very_dark_gray</item>
         <item name="colorPrimaryVariant">@color/own_very_dark_gray</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/own_grayish_yellow</item>
-        <item name="colorSecondaryVariant">@color/own_navy_Blau</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor">@color/own_navy_Blau</item>
+        <item name="colorOnPrimary">@color/own_very_dark_gray</item>
+        <item name="colorSecondary">@color/own_very_dark_gray</item>
+        <item name="colorSecondaryVariant">@color/own_light_gray</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/own_strong_cyan</item>
         <item name="buttonStyle">@style/CustomButtonStyle</item>
-
+        <item name="android:windowBackground">@drawable/darkmode</item>
     </style>
-
-
-
 
     <style name="Theme.Livable.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -20,6 +17,5 @@
     </style>
 
     <style name="Theme.Livable.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.Livable.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
