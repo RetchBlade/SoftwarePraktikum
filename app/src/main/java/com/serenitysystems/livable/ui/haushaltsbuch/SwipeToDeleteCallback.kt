@@ -1,5 +1,6 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,16 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 class SwipeToDeleteCallback(
     private val context: Context,
     private val adapter: ExpenseAdapter
-) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
-    private val deleteColor = Color.parseColor("#f44336")
-    private val restoreColor = Color.parseColor("#4CAF50")
+    private val deleteColor = Color.parseColor("#f44336") //
     private val deletePaint = Paint().apply {
         color = deleteColor
-        isAntiAlias = true
-    }
-    private val restorePaint = Paint().apply {
-        color = restoreColor
         isAntiAlias = true
     }
 
@@ -35,14 +31,17 @@ class SwipeToDeleteCallback(
         val position = viewHolder.adapterPosition
         val expense = adapter.getExpenseAtPosition(position)
 
-        when (direction) {
-            ItemTouchHelper.RIGHT -> {
-                adapter.onRequestDelete(expense, position)
+        AlertDialog.Builder(context)
+            .setTitle("Bestätigung")
+            .setMessage("Möchten Sie diesen Eintrag wirklich löschen?")
+            .setPositiveButton("Ja") { _, _ ->
+                adapter.removeItem(position)
             }
-            ItemTouchHelper.LEFT -> {
-                adapter.restoreExpense(expense)
+            .setNegativeButton("Nein") { dialog, _ ->
+                adapter.notifyItemChanged(position)
+                dialog.dismiss()
             }
-        }
+            .show()
     }
 
     override fun onChildDraw(
@@ -55,11 +54,10 @@ class SwipeToDeleteCallback(
         isCurrentlyActive: Boolean
     ) {
         val itemView = viewHolder.itemView
-        val paint = if (dX > 0) deletePaint else restorePaint
 
         c.drawRect(
             itemView.left.toFloat(), itemView.top.toFloat(),
-            itemView.left + dX, itemView.bottom.toFloat(), paint
+            itemView.left + dX, itemView.bottom.toFloat(), deletePaint
         )
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
