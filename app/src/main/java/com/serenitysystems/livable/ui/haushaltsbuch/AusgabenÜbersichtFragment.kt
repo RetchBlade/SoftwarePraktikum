@@ -19,12 +19,22 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+/**
+ * Fragment für die monatliche Übersicht der Ausgaben (istEinnahme = false).
+ * - Zeigt eine Tortengrafik (PieChart) zur Verteilung der Kategorien.
+ * - Berechnet eine monatliche Gesamtsumme.
+ * - Ermöglicht das Wechseln des Monats per Pfeil-Buttons oder DatePickerDialog.
+ */
 class AusgabenÜbersichtFragment : Fragment() {
 
+    // Binding-Objekt für das Layout fragment_ausgaben_uebersicht.xml
     private var _binding: FragmentAusgabenUebersichtBinding? = null
     private val binding get() = _binding!!
+
+    // ViewModel enthält alle Funktionen zum Laden der Daten aus Firestore
     private val haushaltsbuchViewModel: HaushaltsbuchViewModel by activityViewModels()
 
+    // In diesem Calendar-Objekt wird das aktuell ausgewählte Monat/Jahr gespeichert
     private var selectedDate: Calendar = Calendar.getInstance()
 
     override fun onCreateView(
@@ -35,128 +45,165 @@ class AusgabenÜbersichtFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Nachdem die View erstellt wurde, initialisieren wir UI-Elemente und LiveData-Observer.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
     }
 
+    /**
+     * Initialisiert das Fragment, setzt Listener und Observer.
+     */
     private fun initView() {
+        // 1) Monat/Jahr in der TextView anzeigen (z. B. "März 2025")
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
 
-        binding.leftArrow.setOnClickListener {
-            changeDate(-1)
+        // 2) Beim ersten Aufruf: Lade gleich den aktuellen Monat
+        haushaltsbuchViewModel.loadExpensesForMonth(formatMonth(selectedDate))
+
+        // 3) Beobachte allExpenses, damit alle Änderungen direkt übernommen werden
+        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner) {
+            // Monatliche Filterung erneut aufrufen
+            haushaltsbuchViewModel.loadExpensesForMonth(formatMonth(selectedDate))
         }
 
-        binding.rightArrow.setOnClickListener {
-            changeDate(1)
-        }
-
-        binding.dateTextView.setOnClickListener {
-            showDatePickerDialog()
-        }
-
+        // 4) Beobachte die bereits gefilterten Daten (selectedDateExpenses),
+        //    jedoch filtern wir hier zusätzlich nur Ausgaben (istEinnahme = false).
         haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { expenses ->
             val ausgaben = expenses.filter { !it.istEinnahme }
             updateKontostand(ausgaben)
             updateDiagramAndPanel(ausgaben)
         }
+
+        // 5) Navigationspfeile für das Wechseln des Monats
+        binding.leftArrow.setOnClickListener {
+            changeMonth(-1) // Einen Monat zurück
+        }
+        binding.rightArrow.setOnClickListener {
+            changeMonth(1)  // Einen Monat vor
+        }
+
+        // 6) Klick auf das Datum => öffnet DatePickerDialog für Monat/Jahr
+        binding.dateTextView.setOnClickListener {
+            showMonthPickerDialog()
+        }
     }
 
+    /**
+     * Berechnet die Summe aller Ausgaben in der Liste und zeigt sie im TextView "textViewKontostand" an.
+     */
     private fun updateKontostand(ausgaben: List<Expense>) {
         val totalExpense = ausgaben.sumOf { it.betrag.toDouble() }.toFloat()
-        binding.textViewKontostand.text = "Ausgaben: ${"%.2f".format(totalExpense)} EUR"
+        binding.textViewKontostand.text = "Ausgaben im Monat: %.2f EUR".format(totalExpense)
     }
 
+    /**
+     * Aktualisiert das Tortendiagramm (PieChart) und die Kategorienliste (Panel).
+     */
     private fun updateDiagramAndPanel(ausgaben: List<Expense>) {
+        // Kategoriedaten werden in einem Hintergrund-Thread berechnet (Dispatchers.Default),
+        // um die Haupt-UI nicht zu blockieren.
         viewLifecycleOwner.lifecycleScope.launch {
             val categoryDataList = withContext(Dispatchers.Default) {
                 val categories = haushaltsbuchViewModel.categories
                 categories.mapNotNull { category ->
                     val amount = ausgaben.filter { it.kategorie == category }.sumOf { it.betrag.toDouble() }
-                    if (amount > 0.0) {
+                    if (amount > 0) {
                         val totalAmount = ausgaben.sumOf { it.betrag.toDouble() }
                         val percentage = (amount / totalAmount * 100).toFloat()
                         val color = haushaltsbuchViewModel.getCategoryColor(category)
-                        CategoryData(
-                            category = category,
-                            amount = amount,
-                            percentage = percentage,
-                            color = color
-                        )
-                    } else {
-                        null
-                    }
+                        CategoryData(category, amount, percentage, color)
+                    } else null
                 }
             }
 
-            // Überprüfen, ob die View noch existiert
+            // Sicherstellen, dass das Fragment noch "angebunden" ist
             if (isAdded && _binding != null) {
-                // Aktualisiere die PieChartView
+                // PieChart-Daten setzen
                 binding.pieChartView.setData(
                     categoryDataList.map { it.category },
                     categoryDataList.map { it.amount },
                     categoryDataList.map { it.color }
                 )
 
-                // Entferne bestehende Elemente im categoriesListPanel
+                // Kategorien-Panel leeren
                 binding.categoriesListPanel.removeAllViews()
 
-                // Füge neue Elemente hinzu
+                // Neue Einträge für jede Kategorie erstellen
                 val inflater = LayoutInflater.from(requireContext())
                 categoryDataList.forEach { data ->
                     val itemBinding = ItemCategoryDetailBinding.inflate(inflater, binding.categoriesListPanel, false)
 
+                    // Anfangsbuchstabe, z. B. "H" für "Haushalt"
                     itemBinding.textViewCategoryLetter.text = data.category.first().toString().uppercase()
                     itemBinding.textViewCategoryName.text = data.category
-                    itemBinding.textViewCategoryAmount.text = "${"%.2f".format(data.amount)} EUR"
-                    itemBinding.textViewCategoryPercentage.text = "${"%.0f".format(data.percentage)}%"
+                    itemBinding.textViewCategoryAmount.text = "%.2f EUR".format(data.amount)
+                    itemBinding.textViewCategoryPercentage.text = "%.0f%%".format(data.percentage)
 
-                    // Setze die Hintergrundfarbe
+                    // Hintergrundfarbe für den Buchstaben (z. B. Orange, Grün etc.)
                     val drawable = itemBinding.textViewCategoryLetter.background as? GradientDrawable
                     drawable?.setColor(data.color)
 
-                    // Füge das Element dem Panel hinzu
+                    // Füge das Item dem Panel hinzu
                     binding.categoriesListPanel.addView(itemBinding.root)
                 }
 
-                // Kontrolliere die Sichtbarkeit des Panels
-                binding.categoriesScrollView.visibility = if (categoryDataList.isNotEmpty()) View.VISIBLE else View.GONE
+                // ScrollView ein-/ausblenden je nachdem, ob Kategorien vorhanden sind
+                binding.categoriesScrollView.visibility =
+                    if (categoryDataList.isNotEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
 
-    private fun changeDate(days: Int) {
-        selectedDate.add(Calendar.DAY_OF_MONTH, days)
+    /**
+     * Ändert den Monat um +1 oder -1 und lädt anschließend die Daten neu.
+     */
+    private fun changeMonth(monthDiff: Int) {
+        selectedDate.add(Calendar.MONTH, monthDiff)
         updateDateDisplay()
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
+        haushaltsbuchViewModel.loadExpensesForMonth(formatMonth(selectedDate))
     }
 
+    /**
+     * Aktualisiert das Datumstextfeld, z. B. "März 2025".
+     */
     private fun updateDateDisplay() {
-        binding.dateTextView.text = formatDate(selectedDate)
+        binding.dateTextView.text = formatMonth(selectedDate)
     }
 
-    private fun showDatePickerDialog() {
-        val datePickerDialog = DatePickerDialog(
+    /**
+     * Öffnet einen DatePickerDialog, bei dem nur Monat und Jahr gewählt werden.
+     * Der Tag (dayOfMonth) ist hier nicht relevant.
+     */
+    private fun showMonthPickerDialog() {
+        val year = selectedDate.get(Calendar.YEAR)
+        val month = selectedDate.get(Calendar.MONTH)
+
+        val dialog = DatePickerDialog(
             requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
-                selectedDate.set(Calendar.YEAR, year)
-                selectedDate.set(Calendar.MONTH, monthOfYear)
-                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            { _, selYear, selMonth, _ ->
+                selectedDate.set(Calendar.YEAR, selYear)
+                selectedDate.set(Calendar.MONTH, selMonth)
+                selectedDate.set(Calendar.DAY_OF_MONTH, 1)
                 updateDateDisplay()
-                haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
+                haushaltsbuchViewModel.loadExpensesForMonth(formatMonth(selectedDate))
             },
-            selectedDate.get(Calendar.YEAR),
-            selectedDate.get(Calendar.MONTH),
-            selectedDate.get(Calendar.DAY_OF_MONTH)
+            year,
+            month,
+            1
         )
-        datePickerDialog.show()
+        dialog.show()
     }
 
-    private fun formatDate(calendar: Calendar): String {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        return dateFormat.format(calendar.time)
+    /**
+     * Wandelt das Calendar-Datum in "MMMM yyyy" um, z. B. "März 2025".
+     */
+    private fun formatMonth(calendar: Calendar): String {
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        return sdf.format(calendar.time)
     }
 
     override fun onDestroyView() {
@@ -164,6 +211,9 @@ class AusgabenÜbersichtFragment : Fragment() {
         _binding = null
     }
 
+    /**
+     * Datenklasse für die Darstellung pro Kategorie im PieChart.
+     */
     data class CategoryData(
         val category: String,
         val amount: Double,

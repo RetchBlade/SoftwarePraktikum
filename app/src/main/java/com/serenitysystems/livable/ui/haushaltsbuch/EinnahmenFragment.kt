@@ -13,27 +13,52 @@ import com.serenitysystems.livable.ui.haushaltsbuch.data.Expense
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Fragment für eine **monatliche** Ansicht von Einnahmen (istEinnahme = true).
+ * - onResume: Aktualisierung bei Tab-Wechsel
+ * - Datum klicken => Day-Picker nur für den gewählten Monat
+ */
 class EinnahmenFragment : Fragment() {
 
     private var _binding: FragmentEinnahmenBinding? = null
     private val binding get() = _binding!!
+
     private val haushaltsbuchViewModel: HaushaltsbuchViewModel by activityViewModels()
     private lateinit var adapter: ExpenseAdapter
 
-    private var selectedDate: Calendar = Calendar.getInstance()
+    // Ausgewählter Monat/Jahr
+    private var selectedMonth: Calendar = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEinnahmenBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
 
-        // RecyclerView setup
+    /**
+     * UI-Elemente einrichten, nachdem die View erstellt wurde.
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+    }
+
+    /**
+     * Wenn das Fragment wieder erscheint (Tab-Wechsel etc.),
+     * lädt loadCurrentMonth erneut.
+     */
+    override fun onResume() {
+        super.onResume()
+        loadCurrentMonth()
+    }
+
+    private fun initView() {
+        // RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-
         adapter = ExpenseAdapter(
-            mutableListOf(),
+            expenses = mutableListOf(),
             onEditClick = { expense -> showEditTransactionDialog(expense) },
             onExpenseUpdated = { haushaltsbuchViewModel.updateExpenseInFirestore(it) },
             onExpenseRemoved = { haushaltsbuchViewModel.deleteExpenseFromFirestore(it) },
@@ -49,53 +74,88 @@ class EinnahmenFragment : Fragment() {
                     dialog.dismiss()
                 }
                 builder.show()
-            }
-
+            },
+            // Datum-Klick => nur aktueller Monat
+            onDateClick = { expense -> showDayPickerForThisMonth(expense) }
         )
-
         binding.recyclerView.adapter = adapter
 
-        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner) { expenses ->
-            val einnahmen = expenses.filter { it.istEinnahme }
+        // allExpenses => sobald neue Daten vorliegen => loadCurrentMonth
+        haushaltsbuchViewModel.allExpenses.observe(viewLifecycleOwner) {
+            loadCurrentMonth()
+        }
+
+        // selectedDateExpenses => nur Einnahmen filtern
+        haushaltsbuchViewModel.selectedDateExpenses.observe(viewLifecycleOwner) { list ->
+            val einnahmen = list.filter { it.istEinnahme }
             adapter.updateExpenses(einnahmen)
-            updateKontostand()
         }
 
+        // Kontostand
         haushaltsbuchViewModel.kontostand.observe(viewLifecycleOwner) { kontostand ->
-            binding.textViewKontostand.text = "Kontostand: ${"%.2f".format(kontostand)} EUR"
+            binding.textViewKontostand.text = "Kontostand: %.2f EUR".format(kontostand)
         }
 
+        // FAB => neue Einnahme, Standard Tag=1
         binding.fab.setOnClickListener {
-            showAddTransactionDialog(true)
+            val dateStr = "01.${formatMonthForFirestore(selectedMonth)}"
+            showAddTransactionDialog(true, dateStr)
         }
 
-        updateDateDisplay()
+        updateMonthHeader()
 
+        // Pfeile => Monat +/- 1
         binding.leftArrow.setOnClickListener {
-            changeDate(-1)
+            selectedMonth.add(Calendar.MONTH, -1)
+            selectedMonth.set(Calendar.DAY_OF_MONTH, 1)
+            updateMonthHeader()
         }
-
         binding.rightArrow.setOnClickListener {
-            changeDate(1)
+            selectedMonth.add(Calendar.MONTH, 1)
+            selectedMonth.set(Calendar.DAY_OF_MONTH, 1)
+            updateMonthHeader()
         }
 
+        // Klick auf dateTextView => nur Monat/Jahr wählen
         binding.dateTextView.setOnClickListener {
-            showDatePickerDialog()
+            showMonthPickerDialog()
         }
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(requireContext(), adapter))
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
-
-        return root
     }
 
-    private fun updateKontostand() {
-        val kontostand = haushaltsbuchViewModel.kontostand.value ?: 0f
-        binding.textViewKontostand.text = "Kontostand: ${"%.2f".format(kontostand)} EUR"
+    private fun loadCurrentMonth() {
+        val mmYYYY = formatMonthForFirestore(selectedMonth)
+        haushaltsbuchViewModel.loadExpensesForMonth(mmYYYY)
     }
 
-    private fun showAddTransactionDialog(isEinnahme: Boolean) {
-        val dialog = AddTransactionDialogFragment.newInstance(isEinnahme)
+    private fun updateMonthHeader() {
+        binding.dateTextView.text = formatMonthName(selectedMonth)
+        loadCurrentMonth()
+    }
+
+    private fun showMonthPickerDialog() {
+        val year = selectedMonth.get(Calendar.YEAR)
+        val month = selectedMonth.get(Calendar.MONTH)
+
+        val dialog = DatePickerDialog(
+            requireContext(),
+            { _, newYear, newMonth, _ ->
+                selectedMonth.set(Calendar.YEAR, newYear)
+                selectedMonth.set(Calendar.MONTH, newMonth)
+                selectedMonth.set(Calendar.DAY_OF_MONTH, 1)
+                updateMonthHeader()
+            },
+            year,
+            month,
+            1
+        )
+        dialog.show()
+    }
+
+    private fun showAddTransactionDialog(isEinnahme: Boolean, dateStr: String) {
+        val dialog = AddTransactionDialogFragment.newInstance(isEinnahme, dateStr)
         dialog.show(parentFragmentManager, "AddTransactionDialogFragment")
     }
 
@@ -104,36 +164,57 @@ class EinnahmenFragment : Fragment() {
         dialog.show(parentFragmentManager, "EditTransactionDialogFragment")
     }
 
+    /**
+     * Day-Picker, nur innerhalb dieses Monats.
+     */
+    private fun showDayPickerForThisMonth(expense: Expense) {
+        val parts = expense.datum.split(".")
+        if (parts.size != 3) return
+        val currentDay = parts[0].toIntOrNull() ?: 1
 
-    private fun updateDateDisplay() {
-        binding.dateTextView.text = formatDate(selectedDate)
-        haushaltsbuchViewModel.loadExpensesForDate(formatDate(selectedDate))
-    }
+        val year = selectedMonth.get(Calendar.YEAR)
+        val month = selectedMonth.get(Calendar.MONTH)
 
-    private fun changeDate(days: Int) {
-        selectedDate.add(Calendar.DAY_OF_MONTH, days)
-        updateDateDisplay()
-    }
-
-    private fun showDatePickerDialog() {
-        val datePickerDialog = DatePickerDialog(
+        val datePicker = DatePickerDialog(
             requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
-                selectedDate.set(Calendar.YEAR, year)
-                selectedDate.set(Calendar.MONTH, monthOfYear)
-                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                updateDateDisplay()
+            { _, pickedYear, pickedMonth, pickedDay ->
+                if (pickedYear == year && pickedMonth == month) {
+                    val newDate = String.format("%02d.%02d.%04d", pickedDay, month + 1, year)
+                    val updated = expense.copy(datum = newDate)
+                    haushaltsbuchViewModel.updateExpenseInFirestore(updated)
+                } else {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Falscher Monat")
+                        .setMessage("Bitte wählen Sie einen Tag in diesem Monat!")
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
             },
-            selectedDate.get(Calendar.YEAR),
-            selectedDate.get(Calendar.MONTH),
-            selectedDate.get(Calendar.DAY_OF_MONTH)
+            year,
+            month,
+            currentDay
         )
-        datePickerDialog.show()
+
+        val calMin = Calendar.getInstance()
+        calMin.set(year, month, 1, 0, 0, 0)
+        datePicker.datePicker.minDate = calMin.timeInMillis
+
+        val maxDay = selectedMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val calMax = Calendar.getInstance()
+        calMax.set(year, month, maxDay, 23, 59, 59)
+        datePicker.datePicker.maxDate = calMax.timeInMillis
+
+        datePicker.show()
     }
 
-    private fun formatDate(calendar: Calendar): String {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        return dateFormat.format(calendar.time)
+    private fun formatMonthForFirestore(cal: Calendar): String {
+        val sdf = SimpleDateFormat("MM.yyyy", Locale("de","DE"))
+        return sdf.format(cal.time)
+    }
+
+    private fun formatMonthName(cal: Calendar): String {
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale("de","DE"))
+        return sdf.format(cal.time)
     }
 
     override fun onDestroyView() {
