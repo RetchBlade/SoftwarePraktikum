@@ -1,6 +1,5 @@
 package com.serenitysystems.livable.ui.haushaltsbuch
 
-import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -29,25 +28,28 @@ class ExpenseAdapter(
 
     override fun getItemCount(): Int = expenses.size
 
+
     fun updateExpenses(newExpenses: List<Expense>) {
-        expenses = newExpenses.toMutableList()
+        expenses.clear()
+        expenses.addAll(newExpenses)
         notifyDataSetChanged()
     }
 
     fun getExpenseAtPosition(position: Int): Expense = expenses[position]
 
-    fun confirmDelete(expense: Expense) {
-        val position = expenses.indexOf(expense)
-        if (!expense.isDeleted) {
-            expenses.removeAt(position)
+
+    fun removeItem(position: Int) {
+        if (position in expenses.indices) {
+            val removedExpense = expenses.removeAt(position)
             notifyItemRemoved(position)
-            onExpenseRemoved(expense)
+            onExpenseRemoved(removedExpense)
         }
     }
 
-    fun restoreExpense(expense: Expense) {
-        expenses.add(expense)
-        notifyItemInserted(expenses.size - 1)
+
+    fun restoreExpense(expense: Expense, position: Int) {
+        expenses.add(position, expense)
+        notifyItemInserted(position)
         onExpenseUpdated(expense)
     }
 
@@ -66,7 +68,8 @@ class ExpenseAdapter(
 
         fun bind(expense: Expense) {
             binding.textViewCategory.text = expense.kategorie
-            binding.textViewAmount.text = if (expense.istEinnahme) "+${expense.betrag} EUR" else "-${expense.betrag} EUR"
+            binding.textViewAmount.text =
+                if (expense.istEinnahme) "+${expense.betrag} EUR" else "-${expense.betrag} EUR"
             binding.textViewDate.text = expense.datum
             binding.textViewNotiz.text = expense.notiz
             binding.textViewUser.text = expense.userNickname // Nickname anzeigen
