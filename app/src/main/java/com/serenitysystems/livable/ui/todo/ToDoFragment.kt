@@ -212,7 +212,7 @@ class ToDoFragment : Fragment() {
         }
 
         // Erstelle den Dialog und mache den positive Button deaktiviert, solange keine gültige Beschreibung eingegeben wird
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context, R.style.CustomDialogTheme)
             .setTitle("Todo hinzufügen")
             .setView(dialogView)
             .setPositiveButton("Hinzufügen", null) // Keine Funktion für den Button direkt
