@@ -128,7 +128,8 @@ class WgAnsichtFragment : Fragment() {
 
             fetchUserProfileImage(email) { profileImageUrl ->
                 Glide.with(requireContext())
-                    .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                    .load(profileImageUrl)
+                    .placeholder(R.drawable.pp_placeholder)
                     .circleCrop()
                     .into(profilePicture)
             }
