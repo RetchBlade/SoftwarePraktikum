@@ -20,12 +20,12 @@ class FAQFragment : Fragment() {
             "Kann ich Livable auch alleine nutzen?" to "Ja! Du kannst Livable auch ohne eine WG nutzen, z. B. für deine persönliche To-Do-Liste."
         ),
         "👥 WG-System" to listOf(
-            "Wie kann ich eine WG erstellen oder beitreten?" to "Du kannst entweder eine neue WG erstellen oder einer bestehenden WG beitreten. Die WG-ID zum Beitritt findest du in der WG-Info oder in deinem Profil.",
+            "Wie kann ich eine WG erstellen oder beitreten?" to "Du kannst entweder eine neue WG erstellen oder einer bestehenden WG beitreten. Die WG-ID zum Beitritt findest du als Admin in der WG-Info oder in deinem Profil.",
             "Welche Rechte hat ein WG-Leiter?" to "Der WG-Leiter kann Mitglieder entfernen, die WG löschen oder einen neuen WG-Leiter bestimmen.",
             "Was passiert, wenn ich eine WG lösche?" to "Bevor du eine WG löschst, musst du einen neuen WG-Leiter festlegen. Falls du der einzige Leiter bist, kannst du die WG erst nach Auflösung löschen."
         ),
         "📅 Wochenplan & Aufgaben" to listOf(
-            "Welche Arten von Aufgaben gibt es?" to "🔵 Normale Aufgaben: Reguläre Aufgaben, die dir oder anderen zugewiesen sind.\n🟢 Übernehmbare Aufgaben: Aufgaben, die jeder in der WG übernehmen kann.\n🔴 Überfällige Aufgaben: Aufgaben, die nicht rechtzeitig erledigt wurden.",
+            "Welche Arten von Aufgaben gibt es?" to "🔵 Besetzte Aufgaben: Reguläre Aufgaben, die dir oder anderen zugewiesen sind.\n🟢 Freie Aufgaben: Aufgaben, die noch niemandem zugewiesen sind.\n🔴 Überfällige Aufgaben: Aufgaben, die nicht rechtzeitig erledigt wurden.",
             "Kann ich mich von einer Aufgabe abmelden?" to "Ja! Falls du eine Aufgabe nicht mehr erledigen kannst, kannst du sie freigeben. Sie wird dann als übernehmbare Aufgabe markiert.",
             "Was passiert mit überfälligen Aufgaben?" to "Überfällige Aufgaben erscheinen rot im Wochenplan. Wenn du sie nicht erledigst, werden die Hälfte der Punkte für diese Aufgabe von deinem Punktstand abgezogen."
         ),
@@ -38,12 +38,13 @@ class FAQFragment : Fragment() {
             "Können alle WG-Mitglieder das Haushaltsbuch sehen?" to "Ja, alle Mitglieder der WG können das Haushaltsbuch einsehen."
         ),
         "✅ To-Do-Liste" to listOf(
-            "Wie funktioniert die To-Do-Liste?" to "Du kannst Aufgaben für heute, morgen, diese Woche oder später planen.\n🟡 Gelb = Mittlere Priorität\n🔴 Rot = Hohe Priorität",
+            "Wie funktioniert die To-Do-Liste?" to "Du kannst Aufgaben für heute, morgen, diese Woche oder später planen.\n⚪Weiß = Niedrige Priorität\n🟡 Gelb = Mittlere Priorität\n🔴 Rot = Hohe Priorität",
             "Unterscheidet sich die To-Do-Liste vom Wochenplan?" to "Ja! Die To-Do-Liste ist privat und nicht mit der WG verbunden. Der Wochenplan wird mit allen WG-Mitgliedern geteilt."
         ),
         "🏆 Punktesystem & Badges" to listOf(
-            "Wie funktioniert das Punktesystem?" to "Jede erledigte Aufgabe bringt Punkte. Deine Punkte werden am Monatsanfang zurückgesetzt. Es gibt eine Lifetime-Punktebalance, die deine Gesamtpunkte speichert.",
-            "Was passiert, wenn ich eine Aufgabe nicht erledige?" to "Wenn du eine Aufgabe nicht am geplanten Tag erledigst, verlierst du am nächsten Tag die Hälfte der Punkte. Die Aufgabe wird dann als 'Overdue' (überfällig) markiert.",
+            "Wie funktioniert das Punktesystem?" to "Jede erledigte Aufgabe des Wochenplans bringt Punkte. Du kannst deine gesammelten Punkte für den Monat, aber auch deine Gesamtpunktzahl ansehen. Es gibt eine Lifetime-Punktebalance, die deine Gesamtpunkte speichert. An der Gesamtpunktzahl der Mitglieder kann man erkennen wer den meisten Aufwand aufbringt für den Haushalt.",
+            "Was passiert, wenn ich eine Aufgabe nicht erledige?" to "Wenn du eine Aufgabe nicht am geplanten Tag erledigst, verlierst du in der nächsten Woche die Hälfte der Punkte. Die Aufgabe wird dann als 'Overdue' (überfällig) markiert.",
+            "Was passiert mit neuen Mitgliedern?" to "Mitglieder, die der WG erst neulich beigetreten sind, bekommen den durchschnittlichen Gesamtpunktestand der Mitglieder als eigenen Gesamtpunktestand zugewiesen. Dadurch verlieren die neuen Mitglieder nicht die Motivation, mit den anderen mitzuhalten.",
             "Was sind Badges und wie bekomme ich sie?" to "Badges werden basierend auf deinen monatlichen Punkten vergeben. Je mehr Punkte du im Monat sammelst, desto höher dein Badge-Rang."
         )
     )
