@@ -147,21 +147,28 @@
 
     <!-- Scrollable Content -->
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
+        android:layout_width="395dp"
+        android:layout_height="151dp"
         android:layout_below="@id/actionGrid"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
             android:id="@+id/newsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/blurred_card_background"
+            android:elevation="10dp"
             android:orientation="vertical"
-            android:background="@drawable/gradient_beige"
             android:padding="16dp"
-            android:elevation="10dp">
+            android:paddingStart="30dp"
+            android:paddingTop="110dp">
 
             <TextView
                 android:id="@+id/notificationsTitle"
@@ -177,41 +184,41 @@
                 android:id="@+id/overdueTasksTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="8dp"
                 android:text="Überfällige Aufgaben:"
                 android:textColor="@color/priority_overdue"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility="gone"
-                android:padding="8dp"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/overdueTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp"
+                android:layout_margin="8dp"
                 android:elevation="5dp"
-                android:layout_margin="8dp"/>
+                android:orientation="vertical"
+                android:padding="12dp" />
 
             <!-- Today's Tasks Section -->
             <LinearLayout
                 android:id="@+id/todayTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_margin="8dp"
                 android:elevation="5dp"
-                android:layout_margin="8dp" />
+                android:orientation="vertical" />
 
             <TextView
                 android:id="@+id/noTasksMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp"
                 android:text="Keine Aufgaben für heute!"
                 android:textColor="@color/own_navy_Dunkelblau"
                 android:textSize="16sp"
-                android:gravity="center"
-                android:visibility="gone"
-                android:padding="12dp"/>
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
