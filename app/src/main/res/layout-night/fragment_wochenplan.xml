@@ -69,6 +69,28 @@
             android:padding="16dp" />
     </ScrollView>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/material_grey_300"
+        app:cardCornerRadius="35dp"
+        app:cardElevation="8dp">
+
+        <ImageButton
+            android:id="@+id/showPointsButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:contentDescription="Punkteinsicht"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/trophy" />
+    </androidx.cardview.widget.CardView>
+
+
+
     <!-- Floating Action Button for Adding Task -->
     <androidx.cardview.widget.CardView
         android:layout_width="70dp"

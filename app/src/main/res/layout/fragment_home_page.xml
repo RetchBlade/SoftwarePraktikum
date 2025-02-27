@@ -148,7 +148,7 @@
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="395dp"
-        android:layout_height="151dp"
+        android:layout_height="250dp"
         android:layout_below="@id/actionGrid"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
@@ -162,12 +162,11 @@
         <LinearLayout
             android:id="@+id/newsContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/blurred_card_background"
-            android:elevation="10dp"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingStart="30dp"
+            android:padding="5dp"
+            android:paddingStart="20dp"
             android:paddingTop="110dp">
 
             <TextView
@@ -184,7 +183,7 @@
                 android:id="@+id/overdueTasksTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="3dp"
                 android:text="Überfällige Aufgaben:"
                 android:textColor="@color/priority_overdue"
                 android:textSize="18sp"
@@ -195,17 +194,17 @@
                 android:id="@+id/overdueTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginEnd="25dp"
                 android:elevation="5dp"
                 android:orientation="vertical"
-                android:padding="12dp" />
+                android:padding="2dp" />
 
             <!-- Today's Tasks Section -->
             <LinearLayout
                 android:id="@+id/todayTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_marginEnd="25dp"
                 android:elevation="5dp"
                 android:orientation="vertical" />
 
@@ -214,7 +213,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:padding="12dp"
+                android:padding="2dp"
+
                 android:text="Keine Aufgaben für heute!"
                 android:textColor="@color/own_navy_Dunkelblau"
                 android:textSize="16sp"

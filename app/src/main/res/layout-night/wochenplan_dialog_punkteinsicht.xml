@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/dark_beige"
             android:text="02-2025"
             android:layout_marginHorizontal="20dp" />
 
