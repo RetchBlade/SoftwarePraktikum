@@ -817,7 +817,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
@@ -835,7 +836,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
@@ -853,7 +855,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
