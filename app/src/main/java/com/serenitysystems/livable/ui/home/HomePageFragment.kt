@@ -17,8 +17,7 @@ import com.serenitysystems.livable.R
 import com.serenitysystems.livable.ui.wochenplan.WochenplanViewModel
 import com.serenitysystems.livable.ui.wochenplan.data.DynamicTask
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class HomePageFragment : Fragment() {
 
@@ -40,10 +39,8 @@ class HomePageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home_page, container, false)
 
-        // ViewModel für Wochenplan initialisieren
         wochenplanViewModel = ViewModelProvider(this)[WochenplanViewModel::class.java]
 
-        // UI-Elemente abrufen
         welcomeMessageTextView = view.findViewById(R.id.greetingText)
         userNicknameTextView = view.findViewById(R.id.userNickname)
         userPic = view.findViewById(R.id.imageView)
@@ -52,43 +49,35 @@ class HomePageFragment : Fragment() {
         overdueTasksContainer = view.findViewById(R.id.overdueTasksContainer)
         overdueTasksTitle = view.findViewById(R.id.overdueTasksTitle)
 
-        // Nutzer-Info aus dem ViewModel abrufen
-        homePageViewModel.userNickname.observe(viewLifecycleOwner, Observer { nickname ->
+        homePageViewModel.userNickname.observe(viewLifecycleOwner) { nickname ->
             userNicknameTextView.text = nickname ?: ""
-        })
+        }
 
         userPic.setOnClickListener {
             findNavController().navigate(R.id.nav_profilansicht)
         }
 
-        // Das Benutzerbild vom ViewModel beobachten
-        homePageViewModel.userPic.observe(viewLifecycleOwner, Observer { profileImageUrl ->
-            if (!profileImageUrl.isNullOrEmpty()) {
-                Glide.with(this)
-                    .load(profileImageUrl)
-                    .placeholder(R.drawable.pp)
-                    .error(R.drawable.pp)
-                    .into(userPic)
-            } else {
-                userPic.setImageResource(R.drawable.pp)
-            }
-        })
+        homePageViewModel.userPic.observe(viewLifecycleOwner) { profileImageUrl ->
+            Glide.with(this)
+                .load(profileImageUrl)
+                .placeholder(R.drawable.pp)
+                .error(R.drawable.pp)
+                .into(userPic)
+        }
 
-        // WG-Verwaltung Button
         val wgVerwaltungButton: FrameLayout = view.findViewById(R.id.wgVerwaltungButton)
         wgVerwaltungButton.setOnClickListener {
             showWGOptionsDialog(it)
         }
 
-        // To-Do List Button
         val toDoButton: FrameLayout = view.findViewById(R.id.toDoButton)
         toDoButton.setOnClickListener {
             findNavController().navigate(R.id.nav_todo)
         }
 
-        // Heutige Aufgaben laden und anzeigen
-        observeTodayTasks()
-        observeOverdueTasks()
+        observeTodayTasksLive()
+        observeOverdueTasksLive()
+
         return view
     }
 
@@ -107,39 +96,68 @@ class HomePageFragment : Fragment() {
     }
 
 
-    private fun observeOverdueTasks() {
+    private fun observeOverdueTasksLive() {
         homePageViewModel.userNickname.observe(viewLifecycleOwner) { userNickname ->
-            wochenplanViewModel.lastWeekTasks.observe(viewLifecycleOwner) { overdueTasks ->
-                overdueTasksContainer.removeAllViews()
+            if (userNickname.isNullOrEmpty()) return@observe
 
-                val filteredOverdueTasks = overdueTasks.filter { it.assignee == userNickname }
+            wochenplanViewModel.lastWeekTasks.observe(viewLifecycleOwner) { lastWeekTasks ->
+                wochenplanViewModel.thisWeekTasks.observe(viewLifecycleOwner) { thisWeekTasks ->
+                    homePageViewModel.todayTasks.observe(viewLifecycleOwner) { todayTasks ->
+                        overdueTasksContainer.removeAllViews()
 
-                if (filteredOverdueTasks.isNotEmpty()) {
-                    overdueTasksContainer.visibility = View.VISIBLE
+                        val filteredOverdueTasks = (lastWeekTasks + thisWeekTasks).filter { task ->
+                            !task.isDone && task.assignee == userNickname && getOverdueDays(task) > 0
+                        }
 
-                    filteredOverdueTasks.forEach { task ->
-                        val taskView = LayoutInflater.from(requireContext())
-                            .inflate(R.layout.task_item_overdue, overdueTasksContainer, false)
+                        val filteredTodayTasks = todayTasks.filter { task ->
+                            !task.isDone && task.assignee == userNickname
+                        }
 
-                        val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
-                        val overdueInfoTextView = taskView.findViewById<TextView>(R.id.taskOverdueInfo)
-                        val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+                        if (filteredOverdueTasks.isNotEmpty() || filteredTodayTasks.isNotEmpty()) {
+                            overdueTasksContainer.visibility = View.VISIBLE
 
-                        descriptionTextView.text = task.description
-                        overdueInfoTextView.text = "Überfällig seit ${getOverdueDays(task)} Tagen"
-                        pointsTextView.text = "${task.points} Punkte"
+                            filteredOverdueTasks.forEach { task ->
+                                val taskView = LayoutInflater.from(requireContext())
+                                    .inflate(R.layout.task_item_overdue, overdueTasksContainer, false)
 
-                        overdueTasksContainer.addView(taskView)
+                                val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
+                                val overdueInfoTextView = taskView.findViewById<TextView>(R.id.taskOverdueInfo)
+                                val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+
+                                descriptionTextView.text = task.description
+                                overdueInfoTextView.text = "Überfällig seit ${getOverdueDays(task)} Tagen"
+                                pointsTextView.text = "${task.points} Punkte"
+
+                                overdueTasksContainer.addView(taskView)
+                            }
+
+                            filteredTodayTasks.forEach { task ->
+                                val taskView = LayoutInflater.from(requireContext())
+                                    .inflate(R.layout.task_item_todo, overdueTasksContainer, false)
+
+                                val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
+                                val priorityTextView = taskView.findViewById<TextView>(R.id.taskPriority)
+                                val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+
+                                descriptionTextView.text = task.description
+                                priorityTextView.text = "Priorität: ${task.priority}"
+                                pointsTextView.text = "${task.points} Punkte"
+
+                                overdueTasksContainer.addView(taskView)
+                            }
+
+                        } else {
+                            overdueTasksContainer.visibility = View.GONE
+                        }
                     }
-                } else {
-                    overdueTasksContainer.visibility = View.GONE
                 }
             }
         }
     }
 
 
-    private fun observeTodayTasks() {
+
+    private fun observeTodayTasksLive() {
         homePageViewModel.fetchTodayTasks(wochenplanViewModel)
 
         homePageViewModel.todayTasks.observe(viewLifecycleOwner) { tasks ->
@@ -164,20 +182,11 @@ class HomePageFragment : Fragment() {
                     priorityTextView.text = "Priorität: ${task.priority}"
                     pointsTextView.text = "${task.points} Punkte"
 
-                    // Setzt die passende Farbe für die Priorität
-                    when (task.priority) {
-                        "Hoch" -> priorityTextView.setTextColor(resources.getColor(R.color.priority_high, null))
-                        "Mittel" -> priorityTextView.setTextColor(resources.getColor(R.color.priority_medium, null))
-                        "Niedrig" -> priorityTextView.setTextColor(resources.getColor(R.color.priority_low, null))
-                        else -> priorityTextView.setTextColor(resources.getColor(R.color.own_text_Farbe, null))
-                    }
-
                     todayTasksContainer.addView(taskView)
                 }
             }
         }
     }
-
 
     private fun showWGOptionsDialog(anchorView: View) {
         val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.home_dialog_wg_options, null)
@@ -193,7 +202,6 @@ class HomePageFragment : Fragment() {
         }
 
         dialogView.findViewById<Button>(R.id.joinWGButton).setOnClickListener {
-            showJoinWGDialog()
             dialog?.dismiss()
         }
 
@@ -207,78 +215,6 @@ class HomePageFragment : Fragment() {
             dialog?.dismiss()
         }
 
-        val createWGButton: Button = dialogView.findViewById(R.id.createWGButton)
-        val joinWGButton: Button = dialogView.findViewById(R.id.joinWGButton)
-        val leaveWGButton: Button = dialogView.findViewById(R.id.leaveWGButton)
-        val deleteWGButton: Button = dialogView.findViewById(R.id.deleteWGButton)
-        val showWGInfoButton: Button = dialogView.findViewById(R.id.showWGInfo)
-
-        homePageViewModel.fetchUserWGInfo({ wgId, wgRole ->
-            if (wgId.isNullOrEmpty()) {
-                deleteWGButton.visibility = View.GONE
-                leaveWGButton.visibility = View.GONE
-                showWGInfoButton.visibility = View.GONE
-            } else {
-                createWGButton.visibility = View.GONE
-                joinWGButton.visibility = View.GONE
-
-                if (wgRole == "Wg-Leiter") {
-                    deleteWGButton.visibility = View.VISIBLE
-                } else {
-                    deleteWGButton.visibility = View.GONE
-                }
-
-                leaveWGButton.visibility = View.VISIBLE
-                showWGInfoButton.visibility = View.VISIBLE
-            }
-        }, { errorMessage ->
-            showErrorDialog(errorMessage)
-        })
-
         dialog?.show()
-        positionDialogUnderView(anchorView)
-    }
-
-    private fun positionDialogUnderView(anchorView: View) {
-        dialog?.window?.let { window ->
-            val location = IntArray(2)
-            anchorView.getLocationOnScreen(location)
-            window.attributes.y = location[1] + anchorView.height + 20
-            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
-    }
-
-    private fun showJoinWGDialog() {
-        val dialogView: View = LayoutInflater.from(requireContext()).inflate(R.layout.home_dialog_join_wg, null)
-
-        val joinWGDialog = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        val wgIdInput: EditText = dialogView.findViewById(R.id.wgIdInput)
-        val submitButton: Button = dialogView.findViewById(R.id.submitButton)
-
-        submitButton.setOnClickListener {
-            val wgId = wgIdInput.text.toString().trim()
-            if (wgId.isNotEmpty()) {
-                homePageViewModel.joinWG(wgId) { errorMessage ->
-                    showErrorDialog(errorMessage)
-                }
-                joinWGDialog.dismiss()
-            } else {
-                showErrorDialog("Bitte geben Sie eine WG-ID ein.")
-            }
-        }
-
-        joinWGDialog.show()
-    }
-
-    private fun showErrorDialog(message: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Fehler")
-            .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            .show()
     }
 }

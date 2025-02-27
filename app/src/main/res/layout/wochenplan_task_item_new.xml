@@ -53,7 +53,7 @@
             android:layout_marginTop="7dp"
             android:layout_marginStart="-6dp"
             android:padding="10dp"
-            android:text="Badezimmer putzen"
+            android:text="Task Description"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="@color/own_text_Farbe"
             android:textSize="17sp"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/taskDescriptionLayout"
         android:layout_marginTop="17dp"
-        android:text="Punkte: 50 "
+        android:text="Punkte: "
         android:textColor="#FF5E6162"
         android:textSize="12sp"
         android:textStyle="bold" />
@@ -87,9 +87,9 @@
             android:id="@+id/taskPriority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Hoch "
+            android:text="Priorität: "
             android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="@color/priority_high"
+            android:textColor="#5E6162"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -108,32 +108,41 @@
         android:textStyle="italic"
         android:visibility="gone" />
 
-    <!-- Task Assignee Avatar - Bottom Right Corner -->
-    <ImageView
-        android:id="@+id/taskAssigneeAvatar"
-        android:layout_width="39dp"
-        android:layout_height="35dp"
+    <!-- Container für Avatar & Assignee-Name (Sorgt für perfekte Zentrierung) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/taskDescriptionLayout"
         android:layout_alignParentEnd="true"
-        android:backgroundTint="@color/own_helle_Beige"
-        android:contentDescription="Avatar"
-        android:elevation="6dp"
-        android:padding="3dp"
-        android:src="@drawable/pp" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-    <!-- Task Assignee Text - Below Avatar -->
-    <TextView
-        android:id="@+id/taskAsignee"
-        android:layout_width="93dp"
-        android:layout_height="29dp"
-        android:layout_below="@id/taskAssigneeAvatar"
-        android:layout_alignEnd="@id/taskAssigneeAvatar"
-        android:layout_marginTop="-4dp"
-        android:layout_marginEnd="0dp"
-        android:gravity="right"
-        android:text="Dana"
-        android:textAppearance="?attr/textAppearanceBody2"
-        android:textColor="#FF5E6162"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        <!-- Task Assignee Avatar -->
+        <ImageView
+            android:id="@+id/taskAssigneeAvatar"
+            android:layout_width="39dp"
+            android:layout_height="35dp"
+            android:backgroundTint="@color/own_helle_Beige"
+            android:contentDescription="Avatar"
+            android:elevation="6dp"
+            android:padding="3dp"
+            android:src="@drawable/logo" />
+
+        <!-- Task Assignee Name (immer zentriert unter dem Avatar) -->
+        <TextView
+            android:id="@+id/taskAsignee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Assignee"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="#FF5E6162"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+
 </RelativeLayout>

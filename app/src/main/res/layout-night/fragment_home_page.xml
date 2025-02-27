@@ -49,7 +49,7 @@
             android:text="Willkommen zurück!"
             android:textAlignment="center"
             android:textColor="@color/dark_beige"
-            android:textSize="25sp"
+            android:textSize="27sp"
             android:textStyle="bold" />
 
         <TextView
@@ -67,7 +67,7 @@
             android:text=""
             android:textAlignment="center"
             android:textColor="@color/own_helle_Beige"
-            android:textSize="20sp"
+            android:textSize="27sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -101,7 +101,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_list" />
+                android:src="@drawable/ic_home1"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -131,7 +132,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_home1" />
+                android:src="@drawable/ic_list"
+              />
 
             <TextView
                 android:layout_width="wrap_content"
