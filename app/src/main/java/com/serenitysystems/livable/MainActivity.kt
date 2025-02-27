@@ -1,5 +1,6 @@
 package com.serenitysystems.livable
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -35,6 +37,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Dark Mode persistent setting: Lade den gespeicherten Wert und setze den Modus
+        val sharedPref = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val isDarkMode = sharedPref.getBoolean("dark_mode", false)
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
 
         // Initialize UserPreferences
         userPreferences = UserPreferences(this)
@@ -101,10 +112,13 @@ class MainActivity : AppCompatActivity() {
                     val wgId = documentSnapshot.getString("wgId") ?: ""
                     updateNavigationMenu(wgId, navView)
                     val profileImageUrl = documentSnapshot.getString("profileImageUrl") ?: ""
-                    Glide.with(this)
-                        .load(profileImageUrl)
-                        .placeholder(R.drawable.pp)
-                        .into(profileImageView)
+                    // Überprüfe, ob die Activity noch nicht zerstört ist
+                    if (!isFinishing && !isDestroyed) {
+                        Glide.with(this)
+                            .load(profileImageUrl)
+                            .placeholder(R.drawable.pp)
+                            .into(profileImageView)
+                    }
                 }
             }
 

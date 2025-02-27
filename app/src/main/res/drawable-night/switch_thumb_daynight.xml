@@ -1,0 +1,39 @@
+<!-- switch_thumb_daynight.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Night mode (Checked = true) -->
+    <item android:state_checked="true">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#898787"/> <!-- The "moon" color -->
+                    <size
+                        android:width="28dp"
+                        android:height="28dp"/>
+                </shape><item>
+                <bitmap
+                    android:src="@drawable/moon_icon"
+                    android:gravity="center" />
+            </item>
+
+            </item>
+
+        </layer-list>
+    </item>
+
+    <!-- Day mode (Checked = false) -->
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <gradient  android:startColor="#FFF200"
+                        android:endColor="#FF9800"
+                        /> <!-- The "sun" color -->
+                    <size
+                        android:width="28dp"
+                        android:height="28dp"/>
+                </shape>
+            </item>
+            <!-- Optional: add an inner Image for the sun design -->
+        </layer-list>
+    </item>
+</selector>

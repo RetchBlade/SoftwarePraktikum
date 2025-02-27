@@ -1,0 +1,16 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient    android:startColor="#575757"
+                android:endColor="#373636"
+                />
+
+            <corners android:radius="4dp"/>
+        </shape>
+    </item>
+    <item android:right="8dp">
+        <bitmap
+            android:gravity="right|center_vertical"
+            android:src="@android:drawable/arrow_down_float" />
+    </item>
+</layer-list>

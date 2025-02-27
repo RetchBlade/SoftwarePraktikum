@@ -598,27 +598,6 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun claimTask(task: DynamicTask, userEmail: String, userName: String) {
-        fetchUserToken { token ->
-            token?.let {
-                db.collection("WGs")
-                    .document(it.email) // Get wgId here
-                    .collection("Wochenplan")
-                    .document(task.id)
-                    .update(
-                        "assignee", userName,
-                        "assigneeEmail", userEmail
-                    )
-                    .addOnSuccessListener {
-                        Log.d("WochenplanViewModel", "Task claimed successfully.")
-                        loadTasks() // Refresh data
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("WochenplanViewModel", "Failed to claim task", e)
-                    }
-            }
-        }
-    }
 
     fun calculateMonthlyPoints(wgId: String) {
         db.collection("WGs")
@@ -838,7 +817,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
@@ -856,7 +836,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,
@@ -874,7 +855,8 @@ class WochenplanViewModel(application: Application) : AndroidViewModel(applicati
                                                     val tempDate = taskDate.clone() as Calendar
                                                     while (endDate == null || tempDate.before(endDate) || isSameDay(tempDate, endDate)) {
                                                         val formattedDate = dateFormat.format(tempDate.time)
-                                                        if (!existingTaskDates.containsKey(formattedDate)) {
+                                                        val isDuplicate = existingTasks.any { it.date == formattedDate && it.description == task.description }
+                                                        if (!isDuplicate) {
                                                             val newTask = task.copy(
                                                                 id = UUID.randomUUID().toString(),
                                                                 date = formattedDate,

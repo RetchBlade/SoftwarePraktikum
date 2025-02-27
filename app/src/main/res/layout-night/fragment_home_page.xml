@@ -1,0 +1,221 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+    <!-- User Profile Section -->
+    <LinearLayout
+        android:id="@+id/headerSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="20dp"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:ignore="NotSibling">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="203dp"
+            android:layout_height="195dp"
+            android:layout_gravity="center"
+            app:cardBackgroundColor="@color/own_helle_Beige"
+            app:cardCornerRadius="600dp"
+            app:cardElevation="10dp">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/pp_placeholder" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/greetingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_extrabold"
+            android:gravity="center"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text="Willkommen zurück!"
+            android:textAlignment="center"
+            android:textColor="@color/dark_beige"
+            android:textSize="27sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:fontFamily="@font/poppins_extrabold"
+            android:gravity="center"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="@color/own_helle_Beige"
+            android:textSize="27sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/actionGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerSection"
+        android:layout_marginTop="0dp"
+        android:padding="16dp"
+        app:alignmentMode="alignMargins"
+        app:columnCount="2"
+        app:useDefaultMargins="true">
+
+        <FrameLayout
+            android:id="@+id/wgVerwaltungButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="3dp"
+            android:padding="16dp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="0"
+            app:layout_rowWeight="1">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_home1"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppinsregular"
+                android:text="WG-Verwaltung"
+                android:textColor="@color/own_helle_Beige"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/toDoButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/gradient_blau"
+            android:elevation="3dp"
+            android:padding="16dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="1">
+
+            <ImageView
+                android:layout_width="49dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_list"
+              />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppinsregular"
+                android:text=" Mein To-Do"
+                android:textColor="@color/own_helle_Beige"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
+    </androidx.gridlayout.widget.GridLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_below="@id/actionGrid"
+        android:layout_margin="16dp"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:id="@+id/newsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/container_gradient_beige"
+
+            android:padding="16dp"
+            android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/notificationsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Heute zu tun:"
+                android:textColor="@color/own_navy_Dunkelblau"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Overdue Tasks Section -->
+            <TextView
+                android:id="@+id/overdueTasksTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Überfällige Aufgaben:"
+                android:textColor="@color/priority_overdue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:padding="8dp"/>
+
+            <LinearLayout
+                android:id="@+id/overdueTasksContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:elevation="5dp"
+
+                />
+
+            <!-- Today's Tasks Section -->
+            <LinearLayout
+                android:id="@+id/todayTasksContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:elevation="5dp"
+                />
+
+            <TextView
+                android:id="@+id/noTasksMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keine Aufgaben für heute!"
+                android:textColor="@color/own_navy_Dunkelblau"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="12dp"/>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

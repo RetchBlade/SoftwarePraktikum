@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/pp" />
+                android:src="@drawable/pp_placeholder" />
         </androidx.cardview.widget.CardView>
 
         <TextView
@@ -48,7 +48,7 @@
             android:text="Willkommen zurück!"
             android:textAlignment="center"
             android:textColor="@color/own_helle_Beige"
-            android:textSize="25sp"
+            android:textSize="27sp"
             android:textStyle="bold" />
 
         <TextView
@@ -66,7 +66,7 @@
             android:text=""
             android:textAlignment="center"
             android:textColor="@color/own_helle_Beige"
-            android:textSize="20sp"
+            android:textSize="27sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -100,7 +100,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_list" />
+                android:src="@drawable/ic_home1"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -130,7 +131,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/ic_home1" />
+                android:src="@drawable/ic_list"
+            />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -147,21 +149,27 @@
 
     <!-- Scrollable Content -->
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
+        android:layout_width="395dp"
+        android:layout_height="250dp"
         android:layout_below="@id/actionGrid"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
             android:id="@+id/newsContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/blurred_card_background"
             android:orientation="vertical"
-            android:background="@drawable/gradient_beige"
-            android:backgroundTint="@color/own_helle_Beige"            android:padding="16dp"
-            android:elevation="10dp">
+            android:padding="5dp"
+            android:paddingStart="20dp"
+            android:paddingTop="110dp">
 
             <TextView
                 android:id="@+id/notificationsTitle"
@@ -177,41 +185,42 @@
                 android:id="@+id/overdueTasksTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="3dp"
                 android:text="Überfällige Aufgaben:"
                 android:textColor="@color/priority_overdue"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:visibility="gone"
-                android:padding="8dp"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/overdueTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginEnd="25dp"
                 android:elevation="5dp"
-
-            />
+                android:orientation="vertical"
+                android:padding="2dp" />
 
             <!-- Today's Tasks Section -->
             <LinearLayout
                 android:id="@+id/todayTasksContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginEnd="25dp"
                 android:elevation="5dp"
-             />
+                android:orientation="vertical" />
 
             <TextView
                 android:id="@+id/noTasksMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="2dp"
+
                 android:text="Keine Aufgaben für heute!"
                 android:textColor="@color/own_navy_Dunkelblau"
                 android:textSize="16sp"
-                android:gravity="center"
-                android:visibility="gone"
-                android:padding="12dp"/>
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

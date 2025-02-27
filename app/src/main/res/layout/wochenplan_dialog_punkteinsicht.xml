@@ -7,6 +7,14 @@
     android:background="@drawable/dialog_background">
 
     <!-- Monat Navigation -->
+    <ImageView
+        android:id="@+id/closeDialogButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:contentDescription="Schließen"
+        android:src="@drawable/ic_close" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,11 +58,4 @@
 
 
     <!-- Schließen Button -->
-    <ImageView
-        android:id="@+id/closeDialogButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="end"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Schließen" />
 </LinearLayout>

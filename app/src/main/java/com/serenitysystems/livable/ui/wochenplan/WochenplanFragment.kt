@@ -70,7 +70,7 @@ class WochenplanFragment : Fragment() {
             showTaskDialog()
         }
 
-        binding.showPointsButton.setOnClickListener {
+        binding.showPointsButton?.setOnClickListener {
             showPointsDialog()
         }
 
@@ -265,6 +265,7 @@ class WochenplanFragment : Fragment() {
 
     private fun updateTabIcons() {
         val tabLayout = binding.tabLayout
+        val today = Calendar.getInstance()
 
         for (i in 0 until tabLayout.tabCount) {
             val tab = tabLayout.getTabAt(i)
@@ -272,27 +273,38 @@ class WochenplanFragment : Fragment() {
             val tabIcon = customView?.findViewById<ImageView>(R.id.tabIcon)
             val warningIcon = customView?.findViewById<ImageView>(R.id.warningIcon)
 
-            // Determine if the tab should show a warning icon
-            val showWarningIcon = when (i) {
-                0 -> wochenplanViewModel.lastWeekTasks.value?.any { task ->
-                    !task.isDone && task.priority.startsWith("Überfällig")
-                } ?: false
+            // Hole die Aufgaben für letzte Woche und diese Woche
+            val lastWeekTasks = wochenplanViewModel.lastWeekTasks.value ?: emptyList()
+            val thisWeekTasks = wochenplanViewModel.thisWeekTasks.value ?: emptyList()
 
-                1 -> wochenplanViewModel.thisWeekTasks.value?.any { task ->
-                    !task.isDone && task.priority.startsWith("Überfällig")
-                } ?: false
-
-                else -> false
+            // Prüfen, ob eine Aufgabe überfällig ist (Datum vor heute)
+            val hasOverdueTasks = when (i) {
+                0 -> lastWeekTasks.any { task -> isTaskOverdue(task, today) }
+                1 -> thisWeekTasks.any { task -> isTaskOverdue(task, today) }
+                else -> false // Nächste Woche ignorieren
             }
 
-            // Set the icon and warning visibility
             when (i) {
                 0 -> tabIcon?.setImageResource(R.drawable.ic_lastweek)
                 1 -> tabIcon?.setImageResource(R.drawable.ic_wochencalender)
                 2 -> tabIcon?.setImageResource(R.drawable.ic_nextweek)
             }
 
-            warningIcon?.visibility = if (showWarningIcon) View.VISIBLE else View.GONE
+            // Visibility für das Warning-Icon steuern
+            warningIcon?.visibility = if (hasOverdueTasks) View.VISIBLE else View.GONE
+        }
+    }
+
+
+    private fun isTaskOverdue(task: DynamicTask, today: Calendar): Boolean {
+        return try {
+            val taskDate = Calendar.getInstance().apply {
+                time = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.GERMANY).parse(task.date)!!
+            }
+            !task.isDone && taskDate.before(today)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

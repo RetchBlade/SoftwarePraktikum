@@ -26,6 +26,7 @@
                 android:text="Heute"
                 android:textSize="30sp"
                 android:textStyle="bold"
+                android:textColor="@color/own_text_Farbe"
                 android:padding="8dp"
                 android:id="@+id/headerTextView" />
 
@@ -42,6 +43,8 @@
                 android:text="Morgen"
                 android:textSize="30sp"
                 android:textStyle="bold"
+                android:textColor="@color/own_text_Farbe"
+
                 android:padding="8dp"
                 android:id="@+id/headerTextView2" />
 
@@ -58,6 +61,8 @@
                 android:text="Diese Woche"
                 android:textSize="30sp"
                 android:textStyle="bold"
+                android:textColor="@color/own_text_Farbe"
+
                 android:padding="8dp"
                 android:id="@+id/headerTextView3" />
 
@@ -73,6 +78,8 @@
                 android:layout_height="wrap_content"
                 android:text="Später"
                 android:textSize="30sp"
+                android:textColor="@color/own_text_Farbe"
+
                 android:textStyle="bold"
                 android:padding="8dp"
                 android:id="@+id/headerTextView4" />

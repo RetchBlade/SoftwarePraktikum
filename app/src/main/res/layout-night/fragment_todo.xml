@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.todo.ToDoFragment">
+
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/newTaskButton"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Text und RecyclerView für "Heute" -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Heute"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_beige"
+                android:padding="8dp"
+                android:id="@+id/headerTextView" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/todoListRecyclerView"
+   />
+
+            <!-- Text und RecyclerView für "Morgen" -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_beige"
+
+                android:text="Morgen"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:id="@+id/headerTextView2" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/todoListRecyclerView2"
+   />
+
+            <!-- Text und RecyclerView für "Diese Woche" -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Diese Woche"
+                android:textColor="@color/dark_beige"
+
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:id="@+id/headerTextView3" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/todoListRecyclerView3"
+ />
+
+            <!-- Text und RecyclerView für "Später" -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Später"
+                android:textColor="@color/dark_beige"
+
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:id="@+id/headerTextView4" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/todoListRecyclerView4"
+       />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Action Button zum Hinzufügen neuer Todos -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Neue Aufgabe"
+        android:id="@+id/newTaskButton"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"
+        android:layout_margin="20dp"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white" />
+
+</RelativeLayout>

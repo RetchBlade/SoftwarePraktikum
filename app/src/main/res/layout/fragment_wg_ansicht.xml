@@ -37,14 +37,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- WG ID -->
+                <!-- Container für WG-ID -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/wgIdLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="WG ID:"
@@ -60,10 +61,18 @@
                         android:text="Lädt..."
                         android:textColor="@color/black"
                         android:textSize="16sp"
-                        android:textStyle="italic"
-                        android:clickable="true"
-                        android:focusable="true" />
+                        android:textStyle="italic" />
+
+                    <!-- Copy-Icon -->
+                    <ImageView
+                        android:id="@+id/wgIdCopyIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_copy"
+                        android:contentDescription="WG-ID kopieren" />
                 </LinearLayout>
+
 
                 <!-- WG Adresse -->
                 <LinearLayout

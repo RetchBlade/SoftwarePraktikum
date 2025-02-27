@@ -63,7 +63,7 @@
 
 
 
-        <!-- Kontostand -->
+    <!-- Kontostand -->
         <TextView
             android:id="@+id/textViewKontostand"
             android:layout_width="wrap_content"

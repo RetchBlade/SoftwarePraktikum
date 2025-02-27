@@ -47,4 +47,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+    fun fetchUserToken(action: (UserToken?) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userPreferences.userToken.collect { token ->
+                action(token)
+            }
+        }
+    }
+
+
 }

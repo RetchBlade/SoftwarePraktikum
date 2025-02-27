@@ -33,6 +33,7 @@ class WgAnsichtFragment : Fragment() {
     private lateinit var editButton: ImageView
     private lateinit var bewohnerContainer: LinearLayout
     private lateinit var wgIdText: TextView
+    private lateinit var wgIdCopyIcon: ImageView
 
     private val db = FirebaseFirestore.getInstance()
     private var isLeiter = false
@@ -58,14 +59,15 @@ class WgAnsichtFragment : Fragment() {
         }
 
         wgIdText = view.findViewById(R.id.wgIdText)
+        wgIdCopyIcon = view.findViewById(R.id.wgIdCopyIcon)
 
         sharedViewModel.wgId.observe(viewLifecycleOwner) { wgId ->
             wgIdText.text = wgId ?: "Nicht verfügbar"
         }
 
-        // Klick-Listener zum Kopieren der WgID in die Zwischenablage
-        wgIdText.setOnClickListener { copyToClipboard(wgIdText) }
-
+        wgIdCopyIcon.setOnClickListener {
+            copyToClipboard(wgIdText)
+        }
 
         editButton.setOnClickListener { navigateToEditFragment() }
     }
@@ -106,14 +108,13 @@ class WgAnsichtFragment : Fragment() {
                 }
             }
         }
-
     }
 
     private fun updateRoommateList(newRoommates: List<Triple<String, String, Int>>) {
-        bewohnerContainer.removeAllViews() // 🔥 Wichtig: Vorher leeren
+        bewohnerContainer.removeAllViews() // Wichtig: Vorher leeren
 
         val inflater = LayoutInflater.from(context)
-        val rankIcons = sharedViewModel.rankIcons.value ?: emptyMap() // 🔥 Sicherstellen, dass Rank-Icons geladen sind
+        val rankIcons = sharedViewModel.rankIcons.value ?: emptyMap()
 
         newRoommates.forEachIndexed { index, (name, email, points) ->
             val roommateView = inflater.inflate(R.layout.wgansicht_roommate_item, bewohnerContainer, false)
@@ -127,12 +128,13 @@ class WgAnsichtFragment : Fragment() {
 
             fetchUserProfileImage(email) { profileImageUrl ->
                 Glide.with(requireContext())
-                    .load(profileImageUrl ?: R.drawable.pp_placeholder)
+                    .load(profileImageUrl)
+                    .placeholder(R.drawable.pp_placeholder)
                     .circleCrop()
                     .into(profilePicture)
             }
 
-            // 🔥 Dynamisches Laden des Rank-Icons
+            // Dynamisches Laden des Rank-Icons
             val rank = when {
                 points < 500 -> "neuling"
                 points < 1000 -> "bronze"
@@ -156,11 +158,6 @@ class WgAnsichtFragment : Fragment() {
             bewohnerContainer.addView(roommateView)
         }
     }
-
-
-
-
-
 
     private fun fetchUserProfileImage(email: String, callback: (String?) -> Unit) {
         db.collection("users").document(email)
@@ -190,20 +187,24 @@ class WgAnsichtFragment : Fragment() {
     }
 
     private fun copyToClipboard(textView: TextView) {
+        val wgId = textView.text.toString().trim()
+        if (wgId.isEmpty() || wgId == "Nicht verfügbar") {
+            Snackbar.make(textView, "Keine WG-ID vorhanden", Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
         val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("WG ID", textView.text)
+        val clip = ClipData.newPlainText("WG ID", wgId)
         clipboard.setPrimaryClip(clip)
 
+        // Feedback: Kurze Meldung oder Änderung des Textes
         textView.text = "✅ WG ID kopiert!"
-
-        // Nach 1,5 Sekunden wieder zurücksetzen
         textView.postDelayed({
-            textView.text = clipboard.primaryClip?.getItemAt(0)?.text ?: "WG ID"
+            textView.text = wgId
         }, 1500)
     }
 
     private fun showError(view: View, message: String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
-
 }

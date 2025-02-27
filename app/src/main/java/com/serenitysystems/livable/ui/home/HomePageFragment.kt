@@ -88,7 +88,7 @@ class HomePageFragment : Fragment() {
 
         // Heutige Aufgaben laden und anzeigen
         observeTodayTasks()
-        observeOverdueTasks()
+        observeOverdueTasksLive()
         return view
     }
 
@@ -107,36 +107,70 @@ class HomePageFragment : Fragment() {
     }
 
 
-    private fun observeOverdueTasks() {
+    private fun observeOverdueTasksLive() {
         homePageViewModel.userNickname.observe(viewLifecycleOwner) { userNickname ->
-            wochenplanViewModel.lastWeekTasks.observe(viewLifecycleOwner) { overdueTasks ->
-                overdueTasksContainer.removeAllViews()
+            if (userNickname.isNullOrEmpty()) return@observe
 
-                val filteredOverdueTasks = overdueTasks.filter { it.assignee == userNickname }
+            // Beobachte Aufgaben aus letzter Woche, dieser Woche und heute
+            wochenplanViewModel.lastWeekTasks.observe(viewLifecycleOwner) { lastWeekTasks ->
+                wochenplanViewModel.thisWeekTasks.observe(viewLifecycleOwner) { thisWeekTasks ->
+                    homePageViewModel.todayTasks.observe(viewLifecycleOwner) { todayTasks ->
+                        overdueTasksContainer.removeAllViews()
 
-                if (filteredOverdueTasks.isNotEmpty()) {
-                    overdueTasksContainer.visibility = View.VISIBLE
+                        // 🔥 Überfällige Aufgaben aus letzter & dieser Woche filtern
+                        val filteredOverdueTasks = (lastWeekTasks + thisWeekTasks).filter { task ->
+                            !task.isDone && task.assignee == userNickname && getOverdueDays(task) > 0
+                        }
 
-                    filteredOverdueTasks.forEach { task ->
-                        val taskView = LayoutInflater.from(requireContext())
-                            .inflate(R.layout.task_item_overdue, overdueTasksContainer, false)
+                        // 🔥 Heutige Aufgaben filtern (egal ob überfällig oder nicht)
+                        val filteredTodayTasks = todayTasks.filter { task ->
+                            !task.isDone && task.assignee == userNickname
+                        }
 
-                        val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
-                        val overdueInfoTextView = taskView.findViewById<TextView>(R.id.taskOverdueInfo)
-                        val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+                        if (filteredOverdueTasks.isNotEmpty() || filteredTodayTasks.isNotEmpty()) {
+                            overdueTasksContainer.visibility = View.VISIBLE
 
-                        descriptionTextView.text = task.description
-                        overdueInfoTextView.text = "Überfällig seit ${getOverdueDays(task)} Tagen"
-                        pointsTextView.text = "${task.points} Punkte"
+                            // 🚨 Überfällige Aufgaben zuerst anzeigen
+                            filteredOverdueTasks.forEach { task ->
+                                val taskView = LayoutInflater.from(requireContext())
+                                    .inflate(R.layout.task_item_overdue, overdueTasksContainer, false)
 
-                        overdueTasksContainer.addView(taskView)
+                                val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
+                                val overdueInfoTextView = taskView.findViewById<TextView>(R.id.taskOverdueInfo)
+                                val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+
+                                descriptionTextView.text = task.description
+                                overdueInfoTextView.text = "Überfällig seit ${getOverdueDays(task)} Tagen"
+                                pointsTextView.text = "${task.points} Punkte"
+
+                                overdueTasksContainer.addView(taskView)
+                            }
+
+                            // 🔵 Danach heutige Aufgaben anzeigen (unter den überfälligen)
+                            filteredTodayTasks.forEach { task ->
+                                val taskView = LayoutInflater.from(requireContext())
+                                    .inflate(R.layout.task_item_todo, overdueTasksContainer, false)
+
+                                val descriptionTextView = taskView.findViewById<TextView>(R.id.taskDescription)
+                                val priorityTextView = taskView.findViewById<TextView>(R.id.taskPriority)
+                                val pointsTextView = taskView.findViewById<TextView>(R.id.taskPoints)
+
+                                descriptionTextView.text = task.description
+                                priorityTextView.text = "Priorität: ${task.priority}"
+                                pointsTextView.text = "${task.points} Punkte"
+
+                                overdueTasksContainer.addView(taskView)
+                            }
+
+                        } else {
+                            overdueTasksContainer.visibility = View.GONE
+                        }
                     }
-                } else {
-                    overdueTasksContainer.visibility = View.GONE
                 }
             }
         }
     }
+
 
 
     private fun observeTodayTasks() {

@@ -12,7 +12,7 @@
         <clip>
             <shape android:shape="rectangle">
                 <corners android:radius="10dp"/>
-                <solid android:color="#4CAF50"/> <!-- Grüne Farbe -->
+                <solid android:color="#039BAF"/> <!-- Grüne Farbe -->
             </shape>
         </clip>
     </item>
