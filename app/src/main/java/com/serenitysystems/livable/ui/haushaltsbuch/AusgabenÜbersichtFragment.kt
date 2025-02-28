@@ -46,7 +46,6 @@ class AusgabenÜbersichtFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initView()
     }
 
@@ -195,18 +194,18 @@ class AusgabenÜbersichtFragment : Fragment() {
     }
 
     /**
-     * "MMMM yyyy", z. B. "März 2025"
+     * "MMMM yyyy", z. B. "März 2025" .
      */
     private fun formatMonth(cal: Calendar): String {
-        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.GERMAN)
         return sdf.format(cal.time)
     }
 
     /**
-     * "MM.yyyy", z. B. "03.2025" für loadExpensesForMonth
+     * "MM.yyyy", z. B. "03.2025" .
      */
     private fun formatMonthForQuery(cal: Calendar): String {
-        val sdf = SimpleDateFormat("MM.yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("MM.yyyy", Locale.GERMAN)
         return sdf.format(cal.time)
     }
 

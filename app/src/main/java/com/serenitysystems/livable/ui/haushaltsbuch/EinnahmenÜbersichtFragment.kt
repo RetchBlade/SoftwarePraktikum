@@ -48,7 +48,6 @@ class EinnahmenÜbersichtFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initView()
     }
 
@@ -203,18 +202,18 @@ class EinnahmenÜbersichtFragment : Fragment() {
     }
 
     /**
-     * Formatiert den Monat als "MMMM yyyy" für die Anzeige, z. B. "März 2025".
+     * Formatiert den Monat als "MMMM yyyy" für die Anzeige, z. B. "März 2025" (Almanca).
      */
     private fun formatMonth(cal: Calendar): String {
-        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.GERMAN)
         return sdf.format(cal.time)
     }
 
     /**
-     * Formatiert den Monat als "MM.yyyy" (z. B. "03.2025") für loadExpensesForMonth.
+     * Formatiert den Monat als "MM.yyyy" (z. B. "03.2025") für loadExpensesForMonth (Almanca).
      */
     private fun formatMonthForQuery(cal: Calendar): String {
-        val sdf = SimpleDateFormat("MM.yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("MM.yyyy", Locale.GERMAN)
         return sdf.format(cal.time)
     }
 
